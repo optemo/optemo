@@ -640,11 +640,11 @@
   <requestHandler name="/spell" class="solr.SearchHandler" lazy="true">
     <lst name="defaults">
       <!-- omp = Only More Popular -->
-      <str name="spellcheck.onlyMorePopular">false</str>
+      <str name="spellcheck.onlyMorePopular">true</str>
       <!-- exr = Extended Results -->
       <str name="spellcheck.extendedResults">false</str>
       <!--  The number of suggestions to return -->
-      <str name="spellcheck.count">1</str>
+      <str name="spellcheck.count">3</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>

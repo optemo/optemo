@@ -1,24 +1,22 @@
-# -*- coding: utf-8 -*-
+  # -*- coding: utf-8 -*-
 require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
   attr :collation, :sc_emp_result, :col_emp_result, :num_result
-  attr_accessor :keyword
   
   def filtering_cat_cont_bin_specs(mybins,mycats,myconts)
     
     @filtering||= Product.search do
       if keyword_search
-        puts "jan-10 we are here"
-        @keyword = keyword_search
+        #puts "jan-10 we are here"
         phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
         fulltext phrase
       end  
       any_of do  #disjunction inside the category part
         mycats.each do |cats|
-          puts "cats_name #{cats.name} cats_value #{cats.value}"        
+         #  puts "cats_name #{cats.name} cats_value #{cats.value}"        
           if (cats.name == "category")
             with cats.name.to_sym, cats.value 
           end             
@@ -38,11 +36,11 @@ class Search < ActiveRecord::Base
             end     
           end   
          mybins.each do |bins|
-           puts "bins_name #{bins.name} bins_value #{bins.value}"
+          # puts "bins_name #{bins.name} bins_value #{bins.value}"
            with bins.name.to_sym, bins.value
          end      
         myconts.each do |conts|
-           puts "conts_name #{conts.name} conts_value #{conts.value}"
+          # puts "conts_name #{conts.name} conts_value #{conts.value}"
            with (conts.name.to_sym), [conts.min..conts.max]
            
          end  
@@ -155,7 +153,6 @@ class Search < ActiveRecord::Base
    specs = mybins.empty? && mycats.empty? && myconts.empty?
       
    if (keyword_search && specs) 
-    @keyword = keyword_search
     phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
     
       
@@ -166,10 +163,11 @@ class Search < ActiveRecord::Base
     @keysearch ||= Product.search do
       fulltext phrase
       with :instock, 1
+      spellcheck :count => 4
       paginate :per_page => 500 
     end
     #puts "phrase-jan10-search #{phrase}"
-    #puts "suggestions, #{@keysearch.suggestions}"
+    puts "suggestions, #{@keysearch.suggestions}"
     #puts "keysearch_total #{@keysearch.total}"
     #puts "total_pages_results: #{@keysearch.results.total_pages}"
     

@@ -11,11 +11,11 @@
     <%else%>
       <a class="suggestion" href="#"> <%=Session.search.collation%></a>
     <%end%></b>	
-    as there were no results for <b><%=Session.search.keyword%></b>
+    as there were no results for <b><%=Session.search.keyword_search%></b>
   </div>		
 <%elsif (Session.search.num_result == 0 && (Session.search.col_emp_result || Session.search.collation==nil))%>
 <div id="spellcheck_suggestion_box">
- Your search, <b><%=Session.search.keyword%></b>, did not match any products. 	
+ Your search, <b><%=Session.search.keyword_search%></b>, did not match any products. 	
 </div>
 <%end%>
 <div id="product_content">
