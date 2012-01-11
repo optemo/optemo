@@ -7,6 +7,7 @@ optemo_module = (function (my){
   /* LiveInit functions */
   $('#keyword_submit').live("click", function(){
     if (my.loading_indicator_state.disable) return false;
+  // check if there is any filtering before starting the keyword search (maybe it's needed to combine with my.submitAJAX)
 	 var selections = $("#filter_form").serializeObject();
 		$.each(selections, function(k,v){
        if(v == "" || v == "-") {

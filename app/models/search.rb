@@ -6,11 +6,10 @@ class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
   attr :collation, :sc_emp_result, :col_emp_result, :num_result
   
-  def filtering_cat_cont_bin_specs(mybins,mycats,myconts)
+  def filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search=nil)
     
     @filtering||= Product.search do
       if keyword_search
-        #puts "jan-10 we are here"
         phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
         fulltext phrase
       end  
@@ -50,8 +49,8 @@ class Search < ActiveRecord::Base
       paginate :per_page => 500 
       group :eq_id_str
     end
-   # puts "num_results #{@products1.total}"
-    #puts "group_matches #{@products1.group(:eq_id_str).matches}"
+   # puts "num_results #{@filtering.total}"
+    #puts "group_matches #{@filtering.group(:eq_id_str).matches}"
     res = []
     @filtering.group(:eq_id_str).groups.each do |g|
         #puts "group_value #{g.value}" # blog_id of the each document in the group
@@ -150,60 +149,59 @@ class Search < ActiveRecord::Base
    mycats = self.userdatacats
    mybins = self.userdatabins
    myconts = self.userdataconts
-   specs = mybins.empty? && mycats.empty? && myconts.empty?
+   emp_specs = mybins.empty? && mycats.empty? && myconts.empty?
       
-   if (keyword_search && specs) 
-    phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
-    
+    if (keyword_search) 
+      phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
       
-    @sc_emp_result = false
-    @col_emp_result = false
-    @num_result = 0
+      @sc_emp_result = false
+      @col_emp_result = false
+      @num_result = 0
          
-    @keysearch ||= Product.search do
-      fulltext phrase
-      with :instock, 1
-      spellcheck :count => 4
-      paginate :per_page => 500 
-    end
-    #puts "phrase-jan10-search #{phrase}"
-    puts "suggestions, #{@keysearch.suggestions}"
-    #puts "keysearch_total #{@keysearch.total}"
-    #puts "total_pages_results: #{@keysearch.results.total_pages}"
-    
-    @num_result = @keysearch.total
-    if (@keysearch.suggestions!=nil)  
-     if (!@keysearch.suggestions.empty?)
-      @collation = @keysearch.collation
-         
-      phrase = @collation.downcase.gsub(/\s-/,'')        
-      @sug_products ||= Product.search do
+      @keysearch ||= Product.search do
         fulltext phrase
         with :instock, 1
-        paginate :per_page => 500
+        spellcheck :count => 4
+        paginate :per_page => 500 
       end
+      #puts "phrase-jan10-search #{phrase}"
+      #puts "suggestions, #{@keysearch.suggestions}"
+      #puts "keysearch_total #{@keysearch.total}"
+      #puts "total_pages_results: #{@keysearch.results.total_pages}"
+    
+       @num_result = @keysearch.total
+    
+       if (@keysearch.suggestions!=nil && !@keysearch.suggestions.empty?)
+         @collation = @keysearch.collation
          
-      if (@sug_products.results.empty?)
-        @col_emp_result = true;
-      end
+         phrase = @collation.downcase.gsub(/\s-/,'')        
+         @sug_products ||= Product.search do
+         fulltext phrase
+         with :instock, 1
+         paginate :per_page => 500
+         end
          
-      if (@keysearch.results.empty? && !@col_emp_result)
-        @sc_emp_result = true 
-        @products = @sug_products.results
-      else
-        @products =@keysearch.results
-      end
-     else
-       @products =@keysearch.results 
-     end          
-    else    
-      @products =@keysearch.results 
+         if (@sug_products.results.empty?)
+           @col_emp_result = true;
+         end
+         if (!emp_specs && !@col_emp_result)
+           @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
+         elsif (@keysearch.results.empty? && !@col_emp_result)
+           @sc_emp_result = true 
+           @products = @sug_products.results
+         else
+           @products =@keysearch.results
+         end
+       elsif (!emp_specs && @num_result!=0)
+         @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, self.keyword_search)
+       else
+         @products =@keysearch.results 
+       end             
+    elsif (emp_specs )
+      @products ||= ContSpec.fq2   
+    else
+      @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)
     end
-   elsif (!keyword_search && specs )
-    @products ||= ContSpec.fq2   
-   else
-    @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)
-   end
   end
   
   def products_landing
