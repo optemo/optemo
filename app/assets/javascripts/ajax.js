@@ -16,10 +16,13 @@ optemo_module = (function (my){
   my.submitAJAX = function(){
       var selections = $("#filter_form").serializeObject();
       $.each(selections, function(k,v){
-          if(v == "" || v == "-") {
-              delete selections[k];
+          if(v == "" || v == "-" || v == ";") {
+            delete selections[k];
           }
-          /* Look for weird $ error */
+          /* Slider values shouldn't get sent unless specifically set */
+          if(k.match(/superfluous/)) {
+            delete selections[k];
+          }
       });
       my.ajaxcall("/compare/create", selections);
   }
@@ -52,7 +55,7 @@ optemo_module = (function (my){
         if (outsidecontainer.css('display') != 'block') 
             $('#info').html("").css({'height' : "560px", 'width' : (width-46)+'px'});
         outsidecontainer.css({'left' : '100px',
-                                    'top' : (dsoctop+5-187)+'px',
+                                    'top' : (dsoctop+5)+'px',
                                     'width' : (width||560)+'px',
                                     'display' : 'inline' });
     var wWidth = $(window).width();
@@ -145,7 +148,7 @@ optemo_module = (function (my){
   my.ajaxcall = function(myurl,mydata) {
       // Disable interface elements.
       $('.slider').each(function() {
-          $(this).slider("option", "disabled", true);
+          $(this).slider("disabled", true);
       });
       $('.binary_filter, .cat_filter').attr('disabled', true);
       my.loading_indicator_state.disable = true; //Disables any live click handlers

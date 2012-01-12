@@ -22,7 +22,7 @@
         <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).zip(
            %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
           <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
-          <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>"></div>
+          <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
         <% end %>
         <div style="clear: left;">
           <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
@@ -54,19 +54,20 @@
       <div style="position:relative">
         <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
         <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
-        <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+"-"+current.max.to_s, {:class => 'range'}%>
-        <div class='slider'
-          data-label= '<%= f.name %>'
-          data-min='<%= format_acceptable_increments(distribution_data.first[2], "down") %>' <%# Global min %>
-          data-max='<%= format_acceptable_increments(distribution_data.first[3], "up") %>' <%# Global max %>
-          data-startmin='<%= format_acceptable_increments(current.min.nil? ? distribution_data.first[2] : current.min, "down") %>'
-          data-startmax='<%= format_acceptable_increments(current.max.nil? ? distribution_data.first[3] : current.max, "up") %>'
-          current-data-min='<%= distribution_data.first.first %>'
-          current-data-max='<%= distribution_data.first.second %>'
-          force-int='false'
-        <%= f.name == 'saleprice' ? 'data-formatting=\'$\'' : ""  %>>
-            <div class="centerofslider"><!-- --></div>
-        </div>
+        <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
+        <span style="display: inline-block; width: 155px; padding: 20px 5px;">
+          <input 
+            class="slider" 
+            type="slider" 
+            name="superfluous[<%= f.name %>]"
+            value="<%= [(current.min.nil? ? distribution_data.first[2].floor : current.min),(current.max.nil? ? distribution_data.first[3].ceil : current.max)].join(";") %>"
+            data-min= '<%= distribution_data.first[2].floor %>'
+            data-max= '<%= distribution_data.first[3].ceil %>'
+            data-distmin=<%= distribution_data.first[0] %>
+            data-distmax=<%= distribution_data.first[1] %>
+            data-unit = "<%= t("#{Session.product_type}.specs.#{f.name}.unit", :default => '') %>" 
+            disabled="disabled"/>
+        </span>
       </div>
     <% end %>
   <% when "Binary" %>

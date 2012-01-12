@@ -1,8 +1,3 @@
 <div class="<%= f.style.blank? ? "label" : f.style %>">
   <%= t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym ) %>
-  <% if !(unit = t("#{Session.product_type}.specs.#{f.name}.unit", :default => "")).blank? -%>
-  <span class="unitdisp">
-    (<%= unit %>)
-  </span>
-  <% end %>
 </div>

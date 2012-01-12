@@ -87,4 +87,15 @@ en:
         nooption:       "-"
         submit:         "Submit"
         thanks:         "Thank you for your feedback."
-        
+    color:
+      Red:                 "Red"
+      Orange:              "Orange"
+      Yellow:              "Yellow"
+      Green:               "Green"
+      Blue:                "Blue"
+      Purple:              "Purple"
+      Pink:                "Pink"
+      White:               "White"
+      Silver:              "Silver"
+      Brown:               "Brown"
+      Black:               "Black"
