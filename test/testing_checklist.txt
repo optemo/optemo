@@ -1,89 +1,117 @@
 testing check list:
 
 Landing page:
-- There is a hero product at the top
-- Both SHOP NOW button and the product title link direct to the Best Buy product detail page
-- Click on both the SHOP NOW button and the title link and click back - check if you go back to the landing page
-- If there are other variations of the hero product shown (siblings or bundles) hover over to check
-the displayed alternative text, and click on one to test linking to the proper variation
-- There are featured products listed below the hero
-- Click on the first product image in featured products and check if it successfully loads the product details page (PDP)
-- Click on the back button and check if you get the same page as previously on 
+
+	- There is a hero product at the top
+	- Click both SHOP NOW button and product title 
+		- should link directly to the Best Buy product detail page (PDP)
+		- Click these, then click back - check if you go back to the landing page
+	- If other variations of the hero product are shown (siblings or bundles):
+	 	- Hover over to check the displayed alternative text
+		- Click on one variation to test linking to the proper variation
+	- There are featured products listed below the hero
+		- Click on the first featured product: check if it successfully loads the PDP
+		- Click on the back button and check if you get the initial page
+	- Click the "See All" button above the hero
+
 
 Filter Page:
-- Click on the "See All" button above the hero
-- Check that Best Match is not a link but text: as the default sort by option, it should be already loaded
-- Check if there are distribution graphs on top of sliders on the left panel
-- Filter by price using the Price slider and check if the number of products in the status bar and the distribution on top of other sliders have been changed
-- repeat the previous step for other sliders
-- Filter for red cameras by clicking on red colour swatch and check if only red cameras are displayed
-- repeat the previous step for a couple of other colours
-- find a displayed result which has other available colours or bundles displayed underneath. Hover over a sibling / bundle picture to check the alt text and click on one to see if it leads to the right product page
-- filter brands by clicking on one and multiple brand check boxes and check if the right products are displayed
-- When filtering check if the numbers associated with checkboxes are adjusted and click on brands using the checkbox and the link text 
-- Check on sale and then undo it and see if it works fine
-- Click on reset the test  
-- Click on a brand name link (say Canon link) and see if it filters and the box gets checked then click again to undo it 
-- Check two brand boxes and undo them and see if it filter properly 
-- Check a couple of binary filters and uncheck it (by both clicking on the link and checking the box) 
-- Check two brands and then click on a binary filter that has a small number then undo one of the brands. If the binary filter matched products from both brands, undoing it will preserve the two brands, but if it only matched one, only the matched brand stays selected
-- Click Reset All, then See all
-- Click on the Sort by: Price(Low to High) link; See if the products are sorted correctly
-- Click on the Sort by bestseller to see if products are getting sorted differently;
-- Click on the Sort by newest model to see if products are getting sorted differently;  
-- Click on the next page link; Go back
-- Click on the number 2; make sure this is the same page as before
-- Click on sort by Price again and see if it goes High to Low
-- Click on the Add to Cart link and see if it works
+
+	- Sort options:
+		- Check that Best Match is not a link but text (should be already loaded)
+		- Click Price(Low to High) link: check sorting
+		- Click Price (High to Low) link: check sorting
+		- Click Bestseller link: check sorting
+		- Click Newest Model link: check sorting 
+	- Page Changes:
+		- Click on the next page link; Go back
+		- Click on the number 2; make sure this is the same page as before
+	- Find a product with other available colours or bundles displayed underneath. 
+		- Hover over a sibling / bundle picture to check the alt text
+		- Click one to see if it leads to the right product page
+	- Click on sale and then undo it to see if it works
+	- Filter brands by clicking on one, then multiple brand check boxes
+	 	- check that both the checkboxes and link text function
+		- check that the right products are displayed
+		- check that the numbers associated with checkboxes are adjusted
+	-Colours:
+		- Click on red colour swatch and check if only red cameras are displayed
+		- Repeat the previous step for a couple of other colours
+	- Sliders:
+		- Check that there are distribution graphs on top of sliders
+		- Filter by price: check that number of products / slider distributions change
+		- Repeat the previous step for other sliders
+	- Check two brands, then click on a binary filter with a small number
+	 	- Undo the filter. Test the cases where the filter matched:
+		- Both brands: undoing it will preserve the two brands.
+		- One brand: only the matched brand stays selected
+	- Check a couple of binary filters then uncheck them
+		- Click on both the link and the box
+		- Check that the proper products are shown
+	- Click Reset All, then See all
+	- Click on the Add to Cart link and see if it works
 
 
 Product Comparison:
-- Check the Compare box for one product
-- See if the Comparison number on the Compare button increased to 1 (unless you previously had products selected)
-- Click the compare link on another product; You should see the comparison popover with two products displayed
-- Check if product tile and price are displayed.
-- Click the remove link; The product should be removed; Click close
-- Check the boxes of 3 more products; Click the Compare button at the bottom of the page (it should have (4) next to it)
-- Click the More specs link and see that the tables works, including collapsable headings if available
-- Add products to compare up to the 6th one and see if an error message comes up
-- Then click the compare button of another product and see if the error message comes up
-- Click on Clear Selected Products and check that the checked boxes and compare button are updated for zero selection
-- Add to cart in the compare page
-- Click the compare box of another product
-- Reload the page and see if the item remains selected (IE6 sometimes doesn't remember, which is OK)
 
-Dynamic filters:
--Check dynamic filter on hard drives page - only common filters should be displayed on the first page and relevant filters for each product category 
-- Common filters are the following: 
-    Categories:   
-        External Hard Drives
-        Internal Hard Drives
-        Solid State Drives
-        USB Flash Drives
-        Optical Drives (this used to be DVD & CD drives)
-        Network-Attached Storage (NAS)
-        Storage Accessories
-    Status:
-        On Sale
-        Clearance
-        Online Only
-        Top-Rated
-        Featured Products
-    Brands
-    Price
-    Storage Capacity
-- Additional facets will be also displayed for the following categories:
-	Internal and External drives:
-    	Rotation Speed (multi-selection checkbox)
-    	Data Buffer (slider)
-    	Drive Size (multi-selection checkbox)
-	Solid State Drive:
-		Internal or External (multi-selection checkbox)
-	Optical Drives:
-		Internal or External (multi-selection checkbox)
+	- Check the Compare box for one product
+		- Comparison number on the Compare button should increase to 1
+	- Click the compare link on another product
+		- Should see the comparison popover with two products displayed
+		- Check if product title and price are displayed.
+		- Click the remove link: The product should be removed
+		- Click close to exit
+	- Check the boxes of 3 more products
+		- Click the Compare button at the bottom of the page
+		- Click the More specs link and see that the tables works 
+			- Check that collapsable headings work (if available)
+		- Add to cart in the compare page, then return
+	- Add products to compare up to the 6th product
+		-use both the checkboxes and product compare links
+		- An error message should come up
+	- Click on Clear Selected Products
+		- Check that checked boxes and compare button are updated for zero selection
+	- Click the compare box of another product
+		- Reload the page and see if the item remains selected 
+			-Note: IE6 sometimes doesn't remember, which is OK
+
+
+Dynamic Filters (Harddrives):
+
+	- only common filters should be displayed on first page
+		- Common filters are the following: 
+		   - Categories:   
+		       - External Hard Drives
+		       - Internal Hard Drives
+		       - Solid State Drives
+		       - USB Flash Drives
+		       - Optical Drives (this used to be DVD & CD drives)
+		       - Network-Attached Storage (NAS)
+		       - Storage Accessories
+		   - Status:
+		       - On Sale
+		       - Clearance
+		       - Online Only
+		       - Top-Rated
+		       - Featured Products
+		   - Brands
+		   - Price
+		   - Storage Capacity
+	- Check that additional facets displayed for the following categories:
+		- Additional facets:
+		   - Internal and External drives:
+		       - Rotation Speed (multi-selection checkbox)
+		       - Data Buffer (slider)
+		       - Drive Size (multi-selection checkbox)
+		   - Solid State Drive:
+			   - Internal or External (multi-selection checkbox)
+		   - Optical Drives:
+			   - Internal or External (multi-selection checkbox)
+
 
 French: 
-- Check French links for all departments. 
-- Check that titles are french. 
-- Check that links go to french PDPs
-- Check that the copy and units are all french 
+
+	- Check french links for all departments. 
+	- Check that titles are french. 
+	- Check that links go to french PDPs
+	- Check that the copy and units are all french 
