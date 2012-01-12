@@ -6,7 +6,7 @@
 <%if (Session.search.collation!=nil && !Session.search.col_emp_result) %>
   <div id="spellcheck_suggestion_box">
     Showing results for
-    <b><%if (Session.search.sc_emp_result)%>
+    <b><%if (Session.search.num_result==0)%>
       <%=Session.search.collation%>
     <%else%>
       <a class="suggestion" href="#"> <%=Session.search.collation%></a>

@@ -4,18 +4,19 @@ require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
-  attr :collation, :sc_emp_result, :col_emp_result, :num_result
+  attr_accessor :collation, :col_emp_result, :num_result
   
-  def filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search=nil)
+  def filtering_cat_cont_bin_specs(mybins,mycats,myconts, search_term=nil)
     
-    @filtering||= Product.search do
-      if keyword_search
-        phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
+    @filtering = Product.search do
+      if search_term
+        phrase = search_term.downcase.gsub(/\s-/,'').to_s
         fulltext phrase
       end  
+    
       any_of do  #disjunction inside the category part
         mycats.each do |cats|
-         #  puts "cats_name #{cats.name} cats_value #{cats.value}"        
+          # puts "cats_name #{cats.name} cats_value #{cats.value}"        
           if (cats.name == "category")
             with cats.name.to_sym, cats.value 
           end             
@@ -49,15 +50,21 @@ class Search < ActiveRecord::Base
       paginate :per_page => 500 
       group :eq_id_str
     end
-   # puts "num_results #{@filtering.total}"
+    # puts "num_results #{@filtering.total}"
     #puts "group_matches #{@filtering.group(:eq_id_str).matches}"
+    #puts "filtering_suggestions: #{@filtering.suggestions}"
+    
     res = []
     @filtering.group(:eq_id_str).groups.each do |g|
         #puts "group_value #{g.value}" # blog_id of the each document in the group
         #puts "g_result #{g.results.first.sku}" 
         res << g.results.first
     end
-    @products = res   
+    collation_term = nil
+    if (@filtering.suggestions!=nil && !@filtering.suggestions.empty?)
+       collation_term = @filtering.collation       
+    end
+    [res, collation_term]
   end
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -150,14 +157,24 @@ class Search < ActiveRecord::Base
    mybins = self.userdatabins
    myconts = self.userdataconts
    emp_specs = mybins.empty? && mycats.empty? && myconts.empty?
+       
+    if (keyword_search && !emp_specs)
       
-    if (keyword_search) 
-      phrase = keyword_search.downcase.gsub(/\s-/,'').to_s
+      res ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
+      @num_result = res[0].length
       
-      @sc_emp_result = false
-      @col_emp_result = false
-      @num_result = 0
-         
+      if (res[0].empty? && res[1] != nil)
+        @collation = res[1]
+        res_col= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
+        if (res_col[0].empty?)
+          @col_emp_result = true
+        end
+         @products = res_col[0]
+      else
+        @products = res[0]  
+      end
+    elsif (keyword_search)
+      phrase = keyword_search.downcase.gsub(/\s-/,'').to_s           
       @keysearch ||= Product.search do
         fulltext phrase
         with :instock, 1
@@ -184,23 +201,18 @@ class Search < ActiveRecord::Base
          if (@sug_products.results.empty?)
            @col_emp_result = true;
          end
-         if (!emp_specs && !@col_emp_result)
-           @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
-         elsif (@keysearch.results.empty? && !@col_emp_result)
-           @sc_emp_result = true 
+         if (@keysearch.results.empty? && !@col_emp_result)
            @products = @sug_products.results
          else
            @products =@keysearch.results
          end
-       elsif (!emp_specs && @num_result!=0)
-         @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, self.keyword_search)
        else
          @products =@keysearch.results 
        end             
     elsif (emp_specs )
       @products ||= ContSpec.fq2   
     else
-      @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)
+      @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)[0]
     end
   end
   
