@@ -92,7 +92,7 @@ class Search < ActiveRecord::Base
   
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
-      BinSpec.find_all_by_name_and_product_type("featured",Session.product_type).map{|b| Product.find_by_id(b.product_id).instock ? b : nil}.compact
+      BinSpec.find_all_by_name_and_product_type("featured",Session.product_type)
     end
   end
   
