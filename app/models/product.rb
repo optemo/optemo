@@ -36,8 +36,9 @@ class Product < ActiveRecord::Base
     var = 1
     boolean :instock
     string :eq_id_str 
- 
-   Facet.find_all_by_used_for("filter").each do |s|
+    string :product_type
+    
+   (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
     if (s.feature_type == "Continuous")  
       #name = s.name
        float s.name.to_sym, :trie =>true do
