@@ -9,7 +9,7 @@ class CompareController < ApplicationController
         elsif params[:page]
              classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'utility', :action_type => "nextpage", :parent=>params[:hist]}))  
         elsif params[:sortby] # Change sorting method via navigator_bar select box
-          classVariables(Search.create({:sortby => params[:sortby], :action_type => "sortby",  :parent=>params[:hist]}))
+          classVariables(Search.create({:sortby => params[:sortby], :action_type => "sortby", :parent=>params[:hist]}))
         else
           hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:landing].nil? && params[:hist] && !params[:hist].blank?
           search_history = Search.find_last_by_parent_id(hist) if hist

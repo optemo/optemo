@@ -49,6 +49,9 @@ class Search < ActiveRecord::Base
       with :instock, 1
       paginate :per_page => 500 
       group :eq_id_str
+      if (!search_term)
+        with :product_type, Session.product_type
+      end
     end
     # puts "num_results #{@filtering.total}"
     #puts "group_matches #{@filtering.group(:eq_id_str).matches}"
@@ -56,9 +59,7 @@ class Search < ActiveRecord::Base
     
     res = []
     @filtering.group(:eq_id_str).groups.each do |g|
-        #puts "group_value #{g.value}" # blog_id of the each document in the group
-        #puts "g_result #{g.results.first.sku}" 
-        res << g.results.first
+         res << g.results.first
     end
     collation_term = nil
     if (@filtering.suggestions!=nil && !@filtering.suggestions.empty?)
@@ -176,10 +177,14 @@ class Search < ActiveRecord::Base
     elsif (keyword_search)
       phrase = keyword_search.downcase.gsub(/\s-/,'').to_s           
       @keysearch ||= Product.search do
-        fulltext phrase
+        fulltext phrase do 
+          boost_fields "utility".to_sym => 10
+        end
         with :instock, 1
         spellcheck :count => 4
         paginate :per_page => 500 
+        order_by "price".to_sym , :asc
+        
       end
       #puts "phrase-jan10-search #{phrase}"
       #puts "suggestions, #{@keysearch.suggestions}"
@@ -209,8 +214,9 @@ class Search < ActiveRecord::Base
        else
          @products =@keysearch.results 
        end             
-    elsif (emp_specs )
-      @products ||= ContSpec.fq2   
+    elsif (emp_specs)
+     # @products ||= ContSpec.fq2   
+      @products = self.filtering_cat_cont_bin_specs([],[],[])[0]
     else
       @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)[0]
     end
@@ -332,12 +338,11 @@ class Search < ActiveRecord::Base
       createFeatures(p)
     when "nextpage"
       #the next page button has been clicked
-      if p[:keyword]
-        self.keyword_search = p[:keyword]
-      end 
+      self.keyword_search  = p[:keyword] unless p[:keyword].blank?
       self.page = p[:page]
       duplicateFeatures(old_search)
     when "sortby"
+      self.keyword_search  = p[:keyword] unless p[:keyword].blank?
       self.sortby = p[:sortby]
       duplicateFeatures(old_search)
       self.initial = false
@@ -379,7 +384,7 @@ class Search < ActiveRecord::Base
         @userdatabins << d.class.new(d.attributes)
       end
       #Save keyword search
-      self.keyword_search = os.keyword_search unless os.keyword_search.blank?
+      #self.keyword_search = os.keyword_search unless os.keyword_search.blank?
     end
   end
    
