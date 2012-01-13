@@ -9,7 +9,7 @@ optemo_module = (function (my){
   //****Public Functions****
   // Submit a categorical filter, e.g. brand.
   my.whenDOMready = function(){
-    my.getRealtimePrices();
+   // my.getRealtimePrices();
     my.load_comparisons();
     my.SliderInit();
 
@@ -246,7 +246,7 @@ optemo_module = (function (my){
   //Pagination links
   $('.pagination a').live("click", function(){
       if (my.loading_indicator_state.disable) return false;
-      if ($("#product_name").val()!= "Keyword or Web Code")
+      if ($("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= "")
       	my.ajaxcall($(this).attr('href'), {"keyword": $("#product_name").val()});
 			else
 			 my.ajaxcall($(this).attr('href'))
@@ -261,7 +261,10 @@ optemo_module = (function (my){
   // Change sort method
   $('.sortby').live('click', function() {
       if (my.loading_indicator_state.disable) return false;
-      my.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')});
+			if ($("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= "")
+			my.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat'), "keyword": $("#product_name").val()});
+			else
+			my.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})
       return false;
   });
   

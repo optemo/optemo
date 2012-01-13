@@ -14,6 +14,11 @@ class Search < ActiveRecord::Base
         fulltext phrase
       end  
     
+      order_by(:saleprice, :asc) if sortby == "saleprice_factor"
+      order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
+      order_by(:orders, :desc) if sortby == "orders"
+      order_by(:displayDate, :desc) if sortby == "displayDate"
+      
       any_of do  #disjunction inside the category part
         mycats.each do |cats|
           # puts "cats_name #{cats.name} cats_value #{cats.value}"        
@@ -177,13 +182,19 @@ class Search < ActiveRecord::Base
     elsif (keyword_search)
       phrase = keyword_search.downcase.gsub(/\s-/,'').to_s           
       @keysearch ||= Product.search do
-        fulltext phrase do 
-          boost_fields "utility".to_sym => 10
-        end
+        fulltext phrase 
         with :instock, 1
         spellcheck :count => 4
+        
+        order_by(:saleprice, :asc) if sortby == "saleprice_factor"
+        order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
+        order_by(:orders, :desc) if sortby == "orders"
+        order_by(:displayDate, :desc) if sortby == "displayDate"
+        
         paginate :per_page => 500 
-        order_by "price".to_sym , :asc
+        #boost(1000) {with("saleprice".to_sym, )}
+         
+        
         
       end
       #puts "phrase-jan10-search #{phrase}"
@@ -200,6 +211,12 @@ class Search < ActiveRecord::Base
          @sug_products ||= Product.search do
          fulltext phrase
          with :instock, 1
+         
+         order_by(:saleprice, :desc) if sortby == "saleprice_factor"
+         order_by(:saleprice, :asc) if sortby == "saleprice_factor_high"
+         order_by(:orders, :desc) if sortby == "orders"
+         order_by(:displayDate, :desc) if sortby == "displayDate"
+         
          paginate :per_page => 500
          end
          
@@ -351,8 +368,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      #self.page = p[:page]
-      puts "filter_params: #{p[:filters]}"
+      #puts "filter_params: #{p[:filters]}"
       createFeatures(p[:filters])
       self.initial = false
     else

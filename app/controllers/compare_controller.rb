@@ -5,11 +5,17 @@ class CompareController < ApplicationController
       # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
       if Session.isCrawler?(request.user_agent, params[:_escaped_fragment_]) || params[:ajax] || params[:embedding]
         if (params[:page] && params[:keyword] && params[:keyword] != "Keyword or Web Code" )
-          classVariables(Search.create({:page => params[:page], :keyword => params[:keyword], :sortby => params[:sortby] || 'utility', :action_type => "nextpage", :parent=>params[:hist]}))
+          classVariables(Search.create({page: params[:page], keyword: params[:keyword], sortby: params[:sortby] || 'utility', action_type: "nextpage", parent: params[:hist]}))
+        
         elsif params[:page]
-             classVariables(Search.create({:page => params[:page], :sortby => params[:sortby] || 'utility', :action_type => "nextpage", :parent=>params[:hist]}))  
-        elsif params[:sortby] # Change sorting method via navigator_bar select box
-          classVariables(Search.create({:sortby => params[:sortby], :action_type => "sortby", :parent=>params[:hist]}))
+             classVariables(Search.create({page: params[:page], sortby: params[:sortby] || 'utility', action_type: "nextpage", parent: params[:hist]}))  
+        
+        elsif (params[:sortby] && params[:keyword] && params[:keyword] != "Keyword or Web Code") # Change sorting method via navigator_bar select box
+          classVariables(Search.create({sortby: params[:sortby], keyword: params[:keyword], action_type: "sortby", parent: params[:hist]}))
+        
+        elsif params[:sortby]
+           classVariables(Search.create({sortby: params[:sortby], action_type: "sortby", parent: params[:hist]}))  
+        
         else
           hist = CGI.unescape(params[:hist]).unpack('m')[0].gsub(/\D/,'').to_i if params[:landing].nil? && params[:hist] && !params[:hist].blank?
           search_history = Search.find_last_by_parent_id(hist) if hist

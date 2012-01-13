@@ -42,6 +42,7 @@ class Product < ActiveRecord::Base
     if (s.feature_type == "Continuous")  
       #name = s.name
        float s.name.to_sym, :trie =>true do
+       #float s.name.to_sym do
         cont_specs.find_by_name(s.name).try(:value)
        end
      elsif (s.feature_type == "Categorical")

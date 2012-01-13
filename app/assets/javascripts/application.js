@@ -1,4 +1,4 @@
-//= require realtime_price
+// require realtime_price
 //= require raphael
 //= require jquery-ui-1.8.13.custom.min
 //= require jquery.history
