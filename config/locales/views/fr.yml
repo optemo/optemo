@@ -31,6 +31,8 @@ fr:
         sortby:             "Classé par"
         page:               "Page"
         backtotop:          "Retour en haut"
+        addtocart:          "Ajouter au panier"
+        preorder:           "Précommande"
         compare:    
             powered:        "Offert par "
             rembrandfilter: "Retirer le filtre de marque"  

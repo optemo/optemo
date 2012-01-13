@@ -30,6 +30,8 @@ en:
         sortby:                 "Sort By"
         page:                   "Page"
         backtotop:              "Back to Top"
+        addtocart:              "Add to Cart"
+        preorder:               "Pre-order"
         compare:
             powered:        "Powered by "
             rembrandfilter: "Remove brand filter"
