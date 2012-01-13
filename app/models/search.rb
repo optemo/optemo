@@ -180,45 +180,18 @@ class Search < ActiveRecord::Base
         @products = res[0]  
       end
     elsif (keyword_search)
-      phrase = keyword_search.downcase.gsub(/\s-/,'').to_s           
-      @keysearch ||= Product.search do
-        fulltext phrase 
-        with :instock, 1
-        spellcheck :count => 4
-        
-        order_by(:saleprice, :asc) if sortby == "saleprice_factor"
-        order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
-        order_by(:orders, :desc) if sortby == "orders"
-        order_by(:displayDate, :desc) if sortby == "displayDate"
-        
-        paginate :per_page => 500 
-        #boost(1000) {with("saleprice".to_sym, )}
-         
-        
-        
-      end
+    
+      @keysearch = product_keywordsearch(keyword_search)
+      @num_result = @keysearch.total
+      
       #puts "phrase-jan10-search #{phrase}"
       #puts "suggestions, #{@keysearch.suggestions}"
       #puts "keysearch_total #{@keysearch.total}"
       #puts "total_pages_results: #{@keysearch.results.total_pages}"
-    
-       @num_result = @keysearch.total
-    
+      
        if (@keysearch.suggestions!=nil && !@keysearch.suggestions.empty?)
          @collation = @keysearch.collation
-         
-         phrase = @collation.downcase.gsub(/\s-/,'')        
-         @sug_products ||= Product.search do
-         fulltext phrase
-         with :instock, 1
-         
-         order_by(:saleprice, :desc) if sortby == "saleprice_factor"
-         order_by(:saleprice, :asc) if sortby == "saleprice_factor_high"
-         order_by(:orders, :desc) if sortby == "orders"
-         order_by(:displayDate, :desc) if sortby == "displayDate"
-         
-         paginate :per_page => 500
-         end
+         @sug_products = product_keywordsearch(@collation)
          
          if (@sug_products.results.empty?)
            @col_emp_result = true;
@@ -237,6 +210,23 @@ class Search < ActiveRecord::Base
     else
       @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)[0]
     end
+  end
+  
+  def product_keywordsearch (phrase = self.keyword_search)
+      phrase = phrase.downcase.gsub(/\s-/,'').to_s       
+      @products_found = Product.search do
+        fulltext phrase
+        with :instock, 1
+        spellcheck :count => 4
+        
+        order_by(:saleprice, :asc) if sortby == "saleprice_factor"
+        order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
+        order_by(:orders, :desc) if sortby == "orders"
+        order_by(:displayDate, :desc) if sortby == "displayDate"
+      
+        paginate :per_page => 500
+      end
+    @products_found
   end
   
   def products_landing
