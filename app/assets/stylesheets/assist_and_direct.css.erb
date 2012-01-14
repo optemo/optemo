@@ -332,8 +332,7 @@ html {
   height: 39px;
   width: 80px;
 }
-#optemo_embedder .ie6 .bb_poptitle .bb_quickview_close,
-#optemo_embedder .ie7 .bb_poptitle .bb_quickview_close {
+#optemo_embedder .ie67 .bb_poptitle .bb_quickview_close {
   position: relative;
   background-image: url(<%= asset_path('closepopup.gif') %>);
   margin: -13px -58px 0 0;
@@ -1064,8 +1063,7 @@ margin-top:0;
 	display: block;
 	width: 110px;
 }
-#optemo_embedder .ie6 .closed,
-#optemo_embedder .ie7 .closed {
+#optemo_embedder .ie67 .closed {
   background-image: url(<%= asset_path "demo-spindown-closed.gif" %>);
 }
 
@@ -1076,8 +1074,7 @@ margin-top:0;
 	display: block;
 	width: 110px;
 }
-#optemo_embedder .ie6 .open,
-#optemo_embedder .ie7 .open {
+#optemo_embedder .ie67 .open {
   background-image: url(<%= asset_path "demo-spindown-open.gif" %>);
 }
 
@@ -1411,10 +1408,8 @@ margin-top:0;
 	    position: relative;
 	    cursor: pointer;
     }
-#optemo_embedder .ie6 .awesome_reset,
-#optemo_embedder .ie7 .awesome_reset,
-#optemo_embedder .ie6 .awesome_reset:visited,
-#optemo_embedder .ie7 .awesome_reset:visited {
+#optemo_embedder .ie67 .awesome_reset,
+#optemo_embedder .ie67 .awesome_reset:visited {
   background-image: url(<%= asset_path "alert-overlay.png" %>);
 }
 #optemo_embedder .awesome_reset_grey, 
@@ -1508,15 +1503,28 @@ margin-top:0;
 } 
 
 #optemo_embedder .narrow_text {
-	display:inline-block;
-  margin: 17px 11px 0 4px;
+  margin: 17px 11px 0 12px;
   padding: 0;
 
 }
-#optemo_embedder .narrow_text img{
+#optemo_embedder .narrow_text div {
   width: 150px;
   height: 39px;
+  
 }
+#optemo_embedder .narrow_text .en {
+  background: url(<%= asset_data_uri('refine_your_search.gif') %>);
+}
+#optemo_embedder .narrow_text .fr {
+  background: url(<%= asset_data_uri('refine_your_search_fr.gif') %>);
+}
+#optemo_embedder .ie67 .narrow_text .en {
+  background: url(<%= asset_path('refine_your_search.gif') %>);
+}
+#optemo_embedder .ie67 .narrow_text .fr {
+  background: url(<%= asset_path('refine_your_search_fr.gif') %>);
+}
+
 #optemo_embedder .y_heading
 {
   overflow:hidden;
@@ -1660,7 +1668,7 @@ margin-top:0;
   padding: 0px 5px;
   display: inline;
 }
-#optemo_embedder #IE.ie7 .pagination,#optemo_embedder #IE.ie6 .pagination {
+#optemo_embedder #IE.ie67 .pagination {
   background: #e7e7e7;
 }
 #optemo_embedder .pagination .current{
@@ -1713,9 +1721,7 @@ margin-top:0;
   padding: 10px 20px 5px 5px;
 }
 
-#optemo_embedder .ie6 #back-to-top-bottom, 
-#optemo_embedder .ie6 #back-to-top-bottom:visited,
-#optemo_embedder .ie7 #back-to-top-bottom, 
-#optemo_embedder .ie7 #back-to-top-bottom:visited {
+#optemo_embedder .ie67 #back-to-top-bottom,
+#optemo_embedder .ie67 #back-to-top-bottom:visited {
   background-image: url(<%= asset_path 'back-to-top-small.gif' %>);
 }
