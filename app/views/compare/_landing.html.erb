@@ -16,14 +16,12 @@
   <%= image_tag(cat_specs["imglurl"], :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => hero.id, :'data-sku' => hero.sku) %>
   <div style="float: right;">
     <%= render partial: "product_info", locals: {product: hero, cont_specs: cont_specs, cat_specs: cat_specs, no_variations: true} %>
-    <div style='margin-top: 25px; margin-bottom: 25px;'>
-      <div class="yellowbtn">
-        <div class="left">
-          <div class="right">
-            <a href="<%= text_spec %>" class="easylink" data-sku="<%= hero.sku %>">
-              <%=t "products.shopnow" %> <div class="gt_sym"><!-- --></div>
-            </a>
-          </div>
+    <div class="yellowbtn shopnowhero">
+      <div class="left">
+        <div class="right">
+          <a href="<%= text_spec %>" class="easylink" data-sku="<%= hero.sku %>">
+            <%=t "products.shopnow" %> <div class="gt_sym"><!-- --></div>
+          </a>
         </div>
       </div>
     </div>
