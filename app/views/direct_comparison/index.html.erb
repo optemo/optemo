@@ -56,14 +56,19 @@
   <% end %>
 </div>
 
-<div class="spacer togglespecs" style="width=<%= box_width %>px"><%= link_to '#', :class => 'toggle_specs' do %>
-	<div class="moretext">
-    <%= image_tag("bb_more_specs#{fr?}.gif") %>
-	</div>
+<div class="spacer togglespecs" style="width=<%= box_width %>px">
+	<div class="moretext yellowbtn">
+    <div class="left">
+      <div class="right">
+        <a href="#">
+          <%=t "products.compare.morespecs" %> <div class="gt_sym"><!-- --></div>
+        </a>
+      </div>
+    </div>
+  </div>
 	<div class="lesstext" style="display:none;">
     <%= image_tag("bb_less_specs#{fr?}.gif") %>
 	</div>
-<% end %>
 </div>
 <div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
 	<div class="compare_row"><div class="columntitle

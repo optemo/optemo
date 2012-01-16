@@ -32,6 +32,7 @@ en:
         backtotop:              "Back to Top"
         addtocart:              "Add to Cart"
         preorder:               "Pre-order"
+        shopnow:                "SHOP NOW"
         compare:
             powered:        "Powered by "
             rembrandfilter: "Remove brand filter"
@@ -45,6 +46,7 @@ en:
             compare:        "Compare"
             closewindow:    "Close Window"
             save:           "Save"
+            morespecs:      "More Specs"
         show:
             title:          "Product Details"
             noimage:        "No Image Available"
