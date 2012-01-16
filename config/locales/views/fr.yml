@@ -25,7 +25,6 @@ fr:
       page_entries_info:
         multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"    
     products:
-        seeall:             "Visionner tout"
         shopnow:            "Magasinez"
         featuredproducts:   "Produits vedettes"
         sortby:             "Classé par"
@@ -33,7 +32,7 @@ fr:
         backtotop:          "Retour en haut"
         addtocart:          "Ajouter au panier"
         preorder:           "Précommande"
-        shopnow:            "MAGASINEZ"
+        seeall:             "Visionner tout"
         compare:    
             powered:        "Offert par "
             rembrandfilter: "Retirer le filtre de marque"  

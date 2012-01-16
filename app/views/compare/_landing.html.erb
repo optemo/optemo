@@ -3,7 +3,10 @@
   <div id='navtitle'>
     <%= Session.search.products_size.to_s + ' ' + raw(navtitle) %>
   </div>
-  <%= link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %>
+  <%# link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %>
+  <%= link_to(root_path, {:class=>'seeall'}) do %>
+  <%=t 'products.seeall' %> <div><!-- --></div>
+  <% end %>
 </div>
 <div id="hero">
   <%# The hero product is the first featured product in the db %>
