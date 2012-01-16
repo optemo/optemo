@@ -20,10 +20,10 @@
   <div style='clear:both; width:0;height: 0;'></div>
 </div>
 
-<% if false && @s.product_type == 'camera_bestbuy' %>
+<% if @s.product_type == 'camera_bestbuy' %>
   <%# Disabled camera showcase banner %>
   <div class='showcase_banner_div'>
-    <%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), "http://www.bestbuy.ca/#{isfr? ? "fr" : "en"}-CA/category/pc/pc_gifts1.aspx", :class => 'showcase_banner', :"product_type" => "camera_bestbuy" %>
+    <%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), "http://www.bestbuy.ca/#{isfr? ? "fr" : "en"}-CA/category/introducing-all-new-canon-cameras/pc_newcanon.aspx", :class => 'showcase_banner', :"product_type" => "camera_bestbuy" %>
   </div>
 <% elsif @s.product_type == 'drive_bestbuy' %>
   <div class='showcase_banner_div'>
