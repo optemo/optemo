@@ -56,20 +56,22 @@
   <% end %>
 </div>
 
-<div class="spacer togglespecs" style="width=<%= box_width %>px">
-	<div class="moretext yellowbtn">
-    <div class="left">
-      <div class="right">
-        <a href="#">
-          <%=t "products.compare.morespecs" %> <div class="gt_sym"><!-- --></div>
-        </a>
-      </div>
+<div class="spacer togglespecs yellowbtn">
+  <div class="left">
+    <div class="right" style="width: 150px">
+      <a href="#" class="toggle_specs">
+        <span class="moretext">
+          <%=t "products.compare.morespecs" %>
+        </span>
+        <span class="lesstext" style="display:none;">
+          <%=t "products.compare.lessspecs" %>
+        </span>
+        <div class="gt_sym"><!-- --></div>
+      </a>
     </div>
   </div>
-	<div class="lesstext" style="display:none;">
-    <%= image_tag("bb_less_specs#{fr?}.gif") %>
-	</div>
 </div>
+
 <div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
 	<div class="compare_row"><div class="columntitle
 	                                     leftmostcolumntitle spec-capt"><%=t('compare.index.allspecifications')%></div></div>

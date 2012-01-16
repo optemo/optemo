@@ -47,6 +47,8 @@ fr:
             compare:        "Comparer"
             closewindow:    "Fermer fenêtre"
             save:           "Épargnez"
+            morespecs:      "Plus de fonctions"
+            lessspecs:      "Moins de fonctions"
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"

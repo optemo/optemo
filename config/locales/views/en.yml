@@ -47,6 +47,7 @@ en:
             closewindow:    "Close Window"
             save:           "Save"
             morespecs:      "More Specs"
+            lessspecs:      "Less Specs"
         show:
             title:          "Product Details"
             noimage:        "No Image Available"
