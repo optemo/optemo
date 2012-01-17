@@ -3,8 +3,8 @@ require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size 
-  attr_accessor :collation, :col_emp_result, :num_result
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
+  attr_accessor :collation, :col_emp_result, :num_result, :has_keysearch
   
   self.per_page = 18 #for will_paginate
   
@@ -151,24 +151,25 @@ class Search < ActiveRecord::Base
       end
       @products_size
         
-  end
+  end  
     
   def products
    mycats = self.userdatacats
    mybins = self.userdatabins
    myconts = self.userdataconts
    emp_specs = mybins.empty? && mycats.empty? && myconts.empty?
-       
+   @has_keysearch = false 
+  
     if (keyword_search && !emp_specs)
-      
-      things = self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
-      res = self.grouping(things)
+       @has_keysearch = true
+      things = filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
+      res = grouping(things)
       @num_result = things.group(:eq_id_str).ngroups
       
       if (res.empty? && things.collation != nil)
         @collation = things.collation
-        things_col= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
-        res_col = self.grouping(things_col)
+        things_col= filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
+        res_col = grouping(things_col)
         if (res_col.empty?)
           @col_emp_result = true
         end
@@ -181,7 +182,7 @@ class Search < ActiveRecord::Base
   
       end
     elsif (keyword_search)
-    
+       @has_keysearch = true
       @keysearch = product_keywordsearch(keyword_search)
       @num_result = @keysearch.total
       
@@ -210,13 +211,13 @@ class Search < ActiveRecord::Base
          # @products  = @keysearch.results
        end             
     elsif (emp_specs)
-     things= self.filtering_cat_cont_bin_specs([],[],[])
-     products_list(self.grouping(things), things.group(:eq_id_str).ngroups)
+     things= filtering_cat_cont_bin_specs([],[],[])
+     products_list(grouping(things), things.group(:eq_id_str).ngroups)
     
      
     else
-      things = self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)
-      products_list( self.grouping(things), things.group(:eq_id_str).ngroups)
+      things = filtering_cat_cont_bin_specs(mybins,mycats,myconts)
+      products_list( grouping(things), things.group(:eq_id_str).ngroups)
       
      
     end
@@ -511,4 +512,5 @@ class Search < ActiveRecord::Base
     end
     false
   end
+  private :products_list, :grouping, :product_keywordsearch, :filtering_cat_cont_bin_specs
 end

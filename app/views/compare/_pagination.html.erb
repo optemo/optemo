@@ -10,7 +10,7 @@
         <span class='nav-available-text'><%= raw navtitle %></span>
         <div class='outof'>
           <% total = Equivalence.all_count -%>
-          <%= t("#{Session.product_type}.outof", :count => total) if Session.search.products_size < total %>
+          <%= t("#{Session.product_type}.outof", :count => total) if (Session.search.products_size < total && !Session.search.has_keysearch) %>
         </div>
       </div>
     <% end %>
