@@ -3,12 +3,15 @@ require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size 
   attr_accessor :collation, :col_emp_result, :num_result
+  
+  self.per_page = 18 #for will_paginate
   
   def filtering_cat_cont_bin_specs(mybins,mycats,myconts, search_term=nil)
     
     @filtering = Product.search do
+   
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
         fulltext phrase
@@ -52,25 +55,18 @@ class Search < ActiveRecord::Base
       end
       
       with :instock, 1
-      paginate :per_page => 500 
-      group :eq_id_str
+      paginate :page=> page, :per_page => Search.per_page
+      group :eq_id_str do 
+        ngroups 
+      end
       if (!search_term)
         with :product_type, Session.product_type
       end
     end
-    # puts "num_results #{@filtering.total}"
+    
     #puts "group_matches #{@filtering.group(:eq_id_str).matches}"
     #puts "filtering_suggestions: #{@filtering.suggestions}"
-    
-    res = []
-    @filtering.group(:eq_id_str).groups.each do |g|
-         res << g.results.first
-    end
-    collation_term = nil
-    if (@filtering.suggestions!=nil && !@filtering.suggestions.empty?)
-       collation_term = @filtering.collation       
-    end
-    [res, collation_term]
+    @filtering
   end
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -130,19 +126,14 @@ class Search < ActiveRecord::Base
   def cluster
     @cluster ||= Cluster.new(sim_products, nil)
   end
-  
-  def paginated_products
+ 
+  def paginated_products #set the paginated_products
     unless @paginated_products
-      #if sortby == "utility" || sortby.nil?
-      #  myproducts = Kmeans.compute(18,products.dup)
-      #else
-      #  myproducts = products
-      #end
-      @paginated_products = products.paginate(:page => page, :per_page => SearchProduct.per_page)
+       products
     end
     @paginated_products
   end
-  
+
   def isextended?
     !@extended.nil?
   end  
@@ -153,11 +144,15 @@ class Search < ActiveRecord::Base
   def extended
       @extended ||= Cluster.new(products)
   end
-  
+ 
   def products_size
-    @products_size ||= products.size
+     unless @products_size
+       products
+      end
+      @products_size
+        
   end
-  
+    
   def products
    mycats = self.userdatacats
    mybins = self.userdatabins
@@ -166,18 +161,24 @@ class Search < ActiveRecord::Base
        
     if (keyword_search && !emp_specs)
       
-      res ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
-      @num_result = res[0].length
+      things = self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
+      res = self.grouping(things)
+      @num_result = things.group(:eq_id_str).ngroups
       
-      if (res[0].empty? && res[1] != nil)
-        @collation = res[1]
-        res_col= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
-        if (res_col[0].empty?)
+      if (res.empty? && things.collation != nil)
+        @collation = things.collation
+        things_col= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
+        res_col = self.grouping(things_col)
+        if (res_col.empty?)
           @col_emp_result = true
         end
-         @products = res_col[0]
+         products_list(res_col,things_col.group(:eq_id_str).ngroups)
+         #@products = res_col
+      
       else
-        @products = res[0]  
+        products_list(res,things.group(:eq_id_str).ngroups)
+        # @products = res
+  
       end
     elsif (keyword_search)
     
@@ -197,24 +198,35 @@ class Search < ActiveRecord::Base
            @col_emp_result = true;
          end
          if (@keysearch.results.empty? && !@col_emp_result)
-           @products = @sug_products.results
+           products_list(@sug_products.results,@sug_products.total )
+          # @products = @sug_products.results
+           
          else
-           @products =@keysearch.results
+            products_list(@keysearch.results, @keysearch.total)
+           # @products  = @keysearch.results
          end
        else
-         @products =@keysearch.results 
+          products_list(@keysearch.results, @keysearch.total)
+         # @products  = @keysearch.results
        end             
     elsif (emp_specs)
-     # @products ||= ContSpec.fq2   
-      @products = self.filtering_cat_cont_bin_specs([],[],[])[0]
+     things= self.filtering_cat_cont_bin_specs([],[],[])
+     products_list(self.grouping(things), things.group(:eq_id_str).ngroups)
+    
+     
     else
-      @products ||= self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)[0]
+      things = self.filtering_cat_cont_bin_specs(mybins,mycats,myconts)
+      products_list( self.grouping(things), things.group(:eq_id_str).ngroups)
+      
+     
     end
   end
-  
+    
   def product_keywordsearch (phrase = self.keyword_search)
-      phrase = phrase.downcase.gsub(/\s-/,'').to_s       
-      @products_found = Product.search do
+      phrase = phrase.downcase.gsub(/\s-/,'').to_s    
+
+      products_found = Product.search 
+       products_found.build do  
         fulltext phrase
         with :instock, 1
         spellcheck :count => 4
@@ -224,17 +236,31 @@ class Search < ActiveRecord::Base
         order_by(:orders, :desc) if sortby == "orders"
         order_by(:displayDate, :desc) if sortby == "displayDate"
       
-        paginate :per_page => 500
-      end
-    @products_found
+        paginate :page=> page, :per_page => Search.per_page
+       end
+        products_found.execute!
+     products_found
   end
   
+  def grouping(things)    
+    res=[]
+    things.group(:eq_id_str).groups.each do |g|
+         res << g.results.first
+    end
+    res
+  end
+  
+  def products_list(things, total) #paginate products through sunspot pagination
+     @products_size = total    
+     @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
+   end
+   
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
       BinSpec.find_all_by_name_and_product_type("featured",Session.product_type)
     end
   end
-  
+=begin  
   def sim_products
     if seesim
       begin
@@ -247,7 +273,7 @@ class Search < ActiveRecord::Base
       products
     end
   end
-  
+ 
   def sim_products_size
     @sim_products_size ||= sim_products.size
   end
@@ -313,7 +339,7 @@ class Search < ActiveRecord::Base
       }
     end
   end
-  
+=end  
   def initialize(p={}, opt=nil)
     super({})
     #Set parent id
@@ -358,7 +384,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      #puts "filter_params: #{p[:filters]}"
+      puts "filter_params: #{p[:filters]}"
       createFeatures(p[:filters])
       self.initial = false
     else
