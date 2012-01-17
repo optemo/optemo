@@ -1,8 +1,8 @@
 <div class="y_heading">
-  <p class="narrow_text">
-    <%= image_tag "refine_your_search#{fr?}.gif" %>
+  <div class="narrow_text">
+    <div class="<%= isfr? ? :fr : :en %>"><!-- --></div>
     <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
-  </p>
+  </div>
 </div>
 <form id="filter_form" method="get" action="/compare">
 <% Session.features["filter"].each do |f| %>

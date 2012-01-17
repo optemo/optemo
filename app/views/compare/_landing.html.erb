@@ -3,7 +3,10 @@
   <div id='navtitle'>
     <%= Session.search.products_size.to_s + ' ' + raw(navtitle) %>
   </div>
-  <%= link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %>
+  <%# link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %>
+  <%= link_to(root_path, {:class=>'seeall'}) do %>
+  <%=t 'products.seeall' %> <div><!-- --></div>
+  <% end %>
 </div>
 <div id="hero">
   <%# The hero product is the first featured product in the db %>
@@ -13,17 +16,23 @@
   <%= image_tag(cat_specs["imglurl"], :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => hero.id, :'data-sku' => hero.sku) %>
   <div style="float: right;">
     <%= render partial: "product_info", locals: {product: hero, cont_specs: cont_specs, cat_specs: cat_specs, no_variations: true} %>
-    <div style='margin-top: 25px; margin-bottom: 25px;'>
-      <%= link_to image_tag("shopnow#{fr?}.gif"), text_spec, {:'data-sku' =>hero.sku, :class => 'easylink'} %>
+    <div class="yellowbtn shopnowhero">
+      <div class="left">
+        <div class="right">
+          <a href="<%= text_spec %>" class="easylink" data-sku="<%= hero.sku %>">
+            <%=t "products.shopnow" %> <div class="gt_sym"><!-- --></div>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
   <div style='clear:both; width:0;height: 0;'></div>
 </div>
 
-<% if false && @s.product_type == 'camera_bestbuy' %>
+<% if @s.product_type == 'camera_bestbuy' %>
   <%# Disabled camera showcase banner %>
   <div class='showcase_banner_div'>
-    <%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), "http://www.bestbuy.ca/#{isfr? ? "fr" : "en"}-CA/category/pc/pc_gifts1.aspx", :class => 'showcase_banner', :"product_type" => "camera_bestbuy" %>
+    <%= link_to image_tag("#{@s.product_type}-banner#{fr?}.jpg"), "http://www.bestbuy.ca/#{isfr? ? "fr" : "en"}-CA/category/introducing-all-new-canon-cameras/pc_newcanon.aspx", :class => 'showcase_banner', :"product_type" => "camera_bestbuy" %>
   </div>
 <% elsif @s.product_type == 'drive_bestbuy' %>
   <div class='showcase_banner_div'>

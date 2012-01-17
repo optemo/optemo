@@ -19,8 +19,16 @@
 		<%= image_tag(cat_specs["img150url"], :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
 
     <%= render partial: "product_info", locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, no_variations: no_variations} %>
-	</div>
-	<div style="text-align:left; padding-left:20px">
-			<div class="spacer buttons"><%= link_to image_tag("bestbuy_addtocart#{fr?}.gif"), "http://www.bestbuy.ca/order/addtocart.ashx?accessories=#{product.sku}", {:'data-sku' => product.sku, :class => 'addtocart'} %></div>
-	</div>
+  </div>
+  <div style="padding-left:20px">
+    <div class="spacer buttons">
+      <div class="left">
+        <div class="right">
+          <a href="http://www.bestbuy.ca/order/addtocart.ashx?accessories=<%= product.sku %>" class="addtocart" data-sku="<%= product.sku %>">
+            <%=t BinSpec.cache_all(product.id)["isPreorderable"] ? 'products.preorder' : 'products.addtocart' %>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
