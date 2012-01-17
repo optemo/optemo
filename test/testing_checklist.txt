@@ -24,8 +24,9 @@ Filter Page:
 		- Click Bestseller link: check sorting
 		- Click Newest Model link: check sorting 
 	- Page Changes:
-		- Click on the next page link; Go back
+		- Click on the next page link; Go back by clicking the previous page link
 		- Click on the number 2; make sure this is the same page as before
+	- Click the 'Back to Top' button at the bottom. Check that it works.
 	- Find a product with other available colours or bundles displayed underneath. 
 		- Hover over a sibling / bundle picture to check the alt text
 		- Click one to see if it leads to the right product page
