@@ -76,6 +76,11 @@ class ContSpec < ActiveRecord::Base
       else
           order =  "DESC"
       end
+      if sortby.include?("_high")
+           # CODE TO ALSO SUPPORT _high, remove this if statement
+           order = "ASC"
+           sortby = "saleprice_factor"
+      end
       joins("INNER JOIN cont_specs cont_specs_sort ON cont_specs_sort.product_id = `cont_specs`.product_id").where("cont_specs_sort.name = '#{sortby}'").order("cont_specs_sort.value #{order}")
     end
     
