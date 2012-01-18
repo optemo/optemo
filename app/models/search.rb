@@ -51,10 +51,10 @@ class Search < ActiveRecord::Base
           # puts "conts_name #{conts.name} conts_value #{conts.value}"
           if conts.max and conts.min
             with (conts.name.to_sym), conts.min..conts.max
-          elsif conts.min
-            with (conts.name.to_sym), 0..conts.min
           elsif conts.max
-            with (conts.name.to_sym), conts.max..10000
+            with (conts.name.to_sym), 0..conts.max
+          elsif conts.min
+            with (conts.name.to_sym), conts.min..10000
           end 
          end  
       end
