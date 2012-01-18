@@ -69,11 +69,6 @@ class ContSpec < ActiveRecord::Base
   class << self
     def sorting(sortby)
       sortby ||= "utility" #Default sorting
-      # TODO: remove all this special code when site code is deployed and all DB's use 'saleprice' with 'asc'
-      if sortby.include?("_high")  
-           order = "ASC"
-           sortby = "saleprice_factor"
-      end
       if sortby =~ /(\w+)_asc/
           sortby = $1
           Session.features['sortby'].select{|f|f.name == sortby}.first.style == 'asc'
