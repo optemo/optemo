@@ -24,12 +24,14 @@ en:
       page_entries_info:
         multi_page_html: "<b>%{from}&nbsp;-&nbsp;%{to}</b> of <b>%{count}</b>"
     products:
-        seeall:                 "See All"
-        shopnow:                "Shop Now"
         featuredproducts:       "Featured Products"
         sortby:                 "Sort By"
         page:                   "Page"
         backtotop:              "Back to Top"
+        addtocart:              "Add to Cart"
+        preorder:               "Pre-order"
+        shopnow:                "SHOP NOW"
+        seeall:                 "SEE ALL"
         compare:
             powered:        "Powered by "
             rembrandfilter: "Remove brand filter"
@@ -43,6 +45,8 @@ en:
             compare:        "Compare"
             closewindow:    "Close Window"
             save:           "Save"
+            morespecs:      "More Specs"
+            lessspecs:      "Less Specs"
         show:
             title:          "Product Details"
             noimage:        "No Image Available"

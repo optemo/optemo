@@ -50,7 +50,7 @@ optemo_module = (function (my){
             title.after($('<span>').html(title.html()));
             title.hide();
             //And also remove the add to cart button
-            var addlink = t.siblings().find('.easylink'); //See if we're dealing with the hero product 
+            var addlink = t.siblings('.shopnowhero'); //See if we're dealing with the hero product 
             if (!(addlink.length)) {
               addlink = t.parent().siblings(); //Otherwise we're dealing with the navbox
             }
