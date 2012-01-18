@@ -7,7 +7,11 @@
         <%= Session.search.products_size %>
       </div>
       <div class='sub-title'>
-        <span class='nav-available-text'><%= raw navtitle %></span>
+	   <% if !Session.search.has_keysearch%>
+        <span class='nav-available-text'><%= raw navtitle %></span> 
+	   <%else%>
+		<span class='nav-available-text'> Items Found </span>
+	   <%end%>
         <div class='outof'>
           <% total = Equivalence.all_count -%>
           <%= t("#{Session.product_type}.outof", :count => total) if (Session.search.products_size < total && !Session.search.has_keysearch) %>

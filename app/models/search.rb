@@ -19,9 +19,9 @@ class Search < ActiveRecord::Base
     
       order_by(:saleprice, :asc) if sortby == "saleprice_factor"
       order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
-      order_by(:orders, :desc) if sortby == "orders"
-      order_by(:displayDate, :desc) if sortby == "displayDate"
-      
+      order_by(sortby.to_sym, :desc) if sortby
+      #order_by(:displayDate, :desc) if sortby == "displayDate"
+              
       any_of do  #disjunction inside the category part
         mycats.each do |cats|
           # puts "cats_name #{cats.name} cats_value #{cats.value}"        
@@ -49,8 +49,13 @@ class Search < ActiveRecord::Base
          end      
         myconts.each do |conts|
           # puts "conts_name #{conts.name} conts_value #{conts.value}"
-           with (conts.name.to_sym), [conts.min..conts.max]
-           
+          if conts.max and conts.min
+            with (conts.name.to_sym), conts.min..conts.max
+          elsif conts.min
+            with (conts.name.to_sym), 0..conts.min
+          elsif conts.max
+            with (conts.name.to_sym), conts.max..10000
+          end 
          end  
       end
       
@@ -226,20 +231,18 @@ class Search < ActiveRecord::Base
   def product_keywordsearch (phrase = self.keyword_search)
       phrase = phrase.downcase.gsub(/\s-/,'').to_s    
 
-      products_found = Product.search 
-       products_found.build do  
+      products_found = Product.search do 
         fulltext phrase
         with :instock, 1
         spellcheck :count => 4
         
         order_by(:saleprice, :asc) if sortby == "saleprice_factor"
         order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
-        order_by(:orders, :desc) if sortby == "orders"
-        order_by(:displayDate, :desc) if sortby == "displayDate"
+        order_by(sortby.to_sym, :desc) if sortby
+        #order_by(:displayDate, :desc) if sortby == "displayDate"
       
         paginate :page=> page, :per_page => Search.per_page
-       end
-        products_found.execute!
+      end
      products_found
   end
   
@@ -254,13 +257,55 @@ class Search < ActiveRecord::Base
   def products_list(things, total) #paginate products through sunspot pagination
      @products_size = total    
      @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
+    # @paginated_products.each do |p|
+     #  puts "paginated_prods: #{p.title}"
+    # end    
    end
+=begin   
+    def products_specific_filtering (specs,search_term = nil)
+
+      @filtering = Product.search do
+
+          if search_term
+            phrase = search_term.downcase.gsub(/\s-/,'').to_s
+            fulltext phrase
+          end  
+
+          order_by(:saleprice, :asc) if sortby == "saleprice_factor"
+          order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
+          order_by(sortby.to_sym, :desc) if sortby
+          #order_by(:displayDate, :desc) if sortby == "displayDate"
+
+          facet specs.to_sym 
+
+          with :instock, 1
+          paginate :page=> page, :per_page => self.per_page
+          if (!search_term)
+            with :product_type, Session.product_type
+          end
+          group :eq_id_str do 
+            ngroups 
+          end
+      end
+      #@products = grouping(@filtering)
+      #puts "filtering.lenght #{@products.size}"
+     #@products
+     @filtering.group(:eq_id_str).ngroups
+    end
+=end
+  def count_availables (mybins, mycats, myconts)
+     
+    filtering = filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
+    filtering
+  end   
+  
    
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
       BinSpec.find_all_by_name_and_product_type("featured",Session.product_type)
     end
   end
+  
 =begin  
   def sim_products
     if seesim

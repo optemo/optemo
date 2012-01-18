@@ -9,10 +9,15 @@ require 'inline'
     maxes = []
     specs = []
     feats = []
-    prods = Session.search.products
+    prods = Session.search.paginated_products
     Session.features["filter"].each do |f| 
-      next if f.feature_type != "Continuous" #Only draw distributions for continuous features
-      data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
+      next if f.feature_type != "Continuous" #Only draw distributions for continuous features 
+      #prods = Session.search.products_specific_filtering(f.name)  
+      data= prods.map{|p| ContSpec.find_by_product_id_and_name(p.id, f.name).try(:value)}.compact
+      #data.each do |d|
+       # puts "data_values #{d}"
+      #end
+      #data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
       next if data.empty? #There's no data available for this feature
       min,max = ContSpec.allMinMax(f.name)
       #Max must be larger or equal to min
@@ -26,11 +31,12 @@ require 'inline'
     begin
       #Features can have varying lengths
       lengths = specs.map{|s| s.size}
+     
       raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
       raise ValidationError, "size of feats is not right" unless feats.size == specs.size
       raise ValidationError, "size of mins is not right" unless mins.size == specs.size
       raise ValidationError, "size of maxes is not right" unless maxes.size == specs.size
-      res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
+        res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
       feats.each_with_index do |f, i|   
         t = i*(2+num_buckets) 
         dist[f] = [[res[t], res[t+1],mins[i],maxes[i]], res[(t+2)...(i+1)*(2+num_buckets)]]

@@ -17,12 +17,15 @@ class BinSpec < ActiveRecord::Base
     end
   end
   def self.count_feat(feat)
-    mycats = Session.search.userdatacats.group_by{|x|x.name}.values
+   # mycats = Session.search.userdatacats.group_by{|x|x.name}.values
+    mycats = Session.search.userdatacats
     myconts = Session.search.userdataconts
     mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-    q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false)
-    CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
-      q.count
-    end
+    #q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false)
+    q = Session.search.count_availables(mybins,mycats,myconts)
+    q.group(:eq_id_str).ngroups
+    #CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
+     # q.count
+    #end
   end
 end
