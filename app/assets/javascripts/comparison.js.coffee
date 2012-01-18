@@ -1,5 +1,4 @@
 # Product Comparison */
-
 @module "optemo_module", ->
   #Hardcode the cookie name
   optemo_module.cmpcookie = 'bestbuy_compare_skus'
@@ -16,22 +15,19 @@
     )
     changeNavigatorCompareBtn(skus.length)
   
-  ############################check if the ( before the do is really necessary ##########################
-  ########################################################################################################
-  ########################################################################################################
-  ########################################################################################################
-  
   #****Private Functions****
   #Uncheck box and remove from Compariosn
   removeFromComparison = (sku) ->
-      $(".optemo_compare_checkbox").each (index) ->
-        if ($(this).attr('data-sku') == sku)
-          $(this).attr('checked', '')
-          return
-      remove_comparison_from_skus(sku)
+    debugger
+    $(".optemo_compare_checkbox").each (index) ->
+      if ($(this).attr('data-sku') == sku)
+        $(this).attr('checked', '')
+        return
+    remove_comparison_from_skus(sku)
   
   #Remove from comparison cookie and update comparison count
   remove_comparison_from_skus = (prod_sku) ->
+    debugger
     optemo_module.removeValueFromCookie(optemo_module.cmpcookie, prod_sku+","+$('#main').attr('data-product_type'), 1)
     #Update comparison number
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
@@ -128,7 +124,7 @@
    
     return h
   
-  #############had to change var row_class to rowClass, because function name became a variable name after first call
+  #had to change var row_class to rowClass, because function name became a variable name after first call
   row_class = (row_h) ->
     #Assign row_class
     rowClass;
@@ -143,7 +139,7 @@
     return rowClass;
   
   #Collapse some of the cells for large tables
-  ddtoggle = (item) ->
+  addtoggle = (item) ->
     closed = item.click( ->
       $(this).toggleClass("closed").toggleClass("open").parent('.cell').parent().next('div.contentholder').toggle()
       return false
@@ -154,16 +150,14 @@
   #Data manipulation for the BB API Interface
   merge_bb_json = () ->
     merged = {}
-    index = 0
-    for arg in arguments #for (p = 0; p < arguments.length; p++)
-      for heading of arg
-        for spec of arg[heading]
+    for arg,index in arguments #for (p = 0; p < arguments.length; p++)
+      for own heading,spec of arg
+        for own spec_name,value of spec
           if (typeof(merged[heading]) == "undefined")
             merged[heading] = {}
-          if (typeof(merged[heading][spec]) == "undefined")
-            merged[heading][spec] = []
-          merged[heading][spec][index] = arg[heading][spec]
-      index++
+          if (typeof(merged[heading][spec_name]) == "undefined")
+            merged[heading][spec_name] = []
+          merged[heading][spec_name][index] = value
     return merged
   
   #Build spec matrix from API data
@@ -172,15 +166,13 @@
     anchor = $('#hideable_matrix')
     # Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
     array = []
-    $(skus).each (index,value) ->   #maybe should be $.each skus, do (index,value) -> #(lose bottom thumbnail with this)
+    $.each skus, (index,value) ->   #maybe should be $.each skus, do (index,value) -> #(lose bottom thumbnail with this)
       array.push($('body').data('bestbuy_specs_'+value))
-    
+      
     grouped_specs = merge_bb_json.apply(null,array)
     #Set up Headers
-    index = 0 #########################
-    while (index < skus.length)#########################
-      anchor.append('<div class="columntitle spec_column_'+index+' spec-capt">&nbsp;</div>')#########################
-      index++#########################
+    for sku,index in skus
+      anchor.append('<div class="columntitle spec_column_'+index+' spec-capt">&nbsp;</div>')
       
     result = ""
     whitebg = true
@@ -190,13 +182,10 @@
     for heading of grouped_specs
       if (heading != "")
         #Add Heading
-        debugger
         result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + (if whitebg then 'whitebg' else 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>'
         
-        index = 0######################
-        while (index < skus.length)#########################
-          result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + ' spec_column_'+index+'">&nbsp;</div>'######################
-          index++#########################
+        for sku,index in skus  
+          result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + ' spec_column_'+index+'">&nbsp;</div>'
           
         result += "</div>"
         result += divContentHolderTag
@@ -205,9 +194,10 @@
       for spec of grouped_specs[heading]
         #Row Height calculation
         array = []
-        for i in (grouped_specs[heading][spec]) #for(i = 0; i < grouped_specs[heading][spec].length; i++)
-          if (i)######################
-            array.push(i.length)  ######################
+
+        for i in (grouped_specs[heading][spec])
+          if (i)
+            array.push(i.length)
         
         #Assign row_class
         result += '<div class="'+row_class(Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true))) + '">'
@@ -215,18 +205,16 @@
         #Row heading
         result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>"
         #Data
-        index = 0######################
-        debugger
-        while (index < skus.length)######################
-          spec_value = grouped_specs[heading][spec][index]######################
+        for sku, index in skus ###############################
+          spec_value = grouped_specs[heading][spec][index]
           if (spec_value)
             if (spec_value == "No" || spec_value == "Non") 
               spec_value = "-"
+
             result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + " " + "spec_column_"+ i + '">' + spec_value.replace(/&/g,'&amp;') + "</div>"
           else
             #Blank Cell
             result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + " " + "spec_column_"+ i + '">-</div>'
-          index++######################
           
         result += "</div>"
         whitebg = !whitebg
@@ -284,13 +272,12 @@
             # rebuild prop_list so that we can get the specs back out.
             # We might need to do this regardless, due to the fact that
             # the property list doesn't have to be sent in order.
-            processed_specs = do (optemo_module) -> 
-              for spec in raw_specs
-                if (typeof(optemo_module[spec.group]) == "undefined") 
-                  optemo_module[spec.group] = {}
-                optemo_module[spec.group][spec.name] = spec.value
-              return optemo_module
-            ({})
+            processed_specs = {}
+            for spec in raw_specs
+              if (typeof(processed_specs[spec.group]) == "undefined") 
+                processed_specs[spec.group] = {}
+              processed_specs[spec.group][spec.name] = spec.value
+        
             sku_to_register = sku
             if (bundle_sku)
               sku_to_register = bundle_sku
@@ -311,8 +298,9 @@
     # If this is the last one, take the comparison screen down too
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
     if (skus.length == 0)
-        optemo_module.removeSilkScreen()
-
+      optemo_module.removeSilkScreen()
+    else
+      show_comparison_window()
     return false
   )
   

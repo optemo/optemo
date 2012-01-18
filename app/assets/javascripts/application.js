@@ -1,10 +1,10 @@
+//= require def
 //= require realtime_price
 //= require raphael
 // require jquery-ui-1.8.13.custom.min
 //= require jquery.dependClass
 //= require jquery.slider
 //= require jquery.history
-//= require def
 //= require cookies
 //= require sliders
 //= require comparison
@@ -12,6 +12,8 @@
 //= require_self
 //= require filters
 //= require bbfixes
+
+//Switched 'def' position from before 'cookies' to before 'realtime_price' so that module method would be defined in realtime_price
 
 // These global variables must be declared explicitly for proper scope (the spinner is because setTimeout has its own scope and needs to set the spinner)
 var optemo_module;
