@@ -16,6 +16,7 @@ en:
         isPreorderable:         "Pre-orders"
         saleprice_factor:       "Price: Low to High"
         saleprice_factor_asc:   "Price: High to Low"
+        saleprice_factor_high:   "Price: High to Low"
         displayDate:            "Newest Model"
         orders:                 "Best Selling"
         all:                    "all"
