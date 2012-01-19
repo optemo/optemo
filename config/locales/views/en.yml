@@ -41,7 +41,7 @@ en:
             clickforcompare: "Click to compare products"
             reset:          "Reset All"
             resetdesc:      "Clear all filters"
-            clear:          "Clear Selected Producs"
+            clear:          "Clear Selected Products"
             cleardesc:      "Clear the product selection"
             compare:        "Compare"
             closewindow:    "Close Window"
