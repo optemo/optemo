@@ -18,7 +18,6 @@
   #****Private Functions****
   #Uncheck box and remove from Compariosn
   removeFromComparison = (sku) ->
-    debugger
     $(".optemo_compare_checkbox").each (index) ->
       if ($(this).attr('data-sku') == sku)
         $(this).attr('checked', '')
@@ -27,7 +26,6 @@
   
   #Remove from comparison cookie and update comparison count
   remove_comparison_from_skus = (prod_sku) ->
-    debugger
     optemo_module.removeValueFromCookie(optemo_module.cmpcookie, prod_sku+","+$('#main').attr('data-product_type'), 1)
     #Update comparison number
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
@@ -297,9 +295,9 @@
 
     # If this is the last one, take the comparison screen down too
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
-    if (skus.length == 0)
-      optemo_module.removeSilkScreen()
-    else
+    #if (skus.length == 0)
+    optemo_module.removeSilkScreen()
+    if (skus.length isnt 0)
       show_comparison_window()
     return false
   )

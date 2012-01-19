@@ -5,6 +5,7 @@
   #****Public Functions****
   # This should return all cookie values in an array.
   optemo_module.readAllCookieValues = (name) ->
+    #debugger
     skus = undefined
     cookie = readCookie(name)
     if (cookie) 
@@ -26,6 +27,7 @@
     return skus
   
   optemo_module.addValueToCookie = (name, value, days) ->
+    #debugger
     savedData = readCookie(name)
     numDays = days or 30
     if (savedData)
@@ -37,6 +39,7 @@
         createCookie(name, value, numDays)
           
   optemo_module.removeValueFromCookie = (name, value, days) ->
+    #debugger
     savedData = readCookie(name)
     numDays = days or 30
     if (savedData) 
@@ -48,30 +51,29 @@
     # else do nothing
   
   optemo_module.eraseCookie = (name) ->
+    #debugger
     createCookie(name,"",-1)
   
   #****Private Functions****
   # Add an item to a list with a supplied token - For lists like this: "318*124*19"
   opt_appendStringWithToken = (items, newitem, token) ->
-  	return ((items == "") ? newitem : items+token+newitem)
+    #debugger
+    return (if(items == "") then newitem else items+token+newitem)
 
   # Remove an item from a list with a supplied token - As above, for removal
   opt_removeStringWithToken = (items, rem, token) ->
-  	i = items.split(token)
-  	debugger
-  	newArray = []
-  	
-  	#for (j in i) #####################################################
-  		#if (i[j].match(new RegExp("^" + rem ))) #####################################################
-  			#continue
-  	for j,value of i
-  	  if (value.match(new RegExp("^" + rem)))
-  	    continue
-  	    
-  		newArray.push(i[j])#####################################################
-  	return newArray.join(token)
+    i = items.split(token)
+    #debugger
+    newArray = []
+    for j,value of i
+      if (value.match(new RegExp("^" + rem)))
+        continue
+
+      newArray.push(i[j])#####################################################
+    return newArray.join(token)
 
   createCookie = (name,value,days) ->
+    #debugger
     if (days)
       date = new Date()
       date.setTime(date.getTime()+(days*24*60*60*1000))
@@ -81,11 +83,12 @@
     document.cookie = name+"="+value+expires+"; path=/"
 
   readCookie = (name) ->
+    #debugger
     nameEQ = name + "="
     ca = document.cookie.split(';')
-    for some_var,index in ca
+    for c in ca
     #for(var i=0;i < ca.length;i++) #####################################################
-        c = ca[index]
+        
         while (c.charAt(0)==' ') 
           c = c.substring(1,c.length)
         if (c.indexOf(nameEQ) == 0)
