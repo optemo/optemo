@@ -69,11 +69,17 @@ class ContSpec < ActiveRecord::Base
   class << self
     def sorting(sortby)
       sortby ||= "utility" #Default sorting
-      if sortby.include?("_high")  
+      if sortby =~ /(\w+)_asc/
+          sortby = $1
+          Session.features['sortby'].select{|f|f.name == sortby}.first.style == 'asc'
+          order = "ASC"
+      else
+          order =  "DESC"
+      end
+      if sortby.include?("_high")
+           # CODE TO ALSO SUPPORT _high, remove this if statement
            order = "ASC"
            sortby = "saleprice_factor"
-      else
-           order =  "DESC"    
       end
       joins("INNER JOIN cont_specs cont_specs_sort ON cont_specs_sort.product_id = `cont_specs`.product_id").where("cont_specs_sort.name = '#{sortby}'").order("cont_specs_sort.value #{order}")
     end
