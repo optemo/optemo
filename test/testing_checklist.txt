@@ -13,6 +13,7 @@ Landing page:
 		- Click on the first featured product: check if it successfully loads the PDP
 		- Click on the back button and check if you get the initial page
 	- Click the "See All" button above the hero
+	-Click the Pre-Order banner. Check that it loads the right page.
 
 
 Filter Page:
