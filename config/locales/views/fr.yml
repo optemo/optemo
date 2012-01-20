@@ -16,14 +16,14 @@ fr:
         isPreorderable:         "Précommandes"
         toprated:               "Les mieux cotés"
         saleprice_factor:       "Prix croissants"
-        saleprice_factor_high:  "Prix décroissants"
+        saleprice_factor_asc:   "Prix décroissants"
         displayDate:            "Dernier modèle"  
         orders:                 "Qui se vend le mieux"
         all:                    "tous"
         notapplicable:          "Non disponible"
     will_paginate:
       page_entries_info:
-        multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"    
+        multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"
     products:
         shopnow:            "Magasinez"
         featuredproducts:   "Produits vedettes"
