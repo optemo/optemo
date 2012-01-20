@@ -30,7 +30,8 @@
       </div>
     <% else %>
       <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-      <% optionlist = CatSpec.count_feat(f.name,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+   <% optionlist = CatSpec.count_feat(f.name,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
+	<!--><% optionlist = CatSpec.count_feat(f.name,true)%><!-->
       <div class="categorical<%= " brand" if f.name == "brand" %>">
         <% optionlist.each do |k,available_count| %>
           <% checked = chosen_cats.include?(k) %>

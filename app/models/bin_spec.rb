@@ -22,7 +22,7 @@ class BinSpec < ActiveRecord::Base
     myconts = Session.search.userdataconts
     mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
     #q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false)
-    q = Session.search.count_availables(mybins,mycats,myconts)
+    q = Session.search.products_specific_filtering(mybins,mycats,myconts)
     q.group(:eq_id_str).ngroups
     #CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
      # q.count

@@ -25,10 +25,30 @@ class CatSpec < ActiveRecord::Base
   end
   
   def self.count_feat(feat,includezeros = false,s = Session.search)
-    mycats = s.userdatacats.group_by{|x|x.name}.reject{|id|feat == id}.values
-    mybins = s.userdatabins
-    myconts = s.userdataconts
-    
+    #  mycats = s.userdatacats.group_by{|x|x.name}.reject{|id|feat == id}.values
+      mybins = s.userdatabins
+      myconts = s.userdataconts
+#=begin
+    mycats = s.userdatacats.reject{|e| e.name==feat}   
+    #mycats = s.userdatacats
+    #mycats = s.userdatacats unless mycats  
+    prods = s.products_specific_filtering(mybins,mycats,myconts,feat)
+    q= {}
+    if includezeros
+      prods.facet(feat.to_sym).rows.each do |r|
+        puts "r.value #{r.value} r.count#{r.count}"
+        q[r.value] =r.count
+      end
+    else
+      prods.facet(feat.to_sym).rows.each do |r|
+        if r.count !=0 
+         q[r.value] =r.count
+        end
+      end
+    end
+    q
+#=end
+=begin      
     q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false).joins("INNER JOIN cat_specs cat_count ON cat_count.product_id = `equivalences`.product_id").where(["cat_count.name = ?", feat]).group("cat_count.value").order("count(*) DESC")
     CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
       if includezeros
@@ -37,5 +57,6 @@ class CatSpec < ActiveRecord::Base
         q.count
       end
     end
+=end
   end
 end

@@ -4,11 +4,11 @@ require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
-  attr_accessor :collation, :col_emp_result, :num_result, :has_keysearch
+  attr_accessor :collation, :col_emp_result, :num_result, :has_keysearch, :validated_keyword
   
   self.per_page = 18 #for will_paginate
   
-  def filtering_cat_cont_bin_specs(mybins,mycats,myconts, search_term=nil)
+  def filtering_cat_cont_bin_specs(mybins,mycats,myconts, search_term=nil, spec = nil)
     
     @filtering = Product.search do
    
@@ -37,12 +37,12 @@ class Search < ActiveRecord::Base
           end             
         end   
       end      
-      all_of do  #conjunction for the other cats, bins, and conts specs
+      all_of do  #conjunction for the other bins, and conts specs
          mycats.each do |cats|
-            if (cats.name != "category" && cats.name != "brand")
-              with cats.name.to_sym, cats.value 
-            end     
-          end   
+           if (cats.name!= "category" && cats.name!= "brand")
+             with cats.name.to_sym, cats.value
+           end
+         end
          mybins.each do |bins|
           # puts "bins_name #{bins.name} bins_value #{bins.value}"
            with bins.name.to_sym, bins.value
@@ -59,14 +59,21 @@ class Search < ActiveRecord::Base
          end  
       end
       
+      
       with :instock, 1
       paginate :page=> page, :per_page => Search.per_page
       group :eq_id_str do 
-        ngroups 
+        ngroups  # includes the number of groups that have matched the query
+        truncate # facet counts are based on the most relevant document of each group matching the query
       end
+      
       if (!search_term)
         with :product_type, Session.product_type
       end
+      
+      if spec
+        facet spec.to_sym
+      end      
     end
     
     #puts "group_matches #{@filtering.group(:eq_id_str).matches}"
@@ -157,14 +164,19 @@ class Search < ActiveRecord::Base
       @products_size
         
   end  
-    
+  def validated_keyword
+    unless @validated_keyword
+       products
+      end
+      @keyword
+  end  
   def products
    mycats = self.userdatacats
    mybins = self.userdatabins
    myconts = self.userdataconts
    emp_specs = mybins.empty? && mycats.empty? && myconts.empty?
    @has_keysearch = false 
-  
+   
     if (keyword_search && !emp_specs)
        @has_keysearch = true
       things = filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
@@ -179,6 +191,7 @@ class Search < ActiveRecord::Base
           @col_emp_result = true
         end
          products_list(res_col,things_col.group(:eq_id_str).ngroups)
+         @validated_keyword = @collation
          #@products = res_col
       
       else
@@ -205,6 +218,7 @@ class Search < ActiveRecord::Base
          end
          if (@keysearch.results.empty? && !@col_emp_result)
            products_list(@sug_products.results,@sug_products.total )
+           @validated_keyword = @collation
           # @products = @sug_products.results
            
          else
@@ -261,44 +275,12 @@ class Search < ActiveRecord::Base
      #  puts "paginated_prods: #{p.title}"
     # end    
    end
-=begin   
-    def products_specific_filtering (specs,search_term = nil)
+   
+  def products_specific_filtering (mybins, mycats,myconts, spec=nil)
 
-      @filtering = Product.search do
-
-          if search_term
-            phrase = search_term.downcase.gsub(/\s-/,'').to_s
-            fulltext phrase
-          end  
-
-          order_by(:saleprice, :asc) if sortby == "saleprice_factor"
-          order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
-          order_by(sortby.to_sym, :desc) if sortby
-          #order_by(:displayDate, :desc) if sortby == "displayDate"
-
-          facet specs.to_sym 
-
-          with :instock, 1
-          paginate :page=> page, :per_page => self.per_page
-          if (!search_term)
-            with :product_type, Session.product_type
-          end
-          group :eq_id_str do 
-            ngroups 
-          end
-      end
-      #@products = grouping(@filtering)
-      #puts "filtering.lenght #{@products.size}"
-     #@products
-     @filtering.group(:eq_id_str).ngroups
-    end
-=end
-  def count_availables (mybins, mycats, myconts)
-     
-    filtering = filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
+    filtering = filtering_cat_cont_bin_specs(mybins,mycats,myconts, @validated_keyword,spec)
     filtering
-  end   
-  
+  end 
    
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
@@ -510,6 +492,8 @@ class Search < ActiveRecord::Base
     
     #Save keyword search
     self.keyword_search = p[:keyword] unless p[:keyword].blank?
+    #initialize the validated_keyword
+    @validated_keyword = self.keyword_search
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
