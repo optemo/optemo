@@ -14,14 +14,15 @@ optemo_module = (function (my){
     my.SliderInit();
 
 } 
+
   my.submitAJAX = function(){
-      var selections = $("#filter_form").serializeObject();
-      $.each(selections, function(k,v){
-          if(v == "" || v == "-") {
-              delete selections[k];
-          }
-          /* Look for weird $ error */
-      });
+			 var selections = $("#filter_form").serializeObject();
+				$.each(selections, function(k,v){
+		       if(v == "" || v == "-") {
+		           delete selections[k];
+		       }
+		       /* Look for weird $ error */
+		   });
 			if ($("#product_name").val() == "" || $("#product_name").val()== "Keyword or Web Code")
 				my.ajaxcall("/compare/create", selections)
 			else
@@ -211,7 +212,7 @@ optemo_module = (function (my){
           return 0;
         }
       }
-  };
+  };	
   
   //Serialize an form into a hash, Warning: duplicate keys are dropped
   $.fn.serializeObject = function(){
@@ -260,7 +261,7 @@ optemo_module = (function (my){
   });
   // Change sort method
   $('.sortby').live('click', function() {
-      if (my.loading_indicator_state.disable) return false;
+	  if (my.loading_indicator_state.disable) return false;
 			if ($("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= "")
 			my.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat'), "keyword": $("#product_name").val()});
 			else

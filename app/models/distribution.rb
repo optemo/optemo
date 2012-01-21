@@ -9,26 +9,28 @@ require 'inline'
     maxes = []
     specs = []
     feats = []
-    #prods = Session.search.paginated_products
+    # prods = Session.search.paginated_products
     mycats = Session.search.userdatacats
     mybins = Session.search.userdatabins
     myconts = Session.search.userdataconts
     Session.features["filter"].each do |f| 
       next if f.feature_type != "Continuous" #Only draw distributions for continuous features 
-      prods = Session.search.products_specific_filtering(mybins, mycats, myconts,f.name)  
+      prods = Session.search.products_specific_filtering(mybins, mycats, myconts,f.name)
+        
       data = []
       prods.facet(f.name.to_sym).rows.each do |r|
          for i in (0..(r.count-1))
            data << r.value
          end
       end
-      #puts "data.size #{data.size}"
-      #data= prods.map{|p| ContSpec.find_by_product_id_and_name(p.id, f.name).try(:value)}.compact     
-      #data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
+      # puts "data.size #{data.size}"    
+      # data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
       next if data.empty? #There's no data available for this feature
-      min,max = ContSpec.allMinMax(f.name)
-      #Max must be larger or equal to min
-      next unless (max || min)
+      ranges= Session.search.products_specific_filtering([], [], [],f.name).facet(f.name.to_sym).rows.inject([]){|res, ele| res << ele.value}
+      min,max = ranges.min, ranges.max
+      # min,max = ContSpec.allMinMax(f.name)
+      # Max must be larger or equal to min
+      # next unless (max || min)
       next unless max >= min #ValidationError, "min is larger than max"
       specs << data
       feats << f.name     

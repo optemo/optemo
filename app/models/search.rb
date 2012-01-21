@@ -4,13 +4,13 @@ require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
-  attr_accessor :collation, :col_emp_result, :num_result, :has_keysearch, :validated_keyword
+  attr_accessor :collation, :col_emp_result, :num_result, :has_keysearch, :validated_keyword, :old_keyword
   
   self.per_page = 18 #for will_paginate
   
   def filtering_cat_cont_bin_specs(mybins,mycats,myconts, search_term=nil, spec = nil)
     
-    @filtering = Product.search do
+    filtering = Product.search do
    
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
@@ -78,7 +78,7 @@ class Search < ActiveRecord::Base
     
     #puts "group_matches #{@filtering.group(:eq_id_str).matches}"
     #puts "filtering_suggestions: #{@filtering.suggestions}"
-    @filtering
+    filtering
   end
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -175,8 +175,11 @@ class Search < ActiveRecord::Base
    mybins = self.userdatabins
    myconts = self.userdataconts
    emp_specs = mybins.empty? && mycats.empty? && myconts.empty?
-   @has_keysearch = false 
    
+   @has_keysearch = false 
+   @validated_keyword = keyword_search
+   mycats = []  unless(@old_keyword == keyword_search) 
+ 
     if (keyword_search && !emp_specs)
        @has_keysearch = true
       things = filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
@@ -192,42 +195,37 @@ class Search < ActiveRecord::Base
         end
          products_list(res_col,things_col.group(:eq_id_str).ngroups)
          @validated_keyword = @collation
-         #@products = res_col
       
       else
         products_list(res,things.group(:eq_id_str).ngroups)
-        # @products = res
-  
+        
       end
     elsif (keyword_search)
-       @has_keysearch = true
-      @keysearch = product_keywordsearch(keyword_search)
-      @num_result = @keysearch.total
+      @has_keysearch = true
+      keysearch = product_keywordsearch(keyword_search)
+      @num_result = keysearch.total
       
       #puts "phrase-jan10-search #{phrase}"
-      #puts "suggestions, #{@keysearch.suggestions}"
-      #puts "keysearch_total #{@keysearch.total}"
-      #puts "total_pages_results: #{@keysearch.results.total_pages}"
+      #puts "suggestions, #{keysearch.suggestions}"
+      #puts "keysearch_total #{keysearch.total}"
+      #puts "total_pages_results: #{keysearch.results.total_pages}"
       
-       if (@keysearch.suggestions!=nil && !@keysearch.suggestions.empty?)
-         @collation = @keysearch.collation
-         @sug_products = product_keywordsearch(@collation)
+       if (keysearch.suggestions!=nil && !keysearch.suggestions.empty?)
+         @collation = keysearch.collation
+         sug_products = product_keywordsearch(@collation)
          
-         if (@sug_products.results.empty?)
+         if (sug_products.results.empty?)
            @col_emp_result = true;
          end
-         if (@keysearch.results.empty? && !@col_emp_result)
-           products_list(@sug_products.results,@sug_products.total )
+         if (keysearch.results.empty? && !@col_emp_result)
+           products_list(sug_products.results,sug_products.total )
            @validated_keyword = @collation
-          # @products = @sug_products.results
            
          else
-            products_list(@keysearch.results, @keysearch.total)
-           # @products  = @keysearch.results
+            products_list(keysearch.results, keysearch.total)
          end
        else
-          products_list(@keysearch.results, @keysearch.total)
-         # @products  = @keysearch.results
+          products_list(keysearch.results, keysearch.total)
        end             
     elsif (emp_specs)
      things= filtering_cat_cont_bin_specs([],[],[])
@@ -277,8 +275,9 @@ class Search < ActiveRecord::Base
    end
    
   def products_specific_filtering (mybins, mycats,myconts, spec=nil)
-
+    mycats=[] unless (@old_keyword == keyword_search) 
     filtering = filtering_cat_cont_bin_specs(mybins,mycats,myconts, @validated_keyword,spec)
+    #puts "validated_keyword #{@validated_keyword}"
     filtering
   end 
    
@@ -368,6 +367,7 @@ class Search < ActiveRecord::Base
     end
   end
 =end  
+ 
   def initialize(p={}, opt=nil)
     super({})
     #Set parent id
@@ -377,6 +377,8 @@ class Search < ActiveRecord::Base
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
+    @old_keyword = old_search.keyword_search if old_search
+    #puts "old_keyword_init #{@old_keyword}"
     case p[:action_type]
     when "allproducts"
       #Initial load of the homepage
@@ -412,7 +414,8 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      puts "filter_params: #{p[:filters]}"
+      p[:filters][:categorical]={} unless(@old_keyword==p[:filters][:keyword])
+      puts "filter_params: #{p[:filters]}"  
       createFeatures(p[:filters])
       self.initial = false
     else
@@ -449,6 +452,10 @@ class Search < ActiveRecord::Base
   end
    
   def createFeatures(p)
+    #Save keyword search
+    self.keyword_search = p[:keyword] unless p[:keyword].blank?
+     
+     
     @userdataconts = []
     r = /(?<min>[\d.]*)-(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
@@ -475,25 +482,20 @@ class Search < ActiveRecord::Base
       end
     end
     
-    cats = []
+    #cats = []
     #Check for cat filters which have been eliminated by other filters
-    @userdatacats.group_by(&:name).each_pair do |k,v|
+    #@userdatacats.group_by(&:name).each_pair do |k,v|
       # get all categories
-      if k=='category'
-        v.each { |x| cats << x.value }
-      end
-      if v.size > 1
-        counts = CatSpec.count_feat(k,false,self)
-        v.each do |val|
-          @userdatacats.reject!{|c|c.name == k && c.value == val.value} if counts[val.value].nil? || counts[val.value] == 0
-        end
-      end
-    end
-    
-    #Save keyword search
-    self.keyword_search = p[:keyword] unless p[:keyword].blank?
-    #initialize the validated_keyword
-    @validated_keyword = self.keyword_search
+    #  if k=='category'
+    #    v.each { |x| cats << x.value }
+    #  end
+    #  if v.size > 1
+    #    counts = CatSpec.count_feat(k,false,self)
+    #    v.each do |val|
+    #      @userdatacats.reject!{|c|c.name == k && c.value == val.value} if counts[val.value].nil? || counts[val.value] == 0
+    #     end
+    #  end
+    #end    
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.

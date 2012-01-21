@@ -75,7 +75,7 @@
     <% unchecked = dobj.nil? || dobj.value == false %>
     <% available_count = BinSpec.count_feat(f.name) %>
     <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-      <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter' %>
+      <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter' %>
       <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym) : link_to( t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym), "#", :class => "checkbox_text") %>
       <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
     </div>
