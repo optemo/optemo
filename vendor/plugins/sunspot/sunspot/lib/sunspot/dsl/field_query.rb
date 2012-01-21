@@ -276,6 +276,9 @@ module Sunspot
                 end
                 search_facet = @search.add_date_facet(field, options)
                 Sunspot::Query::DateFieldFacet.new(field, options)
+              elsif options[:range]
+                search_facet = @search.add_range_facet(field, options)
+                Sunspot::Query::RangeFacet.new(field, options)
               else
                 search_facet = @search.add_field_facet(field, options)
                 Sunspot::Query::FieldFacet.new(field, options)
