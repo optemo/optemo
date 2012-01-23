@@ -56,6 +56,13 @@ group :development, :test do
 end
 
 group :test do
-	gem 'factory_girl'
+  gem 'spork', '> 0.9.0.rc'
+  gem 'spork-testunit'
+  gem 'guard-test'
+  gem 'guard-spork'
+  gem 'rb-fsevent'
+  gem 'ruby-prof'
+  gem 'growl_notify'
+	gem 'factory_girl_rails'
 end
 

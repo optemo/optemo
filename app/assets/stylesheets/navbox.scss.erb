@@ -81,6 +81,14 @@
       left: 0;
     }
   }
+  #IE {
+    .yellowbtn {
+      a div {
+        display: inline;
+        zoom: 1;
+      }
+    }
+  }
   .ie6,.ie7 {
     .yellowbtn {
       .background-image: url(<%= asset_path('yellow_m.gif') %>);
@@ -92,6 +100,9 @@
       }
       a:hover {
         text-decoration: none;
+      }
+      a div {
+        background: url(<%= asset_path('gt.gif') %>);
       }
     }
   }
