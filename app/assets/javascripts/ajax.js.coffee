@@ -212,7 +212,6 @@
 
   #/* LiveInit functions */
   $(".bb_quickview_close, #silkscreen").live('click', ->
-    debugger
     optemo_module.removeSilkScreen()
     if (typeof(optemo_module.lastpage) isnt "undefined" and optemo_module.lastpage)
       #There was an error in the last request
@@ -223,7 +222,6 @@
 
   #Pagination links
   $('.pagination a').live("click", ->
-    debugger
     if (optemo_module.loading_indicator_state.disable) 
       return false
     optemo_module.ajaxcall($(this).attr('href'))
@@ -232,14 +230,12 @@
   
   #See all Products
   $('.seeall').live('click', ->
-    debugger
     optemo_module.ajaxcall('/', {})
     return false
   )
   
   # Change sort method
   $('.sortby').live('click', ->
-    debugger
     if (optemo_module.loading_indicator_state.disable)
       return false
     optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})
