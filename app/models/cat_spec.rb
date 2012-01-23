@@ -25,19 +25,12 @@ class CatSpec < ActiveRecord::Base
   end
   
   def self.count_feat(feat,includezeros = false,s = Session.search)
-   #   mycats = s.userdatacats.group_by{|x|x.name}.reject{|id|feat == id}.values
-      mybins = s.userdatabins
-      myconts = s.userdataconts
+    #  mycats = s.userdatacats.group_by{|x|x.name}.reject{|id|feat == id}.values
 #=begin
     mycats = s.userdatacats.reject{|e| e.name==feat}   
     #mycats = s.userdatacats
-    mycats = s.userdatacats unless mycats  
-    prods = s.products_specific_filtering(mybins,mycats,myconts,feat)
-  #  puts "feat_name #{feat}"
-  #  puts "mycats_size #{mycats.size}"
-  #  mycats.each do |cats|
-  #    puts "in cat_spec conts #{cats.name} #{cats.value}"
-  #  end
+    #mycats = s.userdatacats unless mycats  
+    prods = s.solr_search(mycats: mycats, cat_facet: feat)
     q= {}
     if includezeros
       prods.facet(feat.to_sym).rows.each do |r|

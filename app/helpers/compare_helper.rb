@@ -134,13 +134,9 @@ module CompareHelper
   end
 	
 	def getDist(feat)
-    unless defined? @dist
-      unless defined? $d
-       $d = Distribution.new
-      end
-	    @dist = $d.computeDist
-	  end  
-	  @dist[feat]
+    counts = Session.search.solr_cached.facet(feat.to_sym).rows.map(&:count)
+    max = counts.max
+    counts.map{|p|p.to_f/max}
   end
 
   def capitalize_brand_name(name)

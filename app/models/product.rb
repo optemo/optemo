@@ -41,7 +41,7 @@ class Product < ActiveRecord::Base
    (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
     if (s.feature_type == "Continuous")  
       #name = s.name
-       float s.name.to_sym, :trie =>true do
+       float s.name.to_sym do
        #float s.name.to_sym do
         cont_specs.find_by_name(s.name).try(:value)
        end

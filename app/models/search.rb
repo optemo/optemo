@@ -8,9 +8,18 @@ class Search < ActiveRecord::Base
   
   self.per_page = 18 #for will_paginate
   
-  def filtering_cat_cont_bin_specs(mybins,mycats,myconts, search_term=nil, spec = nil)
+  def solr_cached(opt = nil)
+    @solr_cached = nil if opt #Clear cache
+    @solr_cached ||= solr_search(opt || {})
+  end
+  
+  def solr_search(opt = {})
+    mybins = opt[:mybins] || userdatabins
+    mycats = opt[:mycats] || userdatacats
+    myconts = opt[:myconts] || userdataconts
+    search_term = opt[:searchterm] || keyword_search
     
-    filtering = Product.search do
+    Product.search do
    
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
@@ -66,20 +75,25 @@ class Search < ActiveRecord::Base
         ngroups  # includes the number of groups that have matched the query
         truncate # facet counts are based on the most relevant document of each group matching the query
       end
-      
+
       if (!search_term)
         with :product_type, Session.product_type
       end
-      
-      if spec
-        facet spec.to_sym
-      end      
+      if opt[:cat_facet]
+        facet opt[:cat_facet].to_sym 
+      else
+        Session.features["filter"].each do |f|
+          if f.feature_type == "Continuous"
+            range = ContSpec.allMinMax(f.name)
+            buckets = 24
+            
+            facet f.name.to_sym, range: range, range_interval: (range[1]-range[0])/buckets, zeros: 1
+          end
+        end
+      end     
     end
-    
-    #puts "group_matches #{@filtering.group(:eq_id_str).matches}"
-    #puts "filtering_suggestions: #{@filtering.suggestions}"
-    filtering
   end
+  
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
   end
@@ -179,15 +193,16 @@ class Search < ActiveRecord::Base
    end
  
     if (keyword_search )
-       @has_keysearch = true
-      things = filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
+      @has_keysearch = true
+      things = solr_cached
       res = grouping(things)
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
       res_col=[]
       
-      if(@collation)  
-        things_col= filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
+      if (res.empty? && things.collation != nil)
+        @collation = things.collation
+        things_col= solr_cached(search_term: @collation)
         res_col = grouping(things_col)
         if (res_col.empty?)
           @col_emp_result = true
@@ -208,8 +223,8 @@ class Search < ActiveRecord::Base
         products_list(res,things.group(:eq_id_str).ngroups)  
       end
     else
-      things = filtering_cat_cont_bin_specs(mybins,mycats,myconts)
-      products_list( grouping(things), things.group(:eq_id_str).ngroups) 
+      things = solr_cached
+      products_list( grouping(things), things.group(:eq_id_str).ngroups)
     end
   end
   
@@ -228,16 +243,6 @@ class Search < ActiveRecord::Base
      #  puts "paginated_prods: #{p.title}"
     # end    
    end
-   
-  def products_specific_filtering (mybins, mycats,myconts, spec=nil)
-    unless(@old_keyword == keyword_search) 
-       mycats = []  
-       myconts=[]
-     end
-    filtering = filtering_cat_cont_bin_specs(mybins,mycats,myconts, @validated_keyword,spec)
-    #puts "validated_keyword #{@validated_keyword}"
-    filtering
-  end 
 
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
@@ -421,7 +426,9 @@ class Search < ActiveRecord::Base
     end
     false
   end
-  private :products_list, :grouping, :filtering_cat_cont_bin_specs
+
+  private :products_list, :grouping, :product_keywordsearch
+
 end
 
 =begin  
