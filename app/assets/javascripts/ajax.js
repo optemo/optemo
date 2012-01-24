@@ -9,9 +9,10 @@ optemo_module = (function (my){
   //****Public Functions****
   // Submit a categorical filter, e.g. brand.
   my.whenDOMready = function(){
-    my.getRealtimePrices();
-    my.load_comparisons();
     my.SliderInit();
+    if (typeof('optemo_module.getRealtimePrices') == "function")
+      my.getRealtimePrices();
+    my.load_comparisons();
   } 
   my.submitAJAX = function(){
       var selections = $("#filter_form").serializeObject();
@@ -147,11 +148,8 @@ optemo_module = (function (my){
 
   my.ajaxcall = function(myurl,mydata) {
       // Disable interface elements.
-      $('.slider').each(function() {
-          $(this).slider("disabled", true);
-      });
       $('.binary_filter, .cat_filter').attr('disabled', true);
-      my.loading_indicator_state.disable = true; //Disables any live click handlers
+      my.loading_indicator_state.disable = true; //Disables any live click handlers and sliders
       
       my.lasthash = window.location.hash.replace(/^#/, ''); //Save the last request hash in case there is an error
       $.history.load($("#actioncount").html(),myurl,mydata);
