@@ -173,7 +173,10 @@ class Search < ActiveRecord::Base
  
    @has_keysearch = false 
    @validated_keyword = keyword_search
-   mycats = []  unless(@old_keyword == keyword_search) 
+   unless(@old_keyword == keyword_search) 
+     mycats = []  
+     myconts=[]
+   end
  
     if (keyword_search )
        @has_keysearch = true
@@ -181,17 +184,21 @@ class Search < ActiveRecord::Base
       res = grouping(things)
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
-    
+      res_col=[]
+      
+      if(@collation)  
+        things_col= filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
+        res_col = grouping(things_col)
+        if (res_col.empty?)
+          @col_emp_result = true
+        end
+      end
       #puts "collation_name, #{@collation}"
       #puts "things_total #{@num_result}"
       #puts "total_pages_results: #{things.results.total_pages}"
+     
       if (res.empty?)
-        if(@collation)  
-          things_col= filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
-          res_col = grouping(things_col)
-          if (res_col.empty?)
-            @col_emp_result = true
-          end
+        unless (res_col.empty?)
           products_list(res_col,things_col.group(:eq_id_str).ngroups)
           @validated_keyword = @collation
         else
@@ -223,12 +230,15 @@ class Search < ActiveRecord::Base
    end
    
   def products_specific_filtering (mybins, mycats,myconts, spec=nil)
-    mycats=[] unless (@old_keyword == keyword_search) 
+    unless(@old_keyword == keyword_search) 
+       mycats = []  
+       myconts=[]
+     end
     filtering = filtering_cat_cont_bin_specs(mybins,mycats,myconts, @validated_keyword,spec)
     #puts "validated_keyword #{@validated_keyword}"
     filtering
   end 
-   
+
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
       BinSpec.find_all_by_name_and_product_type("featured",Session.product_type)

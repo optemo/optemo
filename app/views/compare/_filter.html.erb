@@ -60,8 +60,8 @@
           data-label= '<%= f.name %>'
           data-min='<%= format_acceptable_increments(distribution_data.first[2], "down") %>' <%# Global min %>
           data-max='<%= format_acceptable_increments(distribution_data.first[3], "up") %>' <%# Global max %>
-          data-startmin='<%= format_acceptable_increments(current.min.nil? ? distribution_data.first[2] : current.min, "down") %>'
-          data-startmax='<%= format_acceptable_increments(current.max.nil? ? distribution_data.first[3] : current.max, "up") %>'
+          data-startmin='<%= format_acceptable_increments(distribution_data.first[2], "down") %>'
+          data-startmax='<%= format_acceptable_increments(distribution_data.first[3], "up") %>'
           current-data-min='<%= distribution_data.first.first %>'
           current-data-max='<%= distribution_data.first.second %>'
           force-int='false'

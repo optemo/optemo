@@ -4,6 +4,11 @@
     <%= Session.search.products_size.to_s + ' ' + raw(navtitle) %>
   </div>
   <%= link_to image_tag("see_all_white#{fr?}.gif"),root_path, :class=>"seeall" %>
+  <%= form_tag("/search", :method => "post", id: "keyword_search") do %>
+  	<% solr_config = YAML.load_file("#{Rails.root}/config/sunspot.yml")[Rails.env] %>
+  	<%=raw autosuggest_text_field "product", "name", "http://127.0.0.1:#{solr_config['solr']['port']}/solr/", "product_name", size: 68,  value: Session.search.keyword_search || "Keyword or Web Code", onfocus: "javascript:if (this.value == 'Keyword or Web Code') {this.value='';}" %>
+  	<%= submit_tag "Search", id: 'keyword_submit' %>
+  <% end %>
 </div>
 <div id="hero">
   <%# The hero product is the first featured product in the db %>
