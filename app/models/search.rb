@@ -37,7 +37,7 @@ class Search < ActiveRecord::Base
           end             
         end   
       end      
-      all_of do  #conjunction for the other bins, and conts specs
+      all_of do  #conjunction for the other bins, cats and conts specs
          mycats.each do |cats|
            if (cats.name!= "category" && cats.name!= "brand")
              with cats.name.to_sym, cats.value
@@ -59,7 +59,7 @@ class Search < ActiveRecord::Base
          end  
       end
       
-      
+      spellcheck :count => 4
       with :instock, 1
       paginate :page=> page, :per_page => Search.per_page
       group :eq_id_str do 
@@ -90,9 +90,6 @@ class Search < ActiveRecord::Base
   
   def userdatabins
       @userdatabins ||= Userdatabin.find_all_by_search_id(id)
-    #  @userdatabins.each do |s|
-    #    puts "userdatabins_ #{s.name}"
-    #  end
   end
   
   
@@ -161,8 +158,7 @@ class Search < ActiveRecord::Base
      unless @products_size
        products
       end
-      @products_size
-        
+      @products_size     
   end  
   def validated_keyword
     unless @validated_keyword
@@ -174,88 +170,40 @@ class Search < ActiveRecord::Base
    mycats = self.userdatacats
    mybins = self.userdatabins
    myconts = self.userdataconts
-   emp_specs = mybins.empty? && mycats.empty? && myconts.empty?
-   
+ 
    @has_keysearch = false 
    @validated_keyword = keyword_search
    mycats = []  unless(@old_keyword == keyword_search) 
  
-    if (keyword_search && !emp_specs)
+    if (keyword_search )
        @has_keysearch = true
       things = filtering_cat_cont_bin_specs(mybins,mycats,myconts, keyword_search)
       res = grouping(things)
       @num_result = things.group(:eq_id_str).ngroups
-      
-      if (res.empty? && things.collation != nil)
-        @collation = things.collation
-        things_col= filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
-        res_col = grouping(things_col)
-        if (res_col.empty?)
-          @col_emp_result = true
-        end
-         products_list(res_col,things_col.group(:eq_id_str).ngroups)
-         @validated_keyword = @collation
-      
-      else
-        products_list(res,things.group(:eq_id_str).ngroups)
-        
-      end
-    elsif (keyword_search)
-      @has_keysearch = true
-      keysearch = product_keywordsearch(keyword_search)
-      @num_result = keysearch.total
-      
-      #puts "phrase-jan10-search #{phrase}"
-      #puts "suggestions, #{keysearch.suggestions}"
-      #puts "keysearch_total #{keysearch.total}"
-      #puts "total_pages_results: #{keysearch.results.total_pages}"
-      
-       if (keysearch.suggestions!=nil && !keysearch.suggestions.empty?)
-         @collation = keysearch.collation
-         sug_products = product_keywordsearch(@collation)
-         
-         if (sug_products.results.empty?)
-           @col_emp_result = true;
-         end
-         if (keysearch.results.empty? && !@col_emp_result)
-           products_list(sug_products.results,sug_products.total )
-           @validated_keyword = @collation
-           
-         else
-            products_list(keysearch.results, keysearch.total)
-         end
-       else
-          products_list(keysearch.results, keysearch.total)
-       end             
-    elsif (emp_specs)
-     things= filtering_cat_cont_bin_specs([],[],[])
-     products_list(grouping(things), things.group(:eq_id_str).ngroups)
+      @collation = things.collation if things.collation !=nil
     
-     
+      #puts "collation_name, #{@collation}"
+      #puts "things_total #{@num_result}"
+      #puts "total_pages_results: #{things.results.total_pages}"
+      if (res.empty?)
+        if(@collation)  
+          things_col= filtering_cat_cont_bin_specs(mybins,mycats,myconts, @collation)
+          res_col = grouping(things_col)
+          if (res_col.empty?)
+            @col_emp_result = true
+          end
+          products_list(res_col,things_col.group(:eq_id_str).ngroups)
+          @validated_keyword = @collation
+        else
+          products_list(res,things.group(:eq_id_str).ngroups) 
+        end
+      else
+        products_list(res,things.group(:eq_id_str).ngroups)  
+      end
     else
       things = filtering_cat_cont_bin_specs(mybins,mycats,myconts)
-      products_list( grouping(things), things.group(:eq_id_str).ngroups)
-      
-     
+      products_list( grouping(things), things.group(:eq_id_str).ngroups) 
     end
-  end
-    
-  def product_keywordsearch (phrase = self.keyword_search)
-      phrase = phrase.downcase.gsub(/\s-/,'').to_s    
-
-      products_found = Product.search do 
-        fulltext phrase
-        with :instock, 1
-        spellcheck :count => 4
-        
-        order_by(:saleprice, :asc) if sortby == "saleprice_factor"
-        order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
-        order_by(sortby.to_sym, :desc) if sortby
-        #order_by(:displayDate, :desc) if sortby == "displayDate"
-      
-        paginate :page=> page, :per_page => Search.per_page
-      end
-     products_found
   end
   
   def grouping(things)    
@@ -267,8 +215,8 @@ class Search < ActiveRecord::Base
   end
   
   def products_list(things, total) #paginate products through sunspot pagination
-     @products_size = total    
-     @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
+    @products_size = total    
+    @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
     # @paginated_products.each do |p|
      #  puts "paginated_prods: #{p.title}"
     # end    
@@ -287,87 +235,6 @@ class Search < ActiveRecord::Base
     end
   end
   
-=begin  
-  def sim_products
-    if seesim
-      begin
-        @simproducts ||= products & Cluster.cached(seesim)
-      rescue IOError
-        #In case the similar products can't be found, just load the filtered products instead of throwing an error
-        products
-      end
-    else
-      products
-    end
-  end
- 
-  def sim_products_size
-    @sim_products_size ||= sim_products.size
-  end
-
-  def groupings
-    return [] if groupby.nil? 
-    if Session.currrent.features["filter"].select{|f|f.feature_type == "Categorical"}.index(groupby) 
-      # It's in the categorical array
-      specs = products.zip CatSpec.cachemany(products, groupby)
-      grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
-    elsif Session.currrent.features["filter"].select{|f|f.feature_type == "Continuous"}.index(groupby) 
-      #The chosen feature is continuous
-      specs = products.zip ContSpec.by_feat(groupby).sort
-      # [[id, low], [id, higher], ... [id, highest]]
-      quartile_length = (specs.length / 4.0).ceil
-      quartiles = []
-      3.times do
-        quartiles << specs.slice!(0,[quartile_length,specs.length].min)
-      end
-      quartiles << specs #The last quartile contains any extra products
-      
-      #Break boundry cases in quartiles where the same item is in two quartiles according to the following pattern
-      # 1 ↓
-      # 2
-      # 3 ↑
-      # 4 ↑
-
-      #Move ties from Q1 to Q2
-      unless quartiles[0].blank? || quartiles[1].blank?
-        threshold_value = quartiles[1].first[1]
-        splitpoint = quartiles[0].index(quartiles[0].find {|spec| spec[1] == threshold_value})
-        quartiles[1] = quartiles[0].slice!(splitpoint..-1) + quartiles[1] unless splitpoint.nil?
-      end
-      
-      #Move ties from Q4 to Q3
-      unless quartiles[2].blank? || quartiles[3].blank?
-        threshold_value = quartiles[2].last[1]
-        splitpoint = quartiles[3].index(quartiles[3].reverse.find {|spec| spec[1] == threshold_value})
-        quartiles[2] = quartiles[2] + quartiles[3].slice!(0..splitpoint) unless splitpoint.nil?
-      end
-      
-      #Move ties from Q3 to Q2
-      unless quartiles[1].blank? || quartiles[2].blank?
-        threshold_value = quartiles[1].last[1]
-        splitpoint = quartiles[2].index(quartiles[2].reverse.find {|spec| spec[1] == threshold_value})
-        quartiles[1] = quartiles[1] + quartiles[2].slice!(0..splitpoint) unless splitpoint.nil?
-      end
-      
-      grouping = quartiles.reject(&:blank?) # For cases like 9 items, where the quartile length ends up being 3.
-
-    else # Binary feature. Do nothing for now.
-    end
-    grouping.map do |q|
-      product_ids = q.map(&:first)
-      prices_list = ContSpec.cachemany(product_ids,"saleprice")
-      utility_list = ContSpec.cachemany(product_ids, "utility")
-      {
-        :min => q.first.last.to_s,
-        :max => q.last.last.to_s,
-        :size => q.count,
-        :cheapest =>  Product.cached(product_ids[prices_list.index(prices_list.max)]),
-        :best => Product.cached(product_ids[utility_list.index(utility_list.max)])
-      }
-    end
-  end
-=end  
- 
   def initialize(p={}, opt=nil)
     super({})
     #Set parent id
@@ -377,6 +244,7 @@ class Search < ActiveRecord::Base
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
+    # save the old_keyword 
     @old_keyword = old_search.keyword_search if old_search
     #puts "old_keyword_init #{@old_keyword}"
     case p[:action_type]
@@ -543,5 +411,86 @@ class Search < ActiveRecord::Base
     end
     false
   end
-  private :products_list, :grouping, :product_keywordsearch, :filtering_cat_cont_bin_specs
+  private :products_list, :grouping, :filtering_cat_cont_bin_specs
 end
+
+=begin  
+  def sim_products
+    if seesim
+      begin
+        @simproducts ||= products & Cluster.cached(seesim)
+      rescue IOError
+        #In case the similar products can't be found, just load the filtered products instead of throwing an error
+        products
+      end
+    else
+      products
+    end
+  end
+ 
+  def sim_products_size
+    @sim_products_size ||= sim_products.size
+  end
+
+  def groupings
+    return [] if groupby.nil? 
+    if Session.currrent.features["filter"].select{|f|f.feature_type == "Categorical"}.index(groupby) 
+      # It's in the categorical array
+      specs = products.zip CatSpec.cachemany(products, groupby)
+      grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
+    elsif Session.currrent.features["filter"].select{|f|f.feature_type == "Continuous"}.index(groupby) 
+      #The chosen feature is continuous
+      specs = products.zip ContSpec.by_feat(groupby).sort
+      # [[id, low], [id, higher], ... [id, highest]]
+      quartile_length = (specs.length / 4.0).ceil
+      quartiles = []
+      3.times do
+        quartiles << specs.slice!(0,[quartile_length,specs.length].min)
+      end
+      quartiles << specs #The last quartile contains any extra products
+      
+      #Break boundry cases in quartiles where the same item is in two quartiles according to the following pattern
+      # 1 ↓
+      # 2
+      # 3 ↑
+      # 4 ↑
+
+      #Move ties from Q1 to Q2
+      unless quartiles[0].blank? || quartiles[1].blank?
+        threshold_value = quartiles[1].first[1]
+        splitpoint = quartiles[0].index(quartiles[0].find {|spec| spec[1] == threshold_value})
+        quartiles[1] = quartiles[0].slice!(splitpoint..-1) + quartiles[1] unless splitpoint.nil?
+      end
+      
+      #Move ties from Q4 to Q3
+      unless quartiles[2].blank? || quartiles[3].blank?
+        threshold_value = quartiles[2].last[1]
+        splitpoint = quartiles[3].index(quartiles[3].reverse.find {|spec| spec[1] == threshold_value})
+        quartiles[2] = quartiles[2] + quartiles[3].slice!(0..splitpoint) unless splitpoint.nil?
+      end
+      
+      #Move ties from Q3 to Q2
+      unless quartiles[1].blank? || quartiles[2].blank?
+        threshold_value = quartiles[1].last[1]
+        splitpoint = quartiles[2].index(quartiles[2].reverse.find {|spec| spec[1] == threshold_value})
+        quartiles[1] = quartiles[1] + quartiles[2].slice!(0..splitpoint) unless splitpoint.nil?
+      end
+      
+      grouping = quartiles.reject(&:blank?) # For cases like 9 items, where the quartile length ends up being 3.
+
+    else # Binary feature. Do nothing for now.
+    end
+    grouping.map do |q|
+      product_ids = q.map(&:first)
+      prices_list = ContSpec.cachemany(product_ids,"saleprice")
+      utility_list = ContSpec.cachemany(product_ids, "utility")
+      {
+        :min => q.first.last.to_s,
+        :max => q.last.last.to_s,
+        :size => q.count,
+        :cheapest =>  Product.cached(product_ids[prices_list.index(prices_list.max)]),
+        :best => Product.cached(product_ids[utility_list.index(utility_list.max)])
+      }
+    end
+  end
+=end  

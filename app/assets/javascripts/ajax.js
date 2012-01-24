@@ -16,17 +16,17 @@ optemo_module = (function (my){
 } 
 
   my.submitAJAX = function(){
-			 var selections = $("#filter_form").serializeObject();
-				$.each(selections, function(k,v){
-		       if(v == "" || v == "-") {
-		           delete selections[k];
-		       }
-		       /* Look for weird $ error */
-		   });
-			if ($("#product_name").val() == "" || $("#product_name").val()== "Keyword or Web Code")
-				my.ajaxcall("/compare/create", selections)
-			else
-        my.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections) );
+		var selections = $("#filter_form").serializeObject();
+		$.each(selections, function(k,v){
+		  if(v == "" || v == "-") {
+		    delete selections[k];
+		  }
+		  /* Look for weird $ error */
+		});
+		if ($("#product_name").val() == "" || $("#product_name").val()== "Keyword or Web Code")
+			 my.ajaxcall("/compare/create", selections)
+		else
+      my.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections) );
 	};
    my.removeSilkScreen = function() {
         $('#silkscreen, #outsidecontainer').hide();
@@ -246,12 +246,12 @@ optemo_module = (function (my){
   
   //Pagination links
   $('.pagination a').live("click", function(){
-      if (my.loading_indicator_state.disable) return false;
-      if ($("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= "")
-      	my.ajaxcall($(this).attr('href'), {"keyword": $("#product_name").val()});
-			else
+    if (my.loading_indicator_state.disable) return false;
+    if ($("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= "")
+       my.ajaxcall($(this).attr('href'), {"keyword": $("#product_name").val()});
+		else
 			 my.ajaxcall($(this).attr('href'))
-      return false;
+    return false;
   });
 
   //See all Products
@@ -262,11 +262,11 @@ optemo_module = (function (my){
   // Change sort method
   $('.sortby').live('click', function() {
 	  if (my.loading_indicator_state.disable) return false;
-			if ($("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= "")
+		if ($("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= "")
 			my.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat'), "keyword": $("#product_name").val()});
-			else
+		else
 			my.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})
-      return false;
+    return false;
   });
   
  

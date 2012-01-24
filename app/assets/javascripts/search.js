@@ -4,19 +4,19 @@ optemo_module = (function (my){
   //****Private Functions***
 	function get_filtering_specs(){
 		 // check if there is any filtering before starting the keyword search (maybe it's needed to combine with my.submitAJAX)
-		 var selections = $("#filter_form").serializeObject();
+		var selections = $("#filter_form").serializeObject();
 			$.each(selections, function(k,v){
 	       if(v == "" || v == "-") {
 	           delete selections[k];
 	       }
 	       /* Look for weird $ error */
-	   });
+	  });
 		return selections
 	}
   /* LiveInit functions */
   $('#keyword_submit').live("click", function(){
-    if (my.loading_indicator_state.disable) return false;
- 	 var selections = get_filtering_specs();
+   	if (my.loading_indicator_state.disable) return false;
+ 	 	var selections = get_filtering_specs();
 	
 		if ($("#product_name").val()!="" && $("#product_name").val()!= "Keyword or Web Code")
 		 {my.ajaxcall("/search", $.extend(selections,{"keyword" : $("#product_name").val()}));}
@@ -26,9 +26,9 @@ optemo_module = (function (my){
   })
   
   $('.suggestion').live('click', function() {
-      if (my.loading_indicator_state.disable) return false;
-			 var selections = get_filtering_specs();
-		 	my.ajaxcall("/search", $.extend(selections,{"keyword" : $.trim($(this).html())}));
+    if (my.loading_indicator_state.disable) return false;
+		var selections = get_filtering_specs();
+		my.ajaxcall("/search", $.extend(selections,{"keyword" : $.trim($(this).html())}));
     return false;
   });
 
