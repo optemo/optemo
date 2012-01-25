@@ -54,15 +54,19 @@
       <div style="position:relative">
         <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
         <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
+        <% step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil) -%>
+        <% datamin = roundedInterval(distribution_data.first[2],step,true) -%>
+        <% datamax = roundedInterval(distribution_data.first[3],step,false) -%>
         <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
         <span class="sliderspan">
           <input 
             class="slider" 
             type="slider" 
             name="superfluous[<%= f.name %>]"
-            value="<%= [(current.min.nil? ? distribution_data.first[2].floor : current.min),(current.max.nil? ? distribution_data.first[3].ceil : current.max)].join(";") %>"
-            data-min= '<%= distribution_data.first[2].floor %>'
-            data-max= '<%= distribution_data.first[3].ceil %>'
+            value="<%= [(current.min.nil? ? datamin : current.min),(current.max.nil? ? datamax : current.max)].join(";") %>"
+            data-step='<%= step %>'
+            data-min= '<%= datamin %>'
+            data-max= '<%= datamax %>'
             data-distmin=<%= distribution_data.first[0] %>
             data-distmax=<%= distribution_data.first[1] %>
             data-unit = "<%= t("#{Session.product_type}.specs.#{f.name}.unit", :default => '') %>" 

@@ -6,8 +6,8 @@
       t = $(this)
       min = parseFloat(t.attr('data-min'))
       max = parseFloat(t.attr('data-max'))
-      mystep = calcInterval(min,max)
-      
+      mystep = parseFloat(t.attr('data-step'))
+
       t.slider
         from: min
         to: max
@@ -17,11 +17,16 @@
         dimension: " "+t.attr('data-unit')
         skin: "plastic"
         callback: (value) ->
-          t.parent().siblings('.range').val(value)
+          #Remove a feature selection that has been undone
+          [curmin,curmax] = (parseFloat(i) for i in value.split(";"))
+          if curmin == min && curmax == max
+            t.parent().siblings('.range').val(";")
+          else
+            t.parent().siblings('.range').val(value)
           optemo_module.submitAJAX() #Auto-submit
         movable: (value) ->
-          [min,max] = (parseFloat(i) for i in value.split(";"))
-          min <= parseFloat(t.attr('data-distmax')) and max >= parseFloat(t.attr('data-distmin'))
+          [curmin,curmax] = (parseFloat(i) for i in value.split(";"))
+          curmin <= parseFloat(t.attr('data-distmax')) and curmax >= parseFloat(t.attr('data-distmin'))
         calculate: (value, label) ->
           #GB / TB conversion
           if label?
@@ -45,11 +50,6 @@
       histogram(t.parent().siblings('.hist')[0])
 
   #Private functions
-  calcInterval = (min,max) ->
-    range = max - min
-    steps = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]
-    s = steps.shift() until range/s > 30 #30 was selected arbitrarly, so that it looks good in the sliders
-    s
     
   #Draw slider histogram, called for each slider above
   histogram = (element, norange) ->
