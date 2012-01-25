@@ -1,20 +1,17 @@
 #/* AJAX Functionality */
 
 @module "optemo_module", ->
-  #This variable is used to determine wether the code is embedded or not
-  if (typeof OPT_REMOTE is "undefined")
-    OPT_REMOTE = false
+
   #Set up the AJAX send function for use with the back button
-  $(document).ready( ->
+  $(document).ready ->
     $.history.init(optemo_module.ajaxsend,{unescape: true})
-  )
 
   #****Public Functions****
   # Submit a categorical filter, e.g. brand.
   optemo_module.whenDOMready = () ->
-    optemo_module.getRealtimePrices()
-    optemo_module.load_comparisons()
     optemo_module.SliderInit()
+    optemo_module.getRealtimePrices() if (optemo_module? && typeof(optemo_module.getRealtimePrices) == "function")
+    optemo_module.load_comparisons()
 
   optemo_module.submitAJAX = () ->
     selections = $("#filter_form").serializeObject()
@@ -91,9 +88,9 @@
     if (/localhost/.test(myurl) or /192\.168/.test(myurl))
       val_timeout = 100000
     lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", val_timeout)
-    if (OPT_REMOTE)
+    if (window.OPT_REMOTE)
       #Embedded Layout
-      myurl = if(typeof myurl isnt "undefined" and myurl isnt null) then myurl.replace(/http:\/\/[^\/]+/,'') else "/compare"
+      myurl = if myurl? then myurl.replace(/http:\/\/[^\/]+/,'') else "/compare"
       # There is a bug in the JSONP implementation. If there is a "?" in the URL, with parameters already on it,
       # this JSONP implementation will add another "?" for the second set of parameters (specified in mydata).
       # For now, just check for a "?" and take those parameters into mydata, 
@@ -108,7 +105,7 @@
           if(not mydata.hasOwnProperty(i)) # Do not merge properties that already exist.
             mydata[i] = content
         myurl = myurl.slice(0, myurl.indexOf('?'))                   
-      JSONP.get(OPT_REMOTE+myurl,mydata,ajaxhandler)
+      JSONP.get(window.OPT_REMOTE+myurl,mydata,ajaxhandler)
     else
       $.ajax(
         #type: (mydata==null)?"GET":"POST",
@@ -136,11 +133,8 @@
 
   optemo_module.ajaxcall = (myurl,mydata) ->
     # Disable interface elements.
-    $('.slider').each( ->
-      $(this).slider("disabled", true)
-    )
     $('.binary_filter, .cat_filter').attr('disabled', true)
-    optemo_module.loading_indicator_state.disable = true #Disables any live click handlers
+    optemo_module.loading_indicator_state.disable = true #Disables any live click handlers and sliders
     
     optemo_module.lasthash = window.location.hash.replace(/^#/, '') #Save the last request hash in case there is an error
     $.history.load($("#actioncount").html(),myurl,mydata)
@@ -166,9 +160,9 @@
 
   #****Private Functions****
   quickajaxcall = (element_name, myurl, fn) -> # The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
-    if (OPT_REMOTE)
+    if (window.OPT_REMOTE)
       #Check for absolute urls
-      JSONP.get(OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true', category_id: window.opt_category_id}, (data) ->
+      JSONP.get(window.OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true', category_id: window.opt_category_id}, (data) ->
         $(element_name).html(data)
         if (fn) 
           fn()

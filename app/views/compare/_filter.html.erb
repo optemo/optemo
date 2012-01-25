@@ -55,7 +55,7 @@
         <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
         <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
         <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
-        <span style="display: inline-block; width: 155px; padding: 20px 0px;" class="sliderspan">
+        <span class="sliderspan">
           <input 
             class="slider" 
             type="slider" 
