@@ -1,7 +1,7 @@
 #/* Fetching the new prices */
 @module "optemo_module", ->
   API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query="
-  optemo_module.getRealtimePrices = () ->
+  @getRealtimePrices = ->
     skus = $('.productimg').map( -> 
       return $(this).attr('data-sku')
     ).toArray().join(" ")
@@ -67,4 +67,3 @@
   #/* LiveInit functions */
   
   #/* End of LiveInit Functions */
-  return optemo_module
