@@ -52,14 +52,12 @@
   
   .yellowbtn {
     background: url(<%= asset_data_uri('yellow_m.gif') %>) repeat-x scroll 0 0 transparent;
-    @include button-prop;
+    display: table;
     .left {
       background: url(<%= asset_data_uri('yellow_l.gif') %>) no-repeat scroll left top transparent;
-      @include button-prop;
     }
     .right {
       background: url(<%= asset_data_uri('yellow_r.gif') %>) no-repeat scroll right top transparent;
-      @include button-prop;
       overflow: hidden;
       text-align: center;
       width: 130px;
@@ -92,11 +90,14 @@
   .ie6,.ie7 {
     .yellowbtn {
       .background-image: url(<%= asset_path('yellow_m.gif') %>);
+      @include button-prop;
       .left {
         .background-image: url(<%= asset_path('yellow_l.gif') %>);
+        @include button-prop;
       }
       .right {
         .background-image: url(<%= asset_path('yellow_r.gif') %>);
+        @include button-prop;
       }
       a:hover {
         text-decoration: none;
