@@ -1,7 +1,7 @@
 #/* Fetching the new prices */
 @module "optemo_module", ->
   API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query="
-  optemo_module.getRealtimePrices = () ->
+  @getRealtimePrices = ->
     skus = $('.productimg').map( -> 
       return $(this).attr('data-sku')
     ).toArray().join(" ")
@@ -27,14 +27,14 @@
               c.find('.saleends').hide()
                         
             #Update the saleprice
-            c.find('.saleprice > span').html((if(typeof(optemo_french) isnt "undefined" and optemo_french) then "" else "$") + this.salePrice + (if(typeof(optemo_french) isnt "undefined" and optemo_french) then " $" else ""))
+            c.find('.saleprice > span').html((if optemo_french? then "" else "$") + this.salePrice + (if optemo_french? then " $" else ""))
             #Update the regularprice
-            c.find('.price > span').html((if(typeof(optemo_french) isnt "undefined" and optemo_french) then "" else "$") + this.regularPrice + (if(typeof(optemo_french) isnt "undefined" and optemo_french) then " $" else ""))
+            c.find('.price > span').html((if optemo_french? then "" else "$") + this.regularPrice + (if optemo_french? then " $" else ""))
             #Update the savings
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
             current_savings = c.find('.save > span').html()
-            if (not(savings is current_savings or savings is current_savings.substring(1,current_savings.length))) 
-              c.find('.save > span').html((if(typeof(optemo_french) isnt "undefined" and optemo_french) then "" else "$") + savings + (if(typeof(optemo_french) isnt "undefined" and optemo_french) then " $" else ""))
+            if current_savings? && !(savings is current_savings or savings is current_savings[1..-1]) 
+              c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
               #Remove saleEnd data because we don't have accurate ones
               c.find('.saleends').hide()
             
@@ -49,10 +49,10 @@
             title.hide()
             #And also remove the add to cart button
             addlink = t.siblings('.shopnowhero') #See if we're dealing with the hero product 
-            if (!(addlink.length)) 
+            unless (addlink.length)
               addlink = t.parent().siblings() #Otherwise we're dealing with the navbox
             
-            addlink.after($('<div style="text-align: center;">').html(if(typeof(optemo_french) isnt "undefined" and optemo_french) then "(En rupture de stock)" else "(Out of stock)")).hide()
+            addlink.after($('<div style="text-align: center;">').html(if optemo_french? then "(En rupture de stock)" else "(Out of stock)")).hide()
             #And also remove the link from the image
             t.siblings("img.productimg").removeClass("productimg").removeAttr('title') #navbox
             t.parent().siblings("img.productimg").removeClass("productimg").removeAttr('title') #Hero
@@ -67,4 +67,3 @@
   #/* LiveInit functions */
   
   #/* End of LiveInit Functions */
-  return optemo_module

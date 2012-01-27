@@ -7,8 +7,8 @@
   
     # LiveInit functions 
   
-    $('.binary_filter').live 'click', (optemo_module.submitAJAX)
-    $('.cat_filter').live 'click', (optemo_module.submitAJAX)
+    $('.binary_filter').live 'click', optemo_module.submitAJAX
+    $('.cat_filter').live 'click', optemo_module.submitAJAX
     $('.checkbox_text').live 'click', ->
       if (optemo_module.loading_indicator_state.disable)
         return false
@@ -45,7 +45,5 @@
         return false
       optemo_module.ajaxcall('/',{landing:'true'})
       return false
-    
 
-    # End of LiveInit Functions 
-    return optemo_module
+    # End of LiveInit Functions

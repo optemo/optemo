@@ -19,25 +19,22 @@
   #/* LiveInit functions */
   
   #Product links
-  $(".productimg, .easylink").live("click", ->
+  $(".productimg, .easylink").live "click", ->
     # This is the show page
     t = $(this)
     href = t.attr('href') or t.parent().find('.easylink').attr('href')
     window.location = href
     return false
-  )
   
   #Links which open in a new window
-  $(".popup").live('click', ->
+  $(".popup").live 'click', ->
     window.open($(this).attr('href'))
     return false
-  )
   
   #Scroll back to the top
-  $('#back-to-top-bottom').live("click", ->
+  $('#back-to-top-bottom').live "click", ->
     $('body,html').animate({scrollTop: 0}, 800)
     return false
-  )
   
   ### Bundles are disabled for now
   //Bundle link
@@ -48,15 +45,13 @@
 
   #/* End of LiveInit functions */
 
-  return optemo_module
-
 
 #//--------------------------------------//
 #//             Page Loader              //
 #//--------------------------------------//
 
 #Load the initial page in non-embedded layout
-if ($('#opt_discovery').length)
+if $('#opt_discovery').length
   #Pass in the option as a url param (Digital Cameras are default)
   window.opt_category_id = decodeURI((RegExp('([?]|&)[Cc]ategory_id=(.+?)(&|$)').exec(location.search)||[0,0,22474])[2])
   if (location.hash)

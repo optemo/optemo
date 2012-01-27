@@ -1,18 +1,16 @@
 # Product Comparison */
 @module "optemo_module", ->
   #Hardcode the cookie name
-  optemo_module.cmpcookie = 'bestbuy_compare_skus'
+  @cmpcookie = 'bestbuy_compare_skus'
   #****Public Functions****
   
   #Check the cookie for comparisons, and the check the appropriate boxes
-  optemo_module.load_comparisons =  ->
+  @load_comparisons = ->
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
-    $.each(skus, (index,sku) ->
-       $('.optemo_compare_checkbox[data-sku="'+sku+'"]').each(->
+    $.each skus, (index,sku) ->
+       $('.optemo_compare_checkbox[data-sku="'+sku+'"]').each ->
           $(this).attr('checked', 'checked')
           loadspecs(sku)
-       )
-    )
     changeNavigatorCompareBtn(skus.length)
   
   #****Private Functions****
@@ -32,11 +30,11 @@
     changeNavigatorCompareBtn(skus.length)
   
   #Check or uncheck a comparison box
-  comparison_checkbox_change = () ->
+  comparison_checkbox_change = ->
     sku_size = optemo_module.readAllCookieValues(optemo_module.cmpcookie).length
     #Differentiate between the checkbox and text link, which passes in the checkbox
-    t = (if (arguments[0].jquery is `undefined`) then $(this) else arguments[0])
-    if (t.is(':checked'))  # save the comparison item
+    t = (unless arguments[0].jquery? then $(this) else arguments[0])
+    if t.is(':checked')  # save the comparison item
       if (sku_size < 5) 
         loadspecs(t.attr('data-sku'))
         optemo_module.addValueToCookie(optemo_module.cmpcookie, t.attr('data-sku')+','+$('#main').attr('data-product_type'), 1)
@@ -75,12 +73,11 @@
       # Hide the clear option if it is visible
       $('.nav_clear_btn:visible').hide()
   
-  show_comparison_window = () ->
+  show_comparison_window = ->
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
     width = undefined
 
-    if (skus.length < 1)
-      return false
+    return false if skus.length < 1
 
     # To figure out the width that we need, start with $('#opt_savedproducts').length probably
     # 560 minimum (width is the first of the two parameters)
@@ -90,12 +87,11 @@
     else
       width = 566
 
-    optemo_module.applySilkScreen('/comparison/' + skus.join(","), null, width, 580, ->
+    optemo_module.applySilkScreen '/comparison/' + skus.join(","), null, width, 580, ->
       # Jquery 1.5 would finish all the requests before building the comparison matrix once
       # With 1.4.2 we can't do that. Keep code for later.
       # $.when.apply(this,reqs).done();
       buildComparisonMatrix()
-    )
     return false
   
   row_height = (length,isLabel) ->
@@ -146,7 +142,7 @@
       item.siblings('div').hide()
   
   #Data manipulation for the BB API Interface
-  merge_bb_json = () ->
+  merge_bb_json = ->
     merged = {}
     for arg,index in arguments #for (p = 0; p < arguments.length; p++)
       for own heading,spec of arg
@@ -159,7 +155,7 @@
     return merged
   
   #Build spec matrix from API data
-  buildComparisonMatrix = () ->
+  buildComparisonMatrix = ->
     skus = $('#basic_matrix').attr('data-skus').split(',')
     anchor = $('#hideable_matrix')
     # Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
@@ -229,9 +225,8 @@
       remove_row.next().clone(),
       remove_row.next().next().clone().find('.leftmostcolumntitle').empty().end()
     )
-    $('.togglable').each( -> 
+    $('.togglable').each -> 
       addtoggle($(this))
-      )
     if ($.browser.msie && $.browser.version.substr(0,1)<7) # IE6 comparison page close button margin space issue
       if (skus.length <= 2)
         $('#optemo_embedder #IE .bb_quickview_close').css("margin-right",'-68px')
@@ -285,13 +280,12 @@
   
   #/* LiveInit functions */
   #Remove buttons on compare
-  $('.remove').live('click', ->
+  $('.remove').live 'click', ->
     removeFromComparison($(this).attr('data-sku'))
     class_name = $(this).attr('class').split(' ').slice(-1) # spec_column_0, for example
 
-    $("." + class_name).each( ->
-        $(this).remove()
-    )
+    $("." + class_name).each ->
+      $(this).remove()
 
     # If this is the last one, take the comparison screen down too
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
@@ -300,23 +294,20 @@
     if (skus.length isnt 0)
       show_comparison_window()
     return false
-  )
   
   #Clear all comparison options
-  $('#optemo_embedder .nav_clear_btn').live("click", ->
+  $('#optemo_embedder .nav_clear_btn').live "click", ->
     #Uncheck currently checked navboxes
-    $('.optemo_compare_checkbox:checked').each( ->
+    $('.optemo_compare_checkbox:checked').each ->
       $(this).attr('checked', '')
-    )
     #Remove saved cookie values
     optemo_module.eraseCookie(optemo_module.cmpcookie)
     changeNavigatorCompareBtn(0)
     return false
-  )
   
   
   #Show/Hide API specs
-  $('.toggle_specs').live('click', ->
+  $('.toggle_specs').live 'click', ->
     # Once we have the additional specs loaded and rendered, we can simply show and hide that table
     t = $(this)
     t.find(".lesstext").toggle()
@@ -325,11 +316,11 @@
     cHeight = optemo_module.current_height()
     $('#silkscreen').css({'height' : cHeight+'px', 'display' : 'inline'})
     return false
-  )
   
   #Add to comparison from navbox
   $('.optemo_compare_checkbox').live('click', comparison_checkbox_change)
-  $('.optemo_compare_button').live('click', ->
+  
+  $('.optemo_compare_button').live 'click', ->
 	  my_checkbox = $(this).parent().find('.optemo_compare_checkbox')
 	  if (!my_checkbox.attr('checked'))
       my_checkbox.attr('checked','checked')
@@ -338,11 +329,8 @@
     if (my_checkbox.is(':checked'))
       show_comparison_window()
     return false
-  )
   
   #Comparison btn on navigation page
   $('#optemo_embedder .nav-compare-btn').live("click", show_comparison_window)
   
   #/* End of LiveInit Functions */
-  
-  return optemo_module

@@ -8,12 +8,12 @@
 
   #****Public Functions****
   # Submit a categorical filter, e.g. brand.
-  optemo_module.whenDOMready = () ->
+  @whenDOMready = ->
     optemo_module.SliderInit()
     optemo_module.getRealtimePrices() if (optemo_module? && typeof(optemo_module.getRealtimePrices) == "function")
     optemo_module.load_comparisons()
 
-  optemo_module.submitAJAX = () ->
+  @submitAJAX = ->
     selections = $("#filter_form").serializeObject()
     $.each(selections, (k,v) ->
       if(v is "" or v is "-" or v is ";") 
@@ -24,23 +24,22 @@
     )
     optemo_module.ajaxcall("/compare/create", selections)
 
-  optemo_module.removeSilkScreen = () ->
+  @removeSilkScreen = ->
     $('#silkscreen, #outsidecontainer').hide()
     # For ie 6, dropdown list has z-index issue. Show dropdown when popup hide.
     if($.browser.msie and $.browser.version.substr<7)        
       $('.jumpmenu').show()
     
-  optemo_module.current_height = ( -> 
+  @current_height = -> 
     D = document
     return Math.max(
       Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
       Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
       Math.max(D.body.clientHeight, D.documentElement.clientHeight)
     )
-  )
 
   #Optemo's Lightbox effect
-  optemo_module.applySilkScreen = (url,data,width,height,f) ->
+  @applySilkScreen = (url,data,width,height,f) ->
     # For ie 6, dropdown list has z-index issue. Hide dropdown when popup show.
     if($.browser.msie and $.browser.version.substr<7)
       $('jumpmenu').hide()
@@ -71,10 +70,10 @@
   #//                AJAX                  //
   #//--------------------------------------//
 
-  optemo_module.loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false}
+  @loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false}
 
   #/* Does a relatively generic ajax call and returns data to the handler below */
-  optemo_module.ajaxsend = (hash,myurl,mydata) ->
+  @ajaxsend = (hash,myurl,mydata) ->
     lis = optemo_module.loading_indicator_state
     #The Optemo category ID should be set in the loader unless this file is loaded non-embedded, then it is set in the opt_discovery section
     mydata = $.extend({'ajax': true, category_id: window.opt_category_id},mydata)
@@ -96,15 +95,10 @@
       # For now, just check for a "?" and take those parameters into mydata, 
       # then strip them and the '?' from the URL. -ZAT July 20, 2011
       if (myurl.match(/\?/))
-        url_hash_to_merge = {}
-        url_params_to_merge = myurl.slice(myurl.indexOf('?') + 1).split('&')
-        for contents in url_params_to_merge
-          hash = contents.split('=')
-          url_hash_to_merge[hash[0]] = hash[1]
-        for content_name, content of url_hash_to_merge
-          if(not mydata.hasOwnProperty(i)) # Do not merge properties that already exist.
-            mydata[i] = content
-        myurl = myurl.slice(0, myurl.indexOf('?'))                   
+        for contents in myurl[(myurl.indexOf('?') + 1)..-1].split('&')
+          data = contents.split('=')
+          mydata[data[0]] = data[1]
+        myurl = myurl[0...myurl.indexOf('?')]                   
       JSONP.get(window.OPT_REMOTE+myurl,mydata,ajaxhandler)
     else
       $.ajax(
@@ -115,7 +109,7 @@
         error: optemo_module.ajaxerror
       )
 
-  optemo_module.ajaxerror = () ->
+  @ajaxerror = ->
     lis = optemo_module.loading_indicator_state
     lis.disable = false
     clearTimeout(lis.spinner_timer) # clearTimeout can run on "null" without error
@@ -128,10 +122,10 @@
     else
       errorstr = '<div class="bb_poptitle"><label class="comp-title">Error</label><div class="bb_quickview_close"></div></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>'
     optemo_module.applySilkScreen(null,errorstr,600,107)
-    if(typeof(optemo_module.lastpage) is "undefined")
+    unless optemo_module.lastpage?
       optemo_module.lastpage = true #Loads the first page after the dialog is closed to try and mitigate the problem. and only do it once
 
-  optemo_module.ajaxcall = (myurl,mydata) ->
+  @ajaxcall = (myurl,mydata) ->
     # Disable interface elements.
     $('.binary_filter, .cat_filter').attr('disabled', true)
     optemo_module.loading_indicator_state.disable = true #Disables any live click handlers and sliders
@@ -143,11 +137,11 @@
   #//            Loading Spinner           //
   #//--------------------------------------//
 
-  optemo_module.start_spinner = () ->
+  @start_spinner = ->
     #Show the spinner up top
     viewportwidth = undefined
     viewportheight = undefined
-    if (typeof window.innerWidth isnt 'undefined') # (mozilla/netscape/opera/IE7/etc.)
+    if window.innerWidth? # (mozilla/netscape/opera/IE7/etc.)
       viewportwidth = window.innerWidth
       viewportheight = window.innerHeight
     else # IE6 and others
@@ -155,7 +149,7 @@
       viewportheight = document.getElementsByTagName('body')[0].clientHeight
     $('#loading').css({left: viewportwidth/2 + 'px', top : viewportheight/2 + 'px'}).show()
 
-  optemo_module.stop_spinner = () ->
+  @stop_spinner = ->
     $('#loading').hide()
 
   #****Private Functions****
@@ -164,8 +158,7 @@
       #Check for absolute urls
       JSONP.get(window.OPT_REMOTE+myurl.replace(/http:\/\/[^\/]+/,''), {embedding:'true', category_id: window.opt_category_id}, (data) ->
         $(element_name).html(data)
-        if (fn) 
-          fn()
+        fn() if (fn)
       )
     else
       $(element_name).load(myurl, fn)
@@ -187,17 +180,12 @@
       return 0
 
   #Serialize an form into a hash, Warning: duplicate keys are dropped
-  $.fn.serializeObject = () ->
+  $.fn.serializeObject = ->
     o = {}
     a = this.serializeArray()
     $.each(a, ->
     #So that multiple checkboxes don't get overwritten, if the value exists, turn it into an array
-      if (o[this.name] isnt undefined)
-        #if (!o[this.name].push) {
-        #    o[this.name] = [o[this.name]];
-        #}
-        #o[this.name].push(this.value || '');
-        #Don't use an array - just concatenate with *
+      if (o[this.name]?)
         o[this.name] = o[this.name] + "*" + this.value or ''
       else
         o[this.name] = this.value or ''
@@ -205,36 +193,31 @@
     return o
 
   #/* LiveInit functions */
-  $(".bb_quickview_close, #silkscreen").live('click', ->
+  $(".bb_quickview_close, #silkscreen").live 'click', ->
     optemo_module.removeSilkScreen()
-    if (typeof(optemo_module.lastpage) isnt "undefined" and optemo_module.lastpage)
+    if (optemo_module.lastpage? and optemo_module.lastpage)
       #There was an error in the last request
       $("#actioncount").html(optemo_module.lasthash) #Undo the last action
       optemo_module.ajaxcall("/")
       optemo_module.lastpage = false
-  )
 
   #Pagination links
-  $('.pagination a').live("click", ->
+  $('.pagination a').live "click", ->
     if (optemo_module.loading_indicator_state.disable) 
       return false
     optemo_module.ajaxcall($(this).attr('href'))
     return false
-  )
   
   #See all Products
-  $('.seeall').live('click', ->
+  $('.seeall').live 'click', ->
     optemo_module.ajaxcall('/', {})
     return false
-  )
   
   # Change sort method
-  $('.sortby').live('click', ->
+  $('.sortby').live 'click', ->
     if (optemo_module.loading_indicator_state.disable)
       return false
     optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})
     return false
-  )
   
   #/* End of LiveInit Functions */
-  return optemo_module

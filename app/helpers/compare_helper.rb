@@ -217,4 +217,22 @@ module CompareHelper
   def only_if_not_onsale(product)
     'style="display:none;"' if BinSpec.cache_all(product.id)["onsale"]
   end
+  
+  def calcInterval(min,max)
+    range = max - min
+    interval = 0
+    [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01].each do |s|
+      interval = s
+      break if range/s > 30 #30 was selected arbitrarly, so that it looks good in the sliders
+    end
+    interval
+  end
+  
+  def roundedInterval(val,interval,down = true)
+    if down
+      (val/interval).floor*interval
+    else
+      (val/interval).ceil*interval
+    end
+  end
 end
