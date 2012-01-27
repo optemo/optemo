@@ -37,4 +37,14 @@ class CatSpec < ActiveRecord::Base
       end
     end
   end
+  
+  def self.order(feat)
+    h={}
+    q = Facet.where(used_for: feat, product_type_id: Session.product_type_id, feature_type: "CatOption")
+    CachingMemcached.cache_lookup("CatOrder#{q.to_sql.hash}") do
+      q = Facet.where(used_for: feat, product_type_id: Session.product_type_id, feature_type: "CatOption")
+      q.each{|f| h[f.name] = f.value}
+    end
+    h
+  end
 end
