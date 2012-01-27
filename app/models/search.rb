@@ -19,7 +19,7 @@ class Search < ActiveRecord::Base
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || keyword_search
     
-    Product.search do
+    filtering = Product.search do
    
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
@@ -88,6 +88,8 @@ class Search < ActiveRecord::Base
             buckets = 24
             
             facet f.name.to_sym, range: range, range_interval: (range[1]-range[0])/buckets, zeros: 1
+          elsif f.feature_type == "Binary"
+            facet f.name.to_sym
           end
         end
       end     

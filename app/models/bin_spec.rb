@@ -17,13 +17,9 @@ class BinSpec < ActiveRecord::Base
     end
   end
   def self.count_feat(feat)
-   # mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-    mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-    #q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false)
-    q = Session.search.solr_search(mybins: mybins)
-    q.group(:eq_id_str).ngroups
-    #CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
-     # q.count
-    #end
+    #mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
+    #q = Session.search.solr_search
+    #q.group(:eq_id_str).ngroups
+    Session.search.solr_cached.facet(feat.to_sym).rows[0].count
   end
 end
