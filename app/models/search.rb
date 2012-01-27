@@ -181,28 +181,23 @@ class Search < ActiveRecord::Base
       @keyword
   end  
   def products
-   mycats = self.userdatacats
-   mybins = self.userdatabins
-   myconts = self.userdataconts
- 
-   @has_keysearch = false 
    @validated_keyword = keyword_search
+   #Remove previous categorical filters and continuous filters for keyword search
+   #NOT WORKING AT THE MOMENT
    unless(@old_keyword == keyword_search) 
      mycats = []  
      myconts=[]
    end
  
     if (keyword_search )
-      @has_keysearch = true
       things = solr_cached
       res = grouping(things)
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
       res_col=[]
       
-      if (res.empty? && things.collation != nil)
-        @collation = things.collation
-        things_col= solr_cached(search_term: @collation)
+      if (@collation)
+        things_col= solr_cached(searchterm: @collation)
         res_col = grouping(things_col)
         if (res_col.empty?)
           @col_emp_result = true
@@ -427,7 +422,7 @@ class Search < ActiveRecord::Base
     false
   end
 
-  private :products_list, :grouping, :product_keywordsearch
+  private :products_list, :grouping
 
 end
 
