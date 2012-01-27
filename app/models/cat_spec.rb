@@ -38,17 +38,12 @@ class CatSpec < ActiveRecord::Base
     end
   end
   
- def self.order(feat,includezeros = false,s = Session.search)
-    q = Facet.where(used_for: feat, product_type_id: 2)
-    h = {}
-    q.each{|f| h[f.name] = f.value}
+ def self.order(feat)
+   q = Facet.where(used_for: feat, product_type_id: Session.product_type_id, feature_type: "CatOption")
+   h={}
+   CachingMemcached.cache_lookup("CatOrder-#{q.to_sql.hash}") do
+      q.each_with_object({}){|f| h[f.name] = f.value}
+   end
     h
-    #CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
-    #  if includezeros
-    #    q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
-    #  else
-    #    q.count
-    #  end
-    #end
  end
 end
