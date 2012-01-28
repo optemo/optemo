@@ -80,13 +80,12 @@ class Search < ActiveRecord::Base
         with :product_type, Session.product_type
       end
       if opt[:cat_facet]
-        facet opt[:cat_facet].to_sym 
+        facet opt[:cat_facet].to_sym
       else
         Session.features["filter"].each do |f|
           if f.feature_type == "Continuous"
             range = ContSpec.allMinMax(f.name)
-            buckets = 24
-            
+            buckets = 24            
             facet f.name.to_sym, range: range, range_interval: (range[1]-range[0])/buckets, zeros: 1
           elsif f.feature_type == "Binary"
             facet f.name.to_sym
@@ -186,10 +185,10 @@ class Search < ActiveRecord::Base
    @validated_keyword = keyword_search
    #Remove previous categorical filters and continuous filters for keyword search
    #NOT WORKING AT THE MOMENT
-   unless(@old_keyword == keyword_search) 
-     mycats = []  
-     myconts=[]
-   end
+  # unless(@old_keyword == keyword_search) 
+  #  mycats = []  
+  #  myconts=[]
+  #end
  
     if (keyword_search )
       things = solr_cached
