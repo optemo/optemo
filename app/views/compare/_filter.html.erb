@@ -50,7 +50,7 @@
     <% range = ContSpec.allMinMax(f.name) -%>
     <% if distribution_data.blank? -%>
       <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
-    <% elsif range[0] == range[1] %>
+    <% elsif (range[0] == range[1]) %>
       <div class="disabled" style="margin: 4px 0 0 5px"><%= range[0] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
     <% else %>
       <div style="position:relative">

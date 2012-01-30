@@ -9,25 +9,33 @@ require 'inline'
     maxes = []
     specs = []
     feats = []
-    # prods = Session.search.paginated_products
-    mycats = Session.search.userdatacats
-    mybins = Session.search.userdatabins
-    myconts = Session.search.userdataconts
+   # prods = Session.search.paginated_products
+   #mycats = Session.search.userdatacats
+   #mybins = Session.search.userdatabins
+   #myconts = Session.search.userdataconts
+   #specs = mycats && mybins && myconts
+    
     Session.features["filter"].each do |f| 
       next if f.feature_type != "Continuous" #Only draw distributions for continuous features 
-      prods = Session.search.products_specific_filtering(mybins, mycats, myconts,f.name)
-        
       data = []
-      prods.facet(f.name.to_sym).rows.each do |r|
-         for i in (0..(r.count-1))
-           data << r.value
-         end
+      prods = Session.search.solr_cached.facet(f.name.to_sym).rows.each do |r|
+        for i in (0..(r.count-1))
+          data << r.value
+        end
       end
       # puts "data.size #{data.size}"    
       # data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
       next if data.empty? #There's no data available for this feature
-      ranges= Session.search.products_specific_filtering([], [], [],f.name).facet(f.name.to_sym).rows.inject([]){|res, ele| res << ele.value}
-      min,max = ranges.min, ranges.max
+      
+      min= CachingMemcached.cache_lookup("Min-#{Session.search.keyword_search}-#{f.name}") do
+        Session.search.solr_cached.facet(f.name.to_sym).rows.map{|ele| ele.value}.min
+      end
+      max= CachingMemcached.cache_lookup("Max-#{Session.search.keyword_search}-#{f.name}") do
+        Session.search.solr_cached.facet(f.name.to_sym).rows.map{|ele| ele.value}.max
+      end
+      
+      #ranges= Session.search.products_specific_filtering([], [], [],f.name).facet(f.name.to_sym).rows.inject([]){|res, ele| res << ele.value}
+      #min,max = ranges.min, ranges.max
       # min,max = ContSpec.allMinMax(f.name)
       # Max must be larger or equal to min
       # next unless (max || min)

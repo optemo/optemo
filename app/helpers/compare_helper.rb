@@ -134,9 +134,12 @@ module CompareHelper
   end
 	
 	def getDist(feat)
-    counts = Session.search.solr_cached.facet(feat.to_sym).rows.map(&:count)
-    max = counts.max
-    counts.map{|p|p.to_f/max}
+	# q = Session.search.solr_cached.facet(feat.to_sym)
+	#
+  # counts = q.rows.map(&:count) 
+  # max = counts.max
+  # counts.map{|p|p.to_f/max}
+    dist = Session.distribution.computeDist
   end
 
   def capitalize_brand_name(name)

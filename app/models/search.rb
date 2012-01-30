@@ -4,7 +4,7 @@ require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
   attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
-  attr_accessor :collation, :col_emp_result, :num_result, :has_keysearch, :validated_keyword, :old_keyword
+  attr_accessor :collation, :col_emp_result, :num_result, :has_keysearch, :validated_keyword, :old_keyword, :ranges
   
   self.per_page = 18 #for will_paginate
   
@@ -19,6 +19,8 @@ class Search < ActiveRecord::Base
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || keyword_search
     
+    specs = mybins && mycats && myconts
+      
     filtering = Product.search do
    
       if search_term
@@ -84,15 +86,19 @@ class Search < ActiveRecord::Base
       else
         Session.features["filter"].each do |f|
           if f.feature_type == "Continuous"
-            range = ContSpec.allMinMax(f.name)
-            buckets = 24            
-            facet f.name.to_sym, range: range, range_interval: (range[1]-range[0])/buckets, zeros: 1
+          # range = ContSpec.allMinMax(f.name)
+          # puts "ranges_min #{range[0]} ranges_max #{range[1]}"
+          # buckets = 24  
+          # if (range[0] && range[1])
+          #  # facet f.name.to_sym, range: range, range_interval: (range[1]-range[0])/buckets, zeros: 1   
+          # end        
+            facet f.name.to_sym
           elsif f.feature_type == "Binary"
             facet f.name.to_sym
           end
+          end
         end
       end     
-    end
   end
   
   def userdataconts
@@ -183,16 +189,11 @@ class Search < ActiveRecord::Base
   end  
   def products
    @validated_keyword = keyword_search
-   #Remove previous categorical filters and continuous filters for keyword search
-   #NOT WORKING AT THE MOMENT
-  # unless(@old_keyword == keyword_search) 
-  #  mycats = []  
-  #  myconts=[]
-  #end
  
-    if (keyword_search )
+    if (keyword_search)
       things = solr_cached
       res = grouping(things)
+  
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
       res_col=[]
@@ -235,9 +236,6 @@ class Search < ActiveRecord::Base
   def products_list(things, total) #paginate products through sunspot pagination
     @products_size = total    
     @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
-    # @paginated_products.each do |p|
-     #  puts "paginated_prods: #{p.title}"
-    # end    
    end
 
   def products_landing
@@ -293,7 +291,7 @@ class Search < ActiveRecord::Base
       duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
-      p[:filters][:categorical]={} unless(@old_keyword==p[:filters][:keyword])
+      #p[:categorical]={} unless(@old_keyword==p[:filters][:keyword]) 
       puts "filter_params: #{p[:filters]}"  
       createFeatures(p[:filters])
       self.initial = false
@@ -333,8 +331,13 @@ class Search < ActiveRecord::Base
   def createFeatures(p)
     #Save keyword search
     self.keyword_search = p[:keyword] unless p[:keyword].blank?
-     
-     
+    
+   unless(@old_keyword==keyword_search) 
+     p[:categorical]={} 
+     p[:continuous]={}
+     p[:binary]={}
+   end
+   
     @userdataconts = []
     r = /(?<min>[\d.]*)-(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|

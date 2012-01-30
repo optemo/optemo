@@ -125,6 +125,8 @@ class CompareController < ApplicationController
     if params[:ajax]
       if Session.search.initial
         render 'ajax_landing', :layout => false
+      elsif params[:keyword]
+        render 'ajax_search', :layout => false
       else      
         render 'ajax', :layout => false
        # end      

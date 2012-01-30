@@ -17,7 +17,7 @@ class SearchProduct < ActiveRecord::Base
       if !categories.empty?
         categories = [categories]
       end
-      res = search_id_q.create_join(categories,[],[]).cats(categories)
+      res = create_join(categories,[],[]).cats(categories)
     end
             
     def fq2
@@ -59,8 +59,8 @@ class SearchProduct < ActiveRecord::Base
   end
   private
   class << self
-    def search_id_q
-      where(:search_id => Session.product_type_id)
+    def search_id_q (product_type_id = Session.product_type_id)
+      where(:search_id => product_type_id)
     end
       
     def create_join(mycats,mybins,myconts = Maybe(Session.search).userdataconts)
