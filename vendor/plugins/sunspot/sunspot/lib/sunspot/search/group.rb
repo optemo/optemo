@@ -22,7 +22,7 @@ module Sunspot
       def verified_hits
         @verified_hits ||= super
       end
-      
+
       def results
         @results ||= verified_hits.map { |hit| hit.instance }
       end
@@ -34,7 +34,7 @@ module Sunspot
       def solr_docs
         @doclist['docs']
       end
-           
+      
       #
       # The total number of documents matching the query for this group
       #
@@ -44,7 +44,7 @@ module Sunspot
       # 
       def total
         @doclist['numFound']
-      end
+      end      
     end
   end
 end
