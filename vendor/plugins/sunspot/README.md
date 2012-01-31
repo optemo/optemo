@@ -1,6 +1,6 @@
 # Sunspot
 
-[![Build Status](http://travis-ci.org/sunspot/sunspot.png)](http://travis-ci.org/sunspot/sunspot)
+[![Build Status](https://secure.travis-ci.org/sunspot/sunspot.png)](http://travis-ci.org/sunspot/sunspot)
 
 Sunspot is a Ruby library for expressive, powerful interaction with the Solr
 search engine. Sunspot is built on top of the RSolr library, which
@@ -384,6 +384,15 @@ end
 # Number of posts with rating withing 2.0..3.0: 1
 search.facet(:average_rating).rows.each do |facet|
   puts "Number of posts with rating withing #{facet.value}: #{facet.count}"
+end
+```
+
+#### Range Facets
+
+```ruby
+# Posts faceted by range of average ratings
+Sunspot.search(Post) do
+  facet :average_rating, :range => 1..5, :range_interval => 1
 end
 ```
 
