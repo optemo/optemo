@@ -47,24 +47,23 @@
     <%= render partial: 'filter_label', locals: {f: f} %>
     <%# Check continuous features for data, instead of graying them, we just don't show them %>
     <% distribution_data = getDist(f.name) -%>
-    <% range = ContSpec.allMinMax(f.name) -%>
     <% if distribution_data.blank? -%>
       <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
-    <% elsif (range[0] == range[1]) %>
-      <div class="disabled" style="margin: 4px 0 0 5px"><%= range[0] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
+    <% elsif distribution_data.first[2] == distribution_data.first[3] %>
+      <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
     <% else %>
       <div style="position:relative">
-        <div class="hist" data-data="<%= distribution_data.join(',') %>"></div>
+        <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
         <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
         <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+"-"+current.max.to_s, {:class => 'range'}%>
         <div class='slider'
           data-label= '<%= f.name %>'
-          data-min='<%= format_acceptable_increments(range[0], "down") %>' <%# Global min %>
-          data-max='<%= format_acceptable_increments(range[1], "up") %>' <%# Global max %>
-          data-startmin='<%= format_acceptable_increments(current.min.nil? ? range[0] : current.min, "down") %>'
-          data-startmax='<%= format_acceptable_increments(current.max.nil? ? range[1] : current.max, "up") %>'
-          current-data-min='<%= range[0] %>'
-          current-data-max='<%= range[1] %>'
+          data-min='<%= format_acceptable_increments(distribution_data.first[2], "down") %>' <%# Global min %>
+          data-max='<%= format_acceptable_increments(distribution_data.first[3], "up") %>' <%# Global max %>
+          data-startmin='<%= format_acceptable_increments(distribution_data.first[2], "down") %>'
+          data-startmax='<%= format_acceptable_increments(distribution_data.first[3], "up") %>'
+          current-data-min='<%= distribution_data.first.first %>'
+          current-data-max='<%= distribution_data.first.second %>'
           force-int='false'
         <%= f.name == 'saleprice' ? 'data-formatting=\'$\'' : ""  %>>
             <div class="centerofslider"><!-- --></div>

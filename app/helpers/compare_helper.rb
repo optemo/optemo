@@ -149,7 +149,6 @@ module CompareHelper
   # counts = q.rows.map(&:count) 
   # max = counts.max
   # counts.map{|p|p.to_f/max}
-  #  dist = Session.distribution.computeDist
   #end
 
   def capitalize_brand_name(name)

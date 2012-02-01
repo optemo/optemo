@@ -32,6 +32,11 @@ optemo_module = (function (my){
     return false;
   });
 
+//return to the home or category that user have searched from
+	$('.last_page').live('click', function() {
+      my.ajaxcall('/', {});
+      return false;
+  });
  
   /* End of LiveInit Functions */
   return my;

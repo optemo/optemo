@@ -3,8 +3,8 @@ require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
-  attr_accessor :collation, :col_emp_result, :num_result, :has_keysearch, :validated_keyword, :old_keyword, :ranges
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size, :filters_cats, :filters_conts, :filters_bins
+  attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :old_keyword
   
   self.per_page = 18 #for will_paginate
   
@@ -17,15 +17,27 @@ class Search < ActiveRecord::Base
     mybins = opt[:mybins] || userdatabins
     mycats = opt[:mycats] || userdatacats
     myconts = opt[:myconts] || userdataconts
-    search_term = opt[:searchterm] || keyword_search
-    
-    specs = mybins && mycats && myconts
-      
+    search_term = opt[:searchterm] || @validated_keyword
+    b_rate = 0   
     filtering = Product.search do
    
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
-        fulltext phrase
+        size = filters_bins.size
+        
+        fulltext phrase do
+        #boost(
+        #  function do
+        #    for i in (0..size-1)
+        #      a = sum(filters_bins[i].name.to_sym, a)
+        #    end
+        #  end       
+        #)
+          filters_bins.each do |f|
+            boost(10) {with(f.name.to_sym, f.value)}
+            #puts "f.name #{f.name}"
+          end    
+        end
       end  
     
       order_by(:saleprice, :asc) if sortby == "saleprice_factor"
@@ -100,6 +112,9 @@ class Search < ActiveRecord::Base
         end
       end     
   end
+  def weight
+    return 10
+  end
   
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
@@ -113,6 +128,17 @@ class Search < ActiveRecord::Base
       @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
   
+  def filters_cats
+      @filters_cats ||= []
+  end
+  
+  def filters_conts
+      @filters_conts ||= []
+  end
+  
+  def filters_bins
+      @filters_bins ||= []
+  end
   
   #Range of product offerings
   def ranges(featureName)
@@ -193,13 +219,15 @@ class Search < ActiveRecord::Base
     if (keyword_search)
       things = solr_cached
       res = grouping(things)
-  
+      
+      #puts "data_facet_size #{things.facet(:saleprice).rows.size}"
+      
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
       res_col=[]
       
       if (@collation)
-        things_col= solr_cached(searchterm: @collation)
+        things_col= solr_search(searchterm: @collation)
         res_col = grouping(things_col)
         if (res_col.empty?)
           @col_emp_result = true
@@ -212,6 +240,7 @@ class Search < ActiveRecord::Base
       if (res.empty?)
         unless (res_col.empty?)
           products_list(res_col,things_col.group(:eq_id_str).ngroups)
+          @solr_cached = things_col
           @validated_keyword = @collation
         else
           products_list(res,things.group(:eq_id_str).ngroups) 
@@ -331,12 +360,6 @@ class Search < ActiveRecord::Base
   def createFeatures(p)
     #Save keyword search
     self.keyword_search = p[:keyword] unless p[:keyword].blank?
-    
-   unless(@old_keyword==keyword_search) 
-     p[:categorical]={} 
-     p[:continuous]={}
-     p[:binary]={}
-   end
    
     @userdataconts = []
     r = /(?<min>[\d.]*)-(?<max>[\d.]*)/
@@ -364,20 +387,15 @@ class Search < ActiveRecord::Base
       end
     end
     
-    #cats = []
-    #Check for cat filters which have been eliminated by other filters
-    #@userdatacats.group_by(&:name).each_pair do |k,v|
-      # get all categories
-    #  if k=='category'
-    #    v.each { |x| cats << x.value }
-    #  end
-    #  if v.size > 1
-    #    counts = CatSpec.count_feat(k,false,self)
-    #    v.each do |val|
-    #      @userdatacats.reject!{|c|c.name == k && c.value == val.value} if counts[val.value].nil? || counts[val.value] == 0
-    #     end
-    #  end
-    #end    
+    unless(@old_keyword==keyword_search) 
+      @filters_cats = @userdatacats
+      @filters_conts = @userdataconts
+      @filters_bins = @userdatabins
+      @userdataconts = []
+      @userdatabins = []
+      @userdatacats = []
+    end
+
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
@@ -430,83 +448,3 @@ class Search < ActiveRecord::Base
 
 end
 
-=begin  
-  def sim_products
-    if seesim
-      begin
-        @simproducts ||= products & Cluster.cached(seesim)
-      rescue IOError
-        #In case the similar products can't be found, just load the filtered products instead of throwing an error
-        products
-      end
-    else
-      products
-    end
-  end
- 
-  def sim_products_size
-    @sim_products_size ||= sim_products.size
-  end
-
-  def groupings
-    return [] if groupby.nil? 
-    if Session.currrent.features["filter"].select{|f|f.feature_type == "Categorical"}.index(groupby) 
-      # It's in the categorical array
-      specs = products.zip CatSpec.cachemany(products, groupby)
-      grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
-    elsif Session.currrent.features["filter"].select{|f|f.feature_type == "Continuous"}.index(groupby) 
-      #The chosen feature is continuous
-      specs = products.zip ContSpec.by_feat(groupby).sort
-      # [[id, low], [id, higher], ... [id, highest]]
-      quartile_length = (specs.length / 4.0).ceil
-      quartiles = []
-      3.times do
-        quartiles << specs.slice!(0,[quartile_length,specs.length].min)
-      end
-      quartiles << specs #The last quartile contains any extra products
-      
-      #Break boundry cases in quartiles where the same item is in two quartiles according to the following pattern
-      # 1 ↓
-      # 2
-      # 3 ↑
-      # 4 ↑
-
-      #Move ties from Q1 to Q2
-      unless quartiles[0].blank? || quartiles[1].blank?
-        threshold_value = quartiles[1].first[1]
-        splitpoint = quartiles[0].index(quartiles[0].find {|spec| spec[1] == threshold_value})
-        quartiles[1] = quartiles[0].slice!(splitpoint..-1) + quartiles[1] unless splitpoint.nil?
-      end
-      
-      #Move ties from Q4 to Q3
-      unless quartiles[2].blank? || quartiles[3].blank?
-        threshold_value = quartiles[2].last[1]
-        splitpoint = quartiles[3].index(quartiles[3].reverse.find {|spec| spec[1] == threshold_value})
-        quartiles[2] = quartiles[2] + quartiles[3].slice!(0..splitpoint) unless splitpoint.nil?
-      end
-      
-      #Move ties from Q3 to Q2
-      unless quartiles[1].blank? || quartiles[2].blank?
-        threshold_value = quartiles[1].last[1]
-        splitpoint = quartiles[2].index(quartiles[2].reverse.find {|spec| spec[1] == threshold_value})
-        quartiles[1] = quartiles[1] + quartiles[2].slice!(0..splitpoint) unless splitpoint.nil?
-      end
-      
-      grouping = quartiles.reject(&:blank?) # For cases like 9 items, where the quartile length ends up being 3.
-
-    else # Binary feature. Do nothing for now.
-    end
-    grouping.map do |q|
-      product_ids = q.map(&:first)
-      prices_list = ContSpec.cachemany(product_ids,"saleprice")
-      utility_list = ContSpec.cachemany(product_ids, "utility")
-      {
-        :min => q.first.last.to_s,
-        :max => q.last.last.to_s,
-        :size => q.count,
-        :cheapest =>  Product.cached(product_ids[prices_list.index(prices_list.max)]),
-        :best => Product.cached(product_ids[utility_list.index(utility_list.max)])
-      }
-    end
-  end
-=end  

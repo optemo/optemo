@@ -50,7 +50,7 @@ class Product < ActiveRecord::Base
         cat_specs.find_by_name(s.name).try(:value)
        end
      elsif (s.feature_type == "Binary")
-       boolean s.name.to_sym do 
+         boolean s.name.to_sym do 
          bin_specs.find_by_name(s.name).try(:value)
        end
     end

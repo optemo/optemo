@@ -28,13 +28,11 @@ class CatSpec < ActiveRecord::Base
     #  mycats = s.userdatacats.group_by{|x|x.name}.reject{|id|feat == id}.values
 #=begin
     mycats = s.userdatacats.reject{|e| e.name==feat}   
-    #mycats = s.userdatacats
-    #mycats = s.userdatacats unless mycats  
     prods = s.solr_search(mycats: mycats, cat_facet: feat)
     q= {}
     if includezeros
       prods.facet(feat.to_sym).rows.each do |r|
-        puts "r.value #{r.value} r.count #{r.count}"
+        #puts "r.value #{r.value} r.count #{r.count}"
         q[r.value] =r.count
       end
     else

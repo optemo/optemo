@@ -9,4 +9,9 @@ module CachingMemcached
       yield
     end
   end
+  def self.delete(key)
+    if Rails.cache.class != ActiveSupport::Cache::FileStore # We have memcache loaded
+      Rails.cache.delete(key) 
+    end
+  end
 end
