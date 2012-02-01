@@ -47,29 +47,14 @@ class Search < ActiveRecord::Base
               
       any_of do  #disjunction inside the category part
         mycats.each do |cats|
-          # puts "cats_name #{cats.name} cats_value #{cats.value}"        
-          if (cats.name == "category")
-            with cats.name.to_sym, cats.value 
-          end             
+          with cats.name.to_sym, cats.value 
         end   
       end     
-      any_of do   # disjunction inside the brand part
-        mycats.each do |cats|
-          if (cats.name == "brand")
-            with cats.name.to_sym, cats.value 
-          end             
-        end   
-      end      
+     
       all_of do  #conjunction for the other bins, cats and conts specs
-         mycats.each do |cats|
-           if (cats.name!= "category" && cats.name!= "brand")
-             with cats.name.to_sym, cats.value
-           end
-         end
-         mybins.each do |bins|
-          # puts "bins_name #{bins.name} bins_value #{bins.value}"
-           with bins.name.to_sym, bins.value
-         end      
+        mybins.each do |bins|
+          with bins.name.to_sym, bins.value
+        end      
         myconts.each do |conts|
           # puts "conts_name #{conts.name} conts_value #{conts.value}"
           if conts.max and conts.min
@@ -79,7 +64,7 @@ class Search < ActiveRecord::Base
           elsif conts.min
             with (conts.name.to_sym), conts.min..10000
           end 
-         end  
+        end  
       end
       
       spellcheck :count => 4
@@ -87,7 +72,7 @@ class Search < ActiveRecord::Base
       paginate :page=> page, :per_page => Search.per_page
       group :eq_id_str do 
         ngroups  # includes the number of groups that have matched the query
-        truncate # facet counts are based on the most relevant document of each group matching the query
+        #truncate # facet counts are based on the most relevant document of each group matching the query
       end
 
       if (!search_term)
