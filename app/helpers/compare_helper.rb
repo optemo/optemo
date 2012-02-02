@@ -131,21 +131,21 @@ module CompareHelper
 	
 	
 	def getDist(feat)
-    unless defined? @dist
-      unless defined? $d
-       $d = Distribution.new
-      end
-	    @dist = $d.computeDist
-	  end  
-	  @dist[feat]
+    num_buckets = 24
+    discretized = Session.search.solr_cached.facet(feat.to_sym).rows
+    min = discretized.first.value
+    max = discretized.last.value
+    step = (max - min + 0.00000001) / num_buckets
+    dist = Array.new(num_buckets,0)
+    #Bucket the data
+    discretized.each do |r|
+      dist[((r.value-min) / step).floor] += r.count
+    end
+    #Normalize to a max of 1
+    maxval = dist.max
+    dist.map!{|i| i.to_f / maxval}
+    [[min,max]+ContSpec.allMinMax(feat),dist]
   end
-	#def getDist(feat)
-	# q = Session.search.solr_cached.facet(feat.to_sym)
-	#
-  # counts = q.rows.map(&:count) 
-  # max = counts.max
-  # counts.map{|p|p.to_f/max}
-  #end
 
   def capitalize_brand_name(name)
     brand_name = name.split(' ').map{|bn| bn=(bn==bn.upcase ? bn.capitalize : bn)}.join(' ')

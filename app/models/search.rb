@@ -80,13 +80,7 @@ class Search < ActiveRecord::Base
       end
       Session.features["filter"].each do |f|
         if f.feature_type == "Continuous"
-        # range = ContSpec.allMinMax(f.name)
-        # puts "ranges_min #{range[0]} ranges_max #{range[1]}"
-        # buckets = 24  
-        # if (range[0] && range[1])
-        #  # facet f.name.to_sym, range: range, range_interval: (range[1]-range[0])/buckets, zeros: 1   
-        # end        
-          facet f.name.to_sym
+          facet f.name.to_sym, sort: :index
         elsif f.feature_type == "Binary"
           facet f.name.to_sym
         elsif f.feature_type == "Categorical"
@@ -202,8 +196,7 @@ class Search < ActiveRecord::Base
       @keyword
   end  
   def products
-   @validated_keyword = keyword_search
- 
+    @validated_keyword = keyword_search
     if (keyword_search)
       things = solr_cached
       res = grouping(things)
@@ -212,20 +205,16 @@ class Search < ActiveRecord::Base
       
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
-      res_col=[]
-      
-      if (@collation)
-        things_col= solr_search(searchterm: @collation)
-        res_col = grouping(things_col)
-        if (res_col.empty?)
-          @col_emp_result = true
-        end
-      end
-      #puts "collation_name, #{@collation}"
-      #puts "things_total #{@num_result}"
-      #puts "total_pages_results: #{things.results.total_pages}"
      
       if (res.empty?)
+        res_col=[]
+        if (@collation)
+          things_col= solr_cached(searchterm: @collation)
+          res_col = grouping(things_col)
+          if (res_col.empty?)
+            @col_emp_result = true
+          end
+        end
         unless (res_col.empty?)
           products_list(res_col,things_col.group(:eq_id_str).ngroups)
           @solr_cached = things_col
@@ -432,7 +421,7 @@ class Search < ActiveRecord::Base
     false
   end
 
-  private :products_list, :grouping
+  private :products_list, :grouping, :solr_search
 
 end
 
