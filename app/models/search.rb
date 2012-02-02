@@ -201,7 +201,8 @@ class Search < ActiveRecord::Base
       
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
-     
+      
+      res_col=[]
       if (@collation)
         things_col= solr_search(searchterm: @collation)
         res_col = grouping(things_col)
@@ -210,7 +211,6 @@ class Search < ActiveRecord::Base
         end
       end
       if (res.empty?)
-        res_col=[]  
         unless (res_col.empty?)
           products_list(res_col,things_col.group(:eq_id_str).ngroups)
           @solr_cached = things_col
