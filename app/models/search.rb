@@ -335,7 +335,7 @@ class Search < ActiveRecord::Base
     self.keyword_search = p[:keyword] unless p[:keyword].blank?
    
     @userdataconts = []
-    r = /(?<min>[\d.]*)-(?<max>[\d.]*)/
+    r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
       #Split range into min and max
       if res = r.match(v)

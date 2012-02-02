@@ -42,9 +42,13 @@
 	padding-right: 2px;
 	height: 387px; /* Please adjust the _navbox no_variations height as well */
  	width: 179px; /*+2 for the border*/
-	background: right center url(<%= asset_path "seperatorbar.png" %>) no-repeat;
+	background: right center url(<%= asset_data_uri "seperatorbar.png" %>) no-repeat;
   overflow: hidden;
   zoom: 1; /* fix IE peekaboo issue */
+}
+#optemo_embedder .ie6 .navbox,
+#optemo_embedder .ie7 .navbox {
+  background-image: url(<%= asset_path "seperatorbar.png" %>);
 }
 
 #optemo_embedder .title {

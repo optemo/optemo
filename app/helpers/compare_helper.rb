@@ -191,7 +191,8 @@ module CompareHelper
   def sortby
     current_sorting_option = Session.search.sortby || "utility"
     Session.features["sortby"].map do |f| 
-      content_tag :li, (current_sorting_option == f.name) ? t("specs."+f.name) : link_to(t("specs."+f.name), "#", {:'data-feat'=>f.name, :class=>"sortby"})
+      suffix = f.style.length > 0 ? '_' + f.style : ''
+      content_tag :li, (current_sorting_option == (f.name+suffix)) ? t("specs."+f.name+suffix) : link_to(t("specs."+f.name+suffix), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
     end.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
   
@@ -212,11 +213,38 @@ module CompareHelper
     return ret
   end
   
+  def cat_order(f, chosen_cats)
+    optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
+  	order = CatSpec.order(f.name)
+    unless order.empty?
+  	   optionlist = optionlist.to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? a[1]-1000000 : order[a[0]]) <=> (chosen_cats.include?(b[0]) ? b[1]-1000000 : order[b[0]])} 
+  	end
+  	optionlist
+  end
+  
   def only_if_onsale(product)
     'style="display:none;"' unless BinSpec.cache_all(product.id)["onsale"]
   end
   
   def only_if_not_onsale(product)
     'style="display:none;"' if BinSpec.cache_all(product.id)["onsale"]
+  end
+  
+  def calcInterval(min,max)
+    range = max - min
+    interval = 0
+    [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01].each do |s|
+      interval = s
+      break if range/s > 30 #30 was selected arbitrarly, so that it looks good in the sliders
+    end
+    interval
+  end
+  
+  def roundedInterval(val,interval,down = true)
+    if down
+      (val/interval).floor*interval
+    else
+      (val/interval).ceil*interval
+    end
   end
 end
