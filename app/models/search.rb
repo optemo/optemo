@@ -35,7 +35,6 @@ class Search < ActiveRecord::Base
         #)
           filters_bins.each do |f|
             boost(10) {with(f.name.to_sym, f.value)}
-            #puts "f.name #{f.name}"
           end    
         end
       end  
@@ -44,27 +43,28 @@ class Search < ActiveRecord::Base
       order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
       order_by(sortby.to_sym, :desc) if sortby
       #order_by(:displayDate, :desc) if sortby == "displayDate"
-              
-      any_of do  #disjunction inside the category part
-        mycats.each do |cats|
-          with cats.name.to_sym, cats.value 
-        end   
-      end     
+
+      cat_filters = {} #Used for faceting exclude so that the counts are right
+      mycats.group_by(&:name).each_pair do |name, group|
+        cat_filters[name] = any_of do  #disjunction inside the category part
+          group.each do |cats|
+            with cats.name.to_sym, cats.value
+          end
+        end
+      end
      
-      all_of do  #conjunction for the other bins, cats and conts specs
-        mybins.each do |bins|
-          with bins.name.to_sym, bins.value
-        end      
-        myconts.each do |conts|
-          # puts "conts_name #{conts.name} conts_value #{conts.value}"
-          if conts.max and conts.min
-            with (conts.name.to_sym), conts.min..conts.max
-          elsif conts.max
-            with (conts.name.to_sym), 0..conts.max
-          elsif conts.min
-            with (conts.name.to_sym), conts.min..10000
-          end 
-        end  
+      #The default is a conjunction for all the items
+      mybins.each do |bins|
+        with bins.name.to_sym, bins.value
+      end
+      myconts.each do |conts|
+        if conts.max and conts.min
+          with (conts.name.to_sym), conts.min..conts.max
+        elsif conts.max
+          with (conts.name.to_sym), 0..conts.max
+        elsif conts.min
+          with (conts.name.to_sym), conts.min..1000000
+        end
       end
       
       spellcheck :count => 4
@@ -78,25 +78,28 @@ class Search < ActiveRecord::Base
       if (!search_term)
         with :product_type, Session.product_type
       end
-      if opt[:cat_facet]
-        facet opt[:cat_facet].to_sym
-      else
-        Session.features["filter"].each do |f|
-          if f.feature_type == "Continuous"
-          # range = ContSpec.allMinMax(f.name)
-          # puts "ranges_min #{range[0]} ranges_max #{range[1]}"
-          # buckets = 24  
-          # if (range[0] && range[1])
-          #  # facet f.name.to_sym, range: range, range_interval: (range[1]-range[0])/buckets, zeros: 1   
-          # end        
+      Session.features["filter"].each do |f|
+        if f.feature_type == "Continuous"
+        # range = ContSpec.allMinMax(f.name)
+        # puts "ranges_min #{range[0]} ranges_max #{range[1]}"
+        # buckets = 24  
+        # if (range[0] && range[1])
+        #  # facet f.name.to_sym, range: range, range_interval: (range[1]-range[0])/buckets, zeros: 1   
+        # end        
+          facet f.name.to_sym
+        elsif f.feature_type == "Binary"
+          facet f.name.to_sym
+        elsif f.feature_type == "Categorical"
+          if f.name == "color" #Colors don't show zero options
             facet f.name.to_sym
-          elsif f.feature_type == "Binary"
-            facet f.name.to_sym
-          end
+          else
+            facet f.name.to_sym, exclude: cat_filters[f.name]
           end
         end
-      end     
+      end
+    end
   end
+  
   def weight
     return 10
   end

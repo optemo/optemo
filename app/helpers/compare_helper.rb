@@ -102,10 +102,6 @@ module CompareHelper
     end
   end
   
-  def category_select(feat)
-    select('superfluous', feat, [t('products.add')+t(Session.product_type+'.specs.'+feat+'.name')] + CatSpec.count_feat(feat,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
-  end
-  
   def main_boxes(landing = false)
     res = ""
     res << '<div class="rowdiv">'
