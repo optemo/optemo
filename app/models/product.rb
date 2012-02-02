@@ -83,5 +83,22 @@ class Product < ActiveRecord::Base
     end
     data.to_s+ending
   end
+  
+  def image_url(imgSize) #creates the url to a product's image given and sku and image size (small, medium, large, 150 -> predetermined sizes)
+    baseUrl = "http://www.bestbuy.ca/multimedia/Products/"
+    skuUrl = sku[0..2]+"/"+sku[0..4]+"/"+sku[0..7]+".jpg"
+    case imgSize
+    when :thumbnail
+      sizeUrl = "55x55/"
+    when :small
+      sizeUrl = "100x100/"
+    when :medium
+      sizeUrl = "150x150/"
+    when :large
+      sizeUrl = "300x300/"
+    
+    end
+    return baseUrl+sizeUrl+skuUrl
+  end
 end
 class ValidationError < ArgumentError; end

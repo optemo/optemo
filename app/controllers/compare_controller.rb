@@ -82,8 +82,6 @@ class CompareController < ApplicationController
         format.html { 
                       if @plain 
                         render :layout => false
-                      elsif Session.mobileView
-                        render 'showsimple'
                       else # Default is with layout as particular to either mobile view or screen view in choose_layout
                         render 'show' # What did "render :http => ..." used to do? confusion
                       end }

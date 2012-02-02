@@ -16,7 +16,7 @@
 	  <% end %>
     </div>
 
-		<%= image_tag(cat_specs["img150url"], :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
+		<%= image_tag(product.image_url(:medium), :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
 
     <%= render partial: "product_info", locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, no_variations: no_variations} %>
   </div>
