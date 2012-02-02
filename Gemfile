@@ -36,8 +36,8 @@ gem 'capistrano-ext'
 # gem 'nokogiri'
 # gem 'sqlite3-ruby', :require => 'sqlite3'
 # gem 'aws-s3', :require => 'aws/s3'
-#gem 'sunspot_rails', :git=> "https://github.com/sunspot/sunspot.git", :branch=>"master"
-gem 'sunspot_rails', '2.0.0.optemo', :path => 'vendor/plugins/sunspot'
+gem 'sunspot_rails', :git=> "https://github.com/wildoats/sunspot.git", :branch=>"optemo"
+#gem 'sunspot_rails', '2.0.0.optemo', :path => 'vendor/plugins/sunspot'
 
 
 #gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
@@ -52,8 +52,8 @@ group :development do
    gem "linecache19", "0.5.13"
    gem "ruby-debug-base19", "0.11.26"
    gem "ruby-debug19", require: 'ruby-debug'
-   #gem 'sunspot_solr', :git=> "https://github.com/sunspot/sunspot.git", :branch=>"master" # optional pre-packaged Solr distribution for use in development
-   gem 'sunspot_solr', '2.0.0.optemo', :path => 'vendor/plugins/sunspot' # optional pre-packaged Solr distribution for use in development
+   gem 'sunspot_solr', :git=> "https://github.com/wildoats/sunspot.git", :branch=>"optemo" # optional pre-packaged Solr distribution for use in development
+   #gem 'sunspot_solr', '2.0.0.optemo', :path => 'vendor/plugins/sunspot' # optional pre-packaged Solr distribution for use in development
    gem 'progress_bar'
 end
 

@@ -1,14 +1,16 @@
-PATH
-  remote: vendor/plugins/sunspot
+GIT
+  remote: https://github.com/wildoats/sunspot.git
+  revision: f3c512fe69f3cd61fdc70a693814f36c8ea3fb92
+  branch: optemo
   specs:
-    sunspot (2.0.0.optemo)
+    sunspot (2.0.0.pre.111215)
       escape (~> 0.0.4)
       pr_geohash (~> 1.0)
       rsolr (~> 1.0.6)
-    sunspot_rails (2.0.0.optemo)
+    sunspot_rails (2.0.0.pre.111215)
       nokogiri
-      sunspot (= 2.0.0.optemo)
-    sunspot_solr (2.0.0.optemo)
+      sunspot (= 2.0.0.pre.111215)
+    sunspot_solr (2.0.0.pre.111215)
       escape (~> 0.0.4)
 
 GEM
@@ -180,8 +182,8 @@ DEPENDENCIES
   ruby-debug-base19 (= 0.11.26)
   ruby-debug19
   sass-rails (~> 3.1.0)
-  sunspot_rails (= 2.0.0.optemo)!
-  sunspot_solr (= 2.0.0.optemo)!
+  sunspot_rails!
+  sunspot_solr!
   uglifier
   will_paginate (= 3.0.0)
   yui-compressor
