@@ -133,18 +133,26 @@ module CompareHelper
 	def getDist(feat)
     num_buckets = 24
     discretized = Session.search.solr_cached.facet(feat.to_sym).rows
-    min = discretized.first.value
-    max = discretized.last.value
-    step = (max - min + 0.00000001) / num_buckets
-    dist = Array.new(num_buckets,0)
-    #Bucket the data
-    discretized.each do |r|
-      dist[((r.value-min) / step).floor] += r.count
+    if (!discretized.empty?)
+      min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
+      max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
+   
+      min = discretized.first.value
+      max = discretized.last.value
+      step = (max - min + 0.00000001) / num_buckets
+      dist = Array.new(num_buckets,0)
+      #Bucket the data
+      discretized.each do |r|
+        dist[((r.value-min) / step).floor] += r.count
+      end
+      #Normalize to a max of 1
+      maxval = dist.max
+      dist.map!{|i| i.to_f / maxval}
+      
+      [[min,max]+[min_all,max_all],dist]
+    else
+      []
     end
-    #Normalize to a max of 1
-    maxval = dist.max
-    dist.map!{|i| i.to_f / maxval}
-    [[min,max]+ContSpec.allMinMax(feat),dist]
   end
 
   def capitalize_brand_name(name)

@@ -94,10 +94,6 @@ class Search < ActiveRecord::Base
     end
   end
   
-  def weight
-    return 10
-  end
-  
   def userdataconts
       @userdataconts ||= Userdatacont.find_all_by_search_id(id)
   end
@@ -206,15 +202,15 @@ class Search < ActiveRecord::Base
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
      
-      if (res.empty?)
-        res_col=[]
-        if (@collation)
-          things_col= solr_cached(searchterm: @collation)
-          res_col = grouping(things_col)
-          if (res_col.empty?)
-            @col_emp_result = true
-          end
+      if (@collation)
+        things_col= solr_search(searchterm: @collation)
+        res_col = grouping(things_col)
+        if (res_col.empty?)
+          @col_emp_result = true
         end
+      end
+      if (res.empty?)
+        res_col=[]  
         unless (res_col.empty?)
           products_list(res_col,things_col.group(:eq_id_str).ngroups)
           @solr_cached = things_col
