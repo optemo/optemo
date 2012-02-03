@@ -35,7 +35,7 @@
         <% optionlist.each do |k,available_count| %>
           <% checked = chosen_cats.include?(k) %>
           <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >
-            <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
+            <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
             <%= (available_count == 0) ?  t("#{Session.product_type}.specs.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
             <span class="av_count"><%= "(#{available_count})" unless checked %></span>
           </div>
@@ -47,7 +47,7 @@
     <%# Check continuous features for data, instead of graying them, we just don't show them %>
     <% distribution_data = getDist(f.name) -%>
     <% if distribution_data.blank? -%>
-      <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
+      	<div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
     <% elsif distribution_data.first[2] == distribution_data.first[3] %>
       <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
     <% else %>
@@ -79,9 +79,11 @@
     <% unchecked = dobj.nil? || dobj.value == false %>
     <% available_count = BinSpec.count_feat(f.name) %>
     <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+	<% if (request.host == "keyword" && available_count != 0) || request.host== "localhost"%>
       <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter' %>
       <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym) : link_to( t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym), "#", :class => "checkbox_text") %>
       <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
+	<%end%>
     </div>
   <% end %>
   </div>
