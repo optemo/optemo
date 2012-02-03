@@ -39,9 +39,13 @@ class Search < ActiveRecord::Base
         end
       end  
     
-      order_by(:saleprice, :asc) if sortby == "saleprice_factor"
-      order_by(:saleprice, :desc) if sortby == "saleprice_factor_high"
-      order_by(sortby.to_sym, :desc) if sortby
+      if sortby == "saleprice_factor"
+        order_by(:saleprice, :asc)
+      elsif sortby == "saleprice_factor_asc"   
+        order_by(:saleprice, :desc) 
+      elsif sortby  
+        order_by(sortby.to_sym, :desc) 
+      end
       #order_by(:displayDate, :desc) if sortby == "displayDate"
 
       cat_filters = {} #Used for faceting exclude so that the counts are right

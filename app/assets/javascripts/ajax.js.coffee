@@ -226,7 +226,7 @@
     if (optemo_module.loading_indicator_state.disable)
       return false
     if $("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= ""
-      my.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat'), "keyword": $("#product_name").val()})
+      optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat'), "keyword": $("#product_name").val()})
     else
       optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})
     return false
