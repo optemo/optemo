@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/wildoats/sunspot.git
-  revision: f3c512fe69f3cd61fdc70a693814f36c8ea3fb92
+  revision: 01c365cb72bf3bf3610aa61cc2632586912bd3b7
   branch: optemo
   specs:
     sunspot (2.0.0.pre.111215)

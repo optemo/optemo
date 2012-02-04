@@ -18,7 +18,7 @@ class Search < ActiveRecord::Base
     mycats = opt[:mycats] || userdatacats
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || @validated_keyword
-    b_rate = 0   
+   
     filtering = Product.search do
    
       if search_term
@@ -88,12 +88,8 @@ class Search < ActiveRecord::Base
           facet f.name.to_sym, sort: :index
         elsif f.feature_type == "Binary"
           facet f.name.to_sym
-        elsif f.feature_type == "Categorical"
-          if f.name == "color" #Colors don't show zero options
-            facet f.name.to_sym
-          else
+        elsif f.feature_type == "Categorical" 
             facet f.name.to_sym, exclude: cat_filters[f.name]
-          end
         end
       end
     end
@@ -202,11 +198,9 @@ class Search < ActiveRecord::Base
       things = solr_cached
       res = grouping(things)
       
-      #puts "data_facet_size #{things.facet(:saleprice).rows.size}"
-      
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
-      
+      #puts "collation_term #{@collation}"
       res_col=[]
       if (@collation)
         things_col= solr_search(searchterm: @collation)
