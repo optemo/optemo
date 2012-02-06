@@ -18,12 +18,11 @@ class Search < ActiveRecord::Base
     mycats = opt[:mycats] || userdatacats
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || @validated_keyword
-    b_rate = 0   
+   
     filtering = Product.search do
    
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
-        size = filters_bins.size
         
         fulltext phrase do
         #boost(
@@ -33,9 +32,17 @@ class Search < ActiveRecord::Base
         #    end
         #  end       
         #)
-          filters_bins.each do |f|
-            boost(10) {with(f.name.to_sym, f.value)}
+          filters_bins.each do |b|
+            boost(30) {with(b.name.to_sym, b.value)}
+          end
+          
+          filters_cats.each do |ca|
+            boost(20) {with ca.name, ca.value}
           end    
+          
+          filters_conts.each do |c|
+            boost(10) { with (c.name.to_sym), c.min||0..c.max||100000}   
+          end
         end
       end  
     
@@ -46,7 +53,6 @@ class Search < ActiveRecord::Base
       elsif sortby  
         order_by(sortby.to_sym, :desc) 
       end
-      #order_by(:displayDate, :desc) if sortby == "displayDate"
 
       cat_filters = {} #Used for faceting exclude so that the counts are right
       mycats.group_by(&:name).each_pair do |name, group|
@@ -62,13 +68,7 @@ class Search < ActiveRecord::Base
         with bins.name.to_sym, bins.value
       end
       myconts.each do |conts|
-        if conts.max and conts.min
-          with (conts.name.to_sym), conts.min..conts.max
-        elsif conts.max
-          with (conts.name.to_sym), 0..conts.max
-        elsif conts.min
-          with (conts.name.to_sym), conts.min..1000000
-        end
+        with (conts.name.to_sym), conts.min||0..conts.max||1000000
       end
       
       spellcheck :count => 4
@@ -88,12 +88,8 @@ class Search < ActiveRecord::Base
           facet f.name.to_sym, sort: :index
         elsif f.feature_type == "Binary"
           facet f.name.to_sym
-        elsif f.feature_type == "Categorical"
-          if f.name == "color" #Colors don't show zero options
-            facet f.name.to_sym
-          else
+        elsif f.feature_type == "Categorical" 
             facet f.name.to_sym, exclude: cat_filters[f.name]
-          end
         end
       end
     end
@@ -202,11 +198,9 @@ class Search < ActiveRecord::Base
       things = solr_cached
       res = grouping(things)
       
-      #puts "data_facet_size #{things.facet(:saleprice).rows.size}"
-      
       @num_result = things.group(:eq_id_str).ngroups
       @collation = things.collation if things.collation !=nil
-      
+      #puts "collation_term #{@collation}"
       res_col=[]
       if (@collation)
         things_col= solr_search(searchterm: @collation)
@@ -338,7 +332,11 @@ class Search < ActiveRecord::Base
   def createFeatures(p)
     #Save keyword search
     self.keyword_search = p[:keyword] unless p[:keyword].blank?
-   
+    
+    @filters_cats =  []
+    @filters_conts = []
+    @filters_bins =  []
+    
     @userdataconts = []
     r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|

@@ -6,10 +6,12 @@ optemo_module = (function (my){
 		 // check if there is any filtering before starting the keyword search (maybe it's needed to combine with my.submitAJAX)
 		var selections = $("#filter_form").serializeObject();
 			$.each(selections, function(k,v){
-	       if(v == "" || v == "-") {
+	       if(v == "" || v == "-" || v==";") {
 	           delete selections[k];
 	       }
-	       /* Look for weird $ error */
+	  		 /* Slider values shouldn't get sent unless specifically set */
+			   if(k.match(/superfluous/)) 
+			      delete selections[k]
 	  });
 		return selections
 	}
