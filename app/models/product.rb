@@ -1,3 +1,7 @@
+require "sunspot"
+require 'sunspot_autocomplete'
+require "autocomplete_view_helpers"
+
 class Product < ActiveRecord::Base
   has_many :cat_specs
   has_many :bin_specs
@@ -17,6 +21,52 @@ class Product < ActiveRecord::Base
   #  ThinkingSphinx.updates_enabled = false
   #  ThinkingSphinx.deltas_enabled = false
   #end
+  attr_writer :product_name
+  
+  searchable do
+    #text :title do
+    text :title do
+      cat_specs.find_by_name("title").try(:value)
+    end
+     
+    text :description do
+      text_specs.find_by_name("longDescription").try(:value)
+    end
+    text :sku 
+    var = 1
+    boolean :instock
+    string :eq_id_str 
+    string :product_type
+    
+   (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
+    if (s.feature_type == "Continuous")
+      float s.name.to_sym, trie: true do
+        cont_specs.find_by_name(s.name).try(:value)
+      end
+    elsif (s.feature_type == "Categorical")
+      string s.name.to_sym do
+        cat_specs.find_by_name(s.name).try(:value)
+      end
+    elsif (s.feature_type == "Binary")
+      string s.name.to_sym do
+        bin_specs.find_by_name(s.name).try(:value)
+      end
+    end
+   end
+    autosuggest :product_name, :using => :instock?                  
+  end
+  
+  def eq_id_str
+    Equivalence.find_by_product_id(id).try(:eq_id).to_s
+  end
+  
+  def instock?
+    if (instock)
+      cat_specs.find_by_name("title").try(:value)
+    else
+      false
+    end
+  end
   
   def self.cached(id)
     CachingMemcached.cache_lookup("Product#{id}"){find(id)}

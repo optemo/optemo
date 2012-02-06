@@ -12,6 +12,7 @@
 *= require nav_bar
 *= require show_page_and_related
 *= require assist
+*= require jquery.autocomplete
 *= require jslider
 *= require slider
 *= require navbox

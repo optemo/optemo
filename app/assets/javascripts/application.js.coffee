@@ -11,6 +11,13 @@
 #= require_self
 #= require filters
 #= require bbfixes
+#= require search
+#= require solr-autocomplete/ajax-solr/core/Core
+#= require solr-autocomplete/ajax-solr/core/AbstractManager
+#= require solr-autocomplete/ajax-solr/managers/Manager.jquery
+#= require solr-autocomplete/ajax-solr/core/Parameter
+#= require solr-autocomplete/ajax-solr/core/ParameterStore
+#= require solr-autocomplete/jquery-autocomplete/jquery.autocomplete
 
 # Switched 'def' position from before 'cookies' to before 'realtime_price' so that module method would be defined in realtime_price
 

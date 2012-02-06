@@ -1,4 +1,4 @@
-<div id="navigator_bar<%= '_bottom' if defined? bottom %>">
+<div id="navigator_bar<%= '_bottom' if defined? bottom %>" <%= "style='height:99px'" if request.host == "keyword" %>>
   <div id="navtitle">
     <% if defined? bottom %>
       <%= Session.search.products_size %> <%= raw navtitle %>
@@ -7,22 +7,29 @@
         <%= Session.search.products_size %>
       </div>
       <div class='sub-title'>
-        <span class='nav-available-text'><%= raw navtitle %></span>
+        <span class='nav-available-text'><%= raw navtitle %></span> 
         <div class='outof'>
           <% total = Equivalence.all_count -%>
-          <%= t("#{Session.product_type}.outof", :count => total) if Session.search.products_size < total %>
+          <%= t("#{Session.product_type}.outof", :count => total) if (Session.search.products_size < total) %>
         </div>
       </div>
     <% end %>
   </div>
   <%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>"nav_compare_btn#{'_bottom' if defined? bottom}"})  %>
   <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :rel => "nofollow", :title => t('products.compare.cleardesc') %>
+  <% if request.host == "keyword" && !defined?(bottom) %>
+    <%= form_tag("/search", :method => "post", id: "keyword_search") do %>
+      <% solr_config = YAML.load_file("#{Rails.root}/config/sunspot.yml")[Rails.env] %>
+      <%=raw autosuggest_text_field "product", "name", "http://#{solr_config['solr']['hostname']}:#{solr_config['solr']['port']}/solr/", "product_name", size: 68,  value: Session.search.keyword_search || "Keyword or Web Code", onfocus: "javascript:if (this.value == 'Keyword or Web Code') {this.value='';}" %>
+      <%= submit_tag "Search", id: 'keyword_submit' %>
+    <% end %>
+  <% end %>
 </div>
 
 <% if Session.search.products_size > SearchProduct.per_page %><!-- top pagination bar -->
   <% products = Session.search.paginated_products %>
   <div class='pagination-container'><span class='pagi-info'><%= page_entries_info(products) %></span>
-    <b><%=t 'products.page' %>:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -2})%>
+    <b><%=t 'products.page' %>:</b><%= will_paginate(products, {:previous_label=>image_tag('prev-page.gif'), :next_label=>image_tag('next-page.gif'), :page_links=>true, :outer_window => -4})%>
     <%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" if defined? bottom %>
   </div>
   

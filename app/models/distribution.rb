@@ -1,6 +1,5 @@
 class Distribution 
 require 'inline'
-
   def computeDist
     dist = {}
     num_buckets = 24 #Must be greater than 0
@@ -9,13 +8,30 @@ require 'inline'
     maxes = []
     specs = []
     feats = []
-    prods = Session.search.products
+   
     Session.features["filter"].each do |f| 
-      next if f.feature_type != "Continuous" #Only draw distributions for continuous features
-      data = prods.map{|p|p.instance_variable_get("@#{f.name}")}.compact
+      next if f.feature_type != "Continuous" #Only draw distributions for continuous features 
+      data = []
+      #puts "data_facet_size #{Session.search.solr_cached.facet(f.name.to_sym).rows.size}"
+      prods = Session.search.solr_cached.facet(f.name.to_sym).rows.each do |r|
+        for i in (0..(r.count-1))
+          data << r.value
+        end
+      end
+      #puts "data.size #{data.size}"    
+      
       next if data.empty? #There's no data available for this feature
-      min,max = ContSpec.allMinMax(f.name)
-      #Max must be larger or equal to min
+     
+      min = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{f.name}") do
+       CachingMemcached.delete("Min#{Session.search.old_keyword}#{f.name}")
+       data.min
+      end
+      max = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{f.name}") do
+       CachingMemcached.delete("Max#{Session.search.old_keyword}#{f.name}")
+       data.max
+      end
+      puts "min_data #{min} max_data #{max} #{Session.search.keyword_search} #{f.name}"
+       
       next unless max >= min #ValidationError, "min is larger than max"
       specs << data
       feats << f.name     
@@ -26,11 +42,12 @@ require 'inline'
     begin
       #Features can have varying lengths
       lengths = specs.map{|s| s.size}
+     
       raise ValidationError, "num_buckets is less than 2" unless num_buckets>1
       raise ValidationError, "size of feats is not right" unless feats.size == specs.size
       raise ValidationError, "size of mins is not right" unless mins.size == specs.size
       raise ValidationError, "size of maxes is not right" unless maxes.size == specs.size
-      res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
+        res = distribution_c(specs.flatten, specs.size, num_buckets, mins, maxes, lengths) #unless $res
       feats.each_with_index do |f, i|   
         t = i*(2+num_buckets) 
         dist[f] = [[res[t], res[t+1],mins[i],maxes[i]], res[(t+2)...(i+1)*(2+num_buckets)]]

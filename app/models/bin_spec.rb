@@ -1,6 +1,5 @@
 class BinSpec < ActiveRecord::Base
   belongs_to :product
-  
   # Get specs for a single item
   def self.cache_all(p_id)
     CachingMemcached.cache_lookup("BinSpecs#{p_id}") do
@@ -18,12 +17,6 @@ class BinSpec < ActiveRecord::Base
     end
   end
   def self.count_feat(feat)
-    mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-    myconts = Session.search.userdataconts
-    mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-    q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false)
-    CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
-      q.count
-    end
+   Session.search.solr_cached.facet(feat.to_sym).rows.try(:first).try(:count) || 0
   end
 end

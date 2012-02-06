@@ -22,7 +22,10 @@
       if(k.match(/superfluous/)) 
         delete selections[k]
     )
-    optemo_module.ajaxcall("/compare/create", selections)
+    if $("#product_name").val() == "" || $("#product_name").val() == "Keyword or Web Code"
+      optemo_module.ajaxcall("/compare/create", selections)
+    else
+      optemo_module.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections) )
 
   @removeSilkScreen = ->
     $('#silkscreen, #outsidecontainer').hide()
@@ -171,13 +174,15 @@
     optemo_module.stop_spinner()
     clearTimeout(lis.socket_error_timer) # We need to clear the timeout error here
     lis.spinner_timer = lis.socket_error_timer = null
-    
-    parts = data.split('[BRK]')
-    if (parts.length == 2) 
-      $('#ajaxfilter').empty().append(parts[1])
-      $('#main').html(parts[0])
-      optemo_module.whenDOMready()
-      return 0
+    if (rdr = /\[REDIRECT\](.*)/.exec(data))
+      window.location.replace(rdr[1])
+    else
+      parts = data.split('[BRK]')
+      if (parts.length == 2) 
+        $('#ajaxfilter').empty().append(parts[1])
+        $('#main').html(parts[0])
+        optemo_module.whenDOMready()
+        return 0
 
   #Serialize an form into a hash, Warning: duplicate keys are dropped
   $.fn.serializeObject = ->
@@ -205,7 +210,10 @@
   $('.pagination a').live "click", ->
     if (optemo_module.loading_indicator_state.disable) 
       return false
-    optemo_module.ajaxcall($(this).attr('href'))
+    if $("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= ""
+      optemo_module.ajaxcall($(this).attr('href'), {"keyword": $("#product_name").val()})
+    else
+      optemo_module.ajaxcall($(this).attr('href'))
     return false
   
   #See all Products
@@ -217,7 +225,10 @@
   $('.sortby').live 'click', ->
     if (optemo_module.loading_indicator_state.disable)
       return false
-    optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})
+    if $("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= ""
+      optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat'), "keyword": $("#product_name").val()})
+    else
+      optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})
     return false
   
   #/* End of LiveInit Functions */

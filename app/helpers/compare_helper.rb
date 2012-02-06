@@ -102,10 +102,6 @@ module CompareHelper
     end
   end
   
-  def category_select(feat)
-    select('superfluous', feat, [t('products.add')+t(Session.product_type+'.specs.'+feat+'.name')] + CatSpec.count_feat(feat,true).map{|k,v| ["#{k} (#{v})", k]}, options={}, {:id => feat+"selector", :class => "selectboxfilter"})
-  end
-  
   def main_boxes(landing = false)
     res = ""
     res << '<div class="rowdiv">'
@@ -133,14 +129,30 @@ module CompareHelper
     res << '<div style="clear:both;height:0;"><!-- --></div></div>'
   end
 	
+	
 	def getDist(feat)
-    unless defined? @dist
-      unless defined? $d
-       $d = Distribution.new
+    num_buckets = 24
+    discretized = Session.search.solr_cached.facet(feat.to_sym).rows
+    if (!discretized.empty?)
+      min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
+      max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
+   
+      min = discretized.first.value
+      max = discretized.last.value
+      step = (max - min + 0.00000001) / num_buckets
+      dist = Array.new(num_buckets,0)
+      #Bucket the data
+      discretized.each do |r|
+        dist[((r.value-min) / step).floor] += r.count
       end
-	    @dist = $d.computeDist
-	  end  
-	  @dist[feat]
+      #Normalize to a max of 1
+      maxval = dist.max
+      dist.map!{|i| i.to_f / maxval}
+      
+      [[min,max]+[min_all,max_all],dist]
+    else
+      []
+    end
   end
 
   def capitalize_brand_name(name)
@@ -202,11 +214,13 @@ module CompareHelper
   end
   
   def cat_order(f, chosen_cats)
-    optionlist = CatSpec.count_feat(f.name,true).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
-  	order = CatSpec.order(f.name)
-    unless order.empty?
-  	   optionlist = optionlist.to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? a[1]-1000000 : order[a[0]]) <=> (chosen_cats.include?(b[0]) ? b[1]-1000000 : order[b[0]])} 
-  	end
+    optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
+    unless (request.host =="keyword")
+  	  order = CatSpec.order(f.name)
+      unless order.empty?
+        optionlist = optionlist.to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? a[1]-1000000 : order[a[0]]) <=> (chosen_cats.include?(b[0]) ? b[1]-1000000 : order[b[0]])} 
+      end
+    end
   	optionlist
   end
   

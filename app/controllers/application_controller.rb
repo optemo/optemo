@@ -49,8 +49,6 @@ class ApplicationController < ActionController::Base
     #s.id = mysession_id
     #s.ab_testing_type = ab_testing_type
     # We are passing in the category id from javascript
-    $d = Distribution.new unless defined? $d
-    #$k = Kmeans.new unless defined? $k    
   end
   
   def title=(title)
