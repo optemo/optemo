@@ -2,7 +2,7 @@
 
 <%= render :partial => "html_and_head", :locals => {:s => s} %>
 <body style="font-size:0.75em;font-family: arial, helvetica, sans-serif;margin:0;">
-<script type="text/javascript">optemo_french = <%= fr? == "_fr" %></script>
+<script type="text/javascript">optemo_french = <%= fr? == "_fr" ? "true" : "null" %></script>
 <div id="optemo_embedder">
     <!--[if lte IE 6]>
     <div id="IE" class="ie6 ie67">
