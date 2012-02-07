@@ -118,66 +118,12 @@ class Search < ActiveRecord::Base
   def filters_bins
       @filters_bins ||= []
   end
-  
-  #Range of product offerings
-  def ranges(featureName)
-     @sRange ||= {}
-     if @sRange[featureName].nil?
-       min = clusters.map{|c|c.ranges(featureName)[0]}.compact.sort[0]
-       max = clusters.map{|c|c.ranges(featureName)[1]}.compact.sort[-1] 
-       @sRange[featureName] = [min, max]
-     end
-     @sRange[featureName]  
-  end
-  
-  def indicator(featureName)
-    indic = false
-    values = clusters.map{|c| c.indicator(featureName)}
-    if values.index(false).nil?
-      indic = true
-    end  
-    indic
-  end
-    
-  def minimum(feature)
-    feature = feature + "_min"
-    min = clusters[0].send(feature)
-    for i in 1..cluster_count-1
-      min = clusters[i].send(feature) if clusters[i].send(feature) < min
-    end
-    min
-  end
-  
-  def maximum(feature)
-    feature = feature + "_max"
-    max = clusters[0].send(feature)
-    for i in 1..cluster_count-1
-      max = clusters[i].send(feature) if clusters[i].send(feature) > max
-    end
-    max
-  end
-  
-  #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
-  def cluster
-    @cluster ||= Cluster.new(sim_products, nil)
-  end
  
   def paginated_products #set the paginated_products
     unless @paginated_products
        products
     end
     @paginated_products
-  end
-
-  def isextended?
-    !@extended.nil?
-  end  
-  
-  def extend_it(extended_obj=nil)
-    @extended = extended_obj unless extended_obj.nil?
-  end  
-  def extended
-      @extended ||= Cluster.new(products)
   end
  
   def products_size
@@ -270,13 +216,6 @@ class Search < ActiveRecord::Base
       @userdataconts = []
       @userdatabins = []
       @userdatacats = []
-    when "similar"
-      #Browse similar button
-      self.seesim = p["cluster_hash"] # current products
-      duplicateFeatures(old_search)
-    when "extended"
-      self.seesim = p["extended_hash"] # current products
-      createFeatures(p)
     when "nextpage"
       #the next page button has been clicked
       self.keyword_search  = p[:keyword] unless p[:keyword].blank?
@@ -287,9 +226,6 @@ class Search < ActiveRecord::Base
       self.sortby = p[:sortby]
       duplicateFeatures(old_search)
       self.initial = false
-    when "groupby"
-      self.groupby = p[:feat]
-      duplicateFeatures(old_search)
     when "filter"
       #product filtering has been done through keyword search of attribute filters
       #p[:categorical]={} unless(@old_keyword==p[:filters][:keyword]) 

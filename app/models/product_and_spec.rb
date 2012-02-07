@@ -1,6 +1,5 @@
 class ProductAndSpec
   attr_accessor :id
-  attr_accessor :dist if Session.extendednav
   def initialize(params = {})
     @id = params[:id]
   end

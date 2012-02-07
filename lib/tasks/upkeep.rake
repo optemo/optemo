@@ -11,26 +11,6 @@ namespace :cache do
   end
 end
 
-desc "Run boostexter to generate strong hypothesis files or Parse boostexter strong hypothesis files and save in database"
-task :btxtr => :environment do
-     $: << "#{Rails.root}/lib/cluster_labeling/boostexter_labels_rb"
-     
-     unless ENV.include?("url") && ENV.include?("action") && (ENV['action']=='save' || ENV['action']=='train')
-          raise "usage: rake btxtr url=? action=? # url is a valid url from products.yml and action is 'save' or 'train'" 
-     end
-     
-     s = Session.new(ENV['url'])
-     s.version = Cluster.maximum(:version, :conditions => ['product_type = ?', s.product_type]) if s.directLayout
-     case ENV['action']
-     when 'train'
-       require 'train_boostexter.rb'
-       BtxtrLabels.train_boostexter_on_all_clusters()
-     when 'save'
-       require 'combined_rules.rb'
-       BtxtrLabels.save_combined_rules_for_all_clusters()
-     end
-end
-
 desc 'Create YAML test fixtures from data in an existing database.  
 Defaults to development database.  Set RAILS_ENV to override.'
 

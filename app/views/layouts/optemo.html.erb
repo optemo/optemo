@@ -17,20 +17,6 @@
     <div id="IE">
     <![endif]-->
 <div id="mycenter">
-	<%= case Session.product_type 
-	  when "printer_lph" then render :partial => "lph_header" 
-	  when /demo|_us$/ then render :partial => "demo_header"
-	  end
-	%>
-<% if Session.product_type == "printer_lph" %>
-	<div id="bottomlinks">
-	   <%= link_to 'Home', '/' %> |
-	   <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
-	   <%= link_to 'Site Map', '/sitemap', {:title => 'Link to all products'} %> |
-	   <%= link_to 'About Us', '/about', {:title => 'LaserPrinterHub'} %> |
-	   <%= link_to 'Contact Us', "znvygb:grnz\100ynfrecevagreuho\056pbz", {:class => 'decrypt', :title => 'Email Us'}%>
-	</div>
-<% end %>
    <div class="bd">
     <%= yield %>
    </div>
@@ -47,12 +33,6 @@
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <%= javascript_include_tag :application %>
-
-<!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
-
-<!-- Piwik -->
-<noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
-<!-- End Piwik Tag -->
 
 <% if @indexload %>
 <noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality, please enable javascript.</div></noscript>
