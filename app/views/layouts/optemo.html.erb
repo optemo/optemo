@@ -1,6 +1,14 @@
-<% s = Session %>	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<title>Site - Optemo Development</title>
+<meta name="fragment" content="!">
+<% if @indexload %>
+  <%= stylesheet_link_tag :application %>
+<% end %>
+</head>
 
-<%= render :partial => "html_and_head", :locals => {:s => s} %>
 <body style="font-size:0.75em;font-family: arial, helvetica, sans-serif;margin:0;">
 <script type="text/javascript">optemo_french = <%= fr? == "_fr" ? "true" : "null" %></script>
 <div id="optemo_embedder">

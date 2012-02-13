@@ -187,7 +187,7 @@ class Search < ActiveRecord::Base
 
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
-      BinSpec.find_all_by_name_and_product_type("featured",Session.product_type)
+      CatSpec.joins("INNER JOIN `bin_specs` ON `cat_specs`.product_id = `bin_specs`.product_id").where(bin_specs: {name: "featured"}, cat_specs: {name: "product_type", value: Session.product_type_leaves}).map(&:product_id)
     end
   end
   

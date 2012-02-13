@@ -2,11 +2,11 @@ module CompareHelper
 
   def navtitle
     if I18n.locale == :fr
-      res = t("#{Session.product_type}.navtitle")
+      res = t("products.compare.title")
     else
-      res = Session.search.products_size > 1 ? t("#{Session.product_type}.navtitle").pluralize : t("#{Session.product_type}.navtitle")
+      res = Session.search.products_size > 1 ? t("products.compare.title").pluralize : t("products.compare.title")
     end
-    res + " " + t("#{Session.product_type}.navtitle2")
+    res + " " + t("products.compare.available")
   end
  
   def chosencats(feat)
@@ -22,7 +22,7 @@ module CompareHelper
       res << "<div class='title_landing_type'>" + I18n.t("products.featuredproducts") + "</div>"
       res << "<div style='clear:both;width: 0;height: 0;'><!-- --></div>"
     end
-    products = prods.map{|p|Product.cached(landing ? p.product_id : p.id)}
+    products = prods.map{|p|Product.cached(landing ? p : p.id)}
     loop do
       row = products.shift(3)
       #Check if any of the products have variations or bundles

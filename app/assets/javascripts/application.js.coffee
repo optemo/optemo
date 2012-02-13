@@ -60,7 +60,7 @@
 #Load the initial page in non-embedded layout
 if $('#opt_discovery').length
   #Pass in the option as a url param (Digital Cameras are default)
-  window.opt_category_id = decodeURI((RegExp('([?]|&)[Cc]ategory_id=(.+?)(&|$)').exec(location.search)||[0,0,22474])[2])
+  window.opt_category_id = decodeURI((RegExp('([?]|&)[Cc]ategory_id=(.+?)(&|$)').exec(location.search)||[0,0,"B20218"])[2])
   if (location.hash)
     optemo_module.ajaxsend(location.hash.replace(/^#/, ''),'/', {category_id: opt_category_id})
   else
