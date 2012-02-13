@@ -36,7 +36,9 @@ class Product < ActiveRecord::Base
     var = 1
     boolean :instock
     string :eq_id_str 
-    string :product_type
+    string :product_type do
+      cat_specs.find_by_name(:product_type).value
+    end
     
    (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
     if (s.feature_type == "Continuous")

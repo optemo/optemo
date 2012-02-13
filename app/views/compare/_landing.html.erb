@@ -1,7 +1,7 @@
 <% mb = {"featured" => main_boxes(true)} #Calculate mb before navtitle -%>
 <div id='navigator_bar_top' <%= "style='height:80px'" if request.host == "keyword" %>>
   <div id='navtitle'>
-    <%= Session.search.products_size.to_s + ' ' + raw(navtitle) %>
+    <%= Session.search.products_size.to_s + ' ' + raw(product_title) + " " + t("products.compare.available") %>
   </div>
   <%= link_to(root_path, {:class=>'seeall'}) do %>
   <%=t 'products.seeall' %> <div><!-- --></div>

@@ -2,7 +2,6 @@ en:
     drive_bestbuy: &drives
         # All language-dependent definitions in models
         navtitle:                   "Drive"
-        outof:                      "Out of %{count} Drives"
         
         specs:
             saleprice:

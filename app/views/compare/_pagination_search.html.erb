@@ -1,7 +1,7 @@
 <div id="navigator_bar<%= '_bottom' if defined? bottom %>" <%= "style='height:99px'" if request.host == "keyword" %>>		
   <div id="navtitle">
     <% if defined? bottom %>
-      <%= Session.search.products_size %> <%= raw navtitle %>
+      <%= Session.search.products_size %> <%= raw(product_title) + " " + t("products.compare.available") %>
     <% else %>
       <div class='nav-number'>
         <%= Session.search.products_size %>

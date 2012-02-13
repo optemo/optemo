@@ -2,7 +2,6 @@ fr:
     drive_bestbuy:
         # All language-dependent definitions in models
         navtitle:                   "Lecteurs"
-        outof:                      "Parmi %{count} lecteurs"
 
         specs:
             saleprice:

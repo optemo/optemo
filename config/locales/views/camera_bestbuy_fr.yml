@@ -2,7 +2,6 @@ fr:
     camera_bestbuy:
         # All language-dependent definitions in models
         navtitle:                   "Appareils photo"
-        outof:                      "Parmi %{count} appareils photo"
         
         specs:
             saleprice:

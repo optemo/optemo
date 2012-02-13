@@ -1,16 +1,16 @@
 <div id="navigator_bar<%= '_bottom' if defined? bottom %>" <%= "style='height:99px'" if request.host == "keyword" %>>
   <div id="navtitle">
     <% if defined? bottom %>
-      <%= Session.search.products_size %> <%= raw navtitle %>
+      <%= Session.search.products_size %> <%= raw(product_title) + " " + t("products.compare.available") %> 
     <% else %>
       <div class='nav-number'>
         <%= Session.search.products_size %>
       </div>
       <div class='sub-title'>
-        <span class='nav-available-text'><%= raw navtitle %></span> 
+        <span class='nav-available-text'><%= raw(product_title) + " " + t("products.compare.available") %></span> 
         <div class='outof'>
-          <% total = Equivalence.all_count -%>
-          <%= t("products.compare.outof")+total.to_s+t("products.compare.title") if (Session.search.products_size < total) %>
+          <% total = Session.search.solr_all -%>
+          <%= t("products.compare.outof")+" #{total} "+(I18n.locale == :fr ? product_title.downcase : product_title) if (Session.search.products_size < total) %>
         </div>
       </div>
     <% end %>

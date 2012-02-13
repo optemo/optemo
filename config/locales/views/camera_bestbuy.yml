@@ -2,7 +2,6 @@ en:
     camera_bestbuy:
         # All language-dependent definitions in models
         navtitle:                  "Camera"
-        outof:                      "Out of %{count} Cameras"
         
         specs:
             maxresolution:

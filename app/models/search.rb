@@ -81,7 +81,7 @@ class Search < ActiveRecord::Base
       end
 
       if (!search_term)
-        with :product_type, Session.product_type
+        with :product_type, Session.product_type_leaves
       end
       Session.features["filter"].each do |f|
         if f.feature_type == "Continuous"
@@ -92,6 +92,18 @@ class Search < ActiveRecord::Base
             facet f.name.to_sym, exclude: cat_filters[f.name]
         end
       end
+    end
+  end
+  
+  def solr_all
+    CachingMemcached.cache_lookup("AllCount-#{Session.product_type}") do
+      Product.search do
+        with :instock, 1
+        group :eq_id_str do 
+          ngroups  # includes the number of groups that have matched the query
+        end
+        with :product_type, Session.product_type_leaves
+      end.group(:eq_id_str).ngroups
     end
   end
   

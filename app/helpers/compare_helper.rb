@@ -1,12 +1,11 @@
 module CompareHelper
 
-  def navtitle
+  def product_title
     if I18n.locale == :fr
-      res = t("products.compare.title")
+      t("products.compare.title")
     else
-      res = Session.search.products_size > 1 ? t("products.compare.title").pluralize : t("products.compare.title")
+      Session.search.products_size > 1 ? t("products.compare.title").pluralize : t("products.compare.title")
     end
-    res + " " + t("products.compare.available")
   end
  
   def chosencats(feat)
