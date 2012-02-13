@@ -1,7 +1,6 @@
 fr:
     drive_bestbuy:
         # All language-dependent definitions in models
-        navtitle:                   "Lecteurs"
 
         specs:
             saleprice:

@@ -2,9 +2,9 @@ module CompareHelper
 
   def product_title
     if I18n.locale == :fr
-      t("products.compare.title")
+      t("#{Session.product_type}.name")
     else
-      Session.search.products_size > 1 ? t("products.compare.title").pluralize : t("products.compare.title")
+      Session.search.products_size > 1 ? t("#{Session.product_type}.name").pluralize : t("#{Session.product_type}.name")
     end
   end
  

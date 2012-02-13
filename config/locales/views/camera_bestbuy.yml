@@ -1,7 +1,6 @@
 en:
     camera_bestbuy:
         # All language-dependent definitions in models
-        navtitle:                  "Camera"
         
         specs:
             maxresolution:

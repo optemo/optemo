@@ -27,9 +27,9 @@ gem 'mysql2', '> 0.3'
 gem 'capistrano'
 gem 'capistrano-ext'
 
-#gem 'i18n-active_record',
-#      :git => 'git://github.com/svenfuchs/i18n-active_record.git',
-#      :require => 'i18n/active_record'
+gem 'i18n-active_record',
+      :git => 'git://github.com/svenfuchs/i18n-active_record.git',
+      :require => 'i18n/active_record'
 
 # Bundle the extra gems:
 # gem 'bj'

@@ -1,7 +1,6 @@
 en:
     drive_bestbuy: &drives
         # All language-dependent definitions in models
-        navtitle:                   "Drive"
         
         specs:
             saleprice:

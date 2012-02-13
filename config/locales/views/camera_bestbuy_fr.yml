@@ -1,7 +1,6 @@
 fr:
     camera_bestbuy:
         # All language-dependent definitions in models
-        navtitle:                   "Appareils photo"
         
         specs:
             saleprice:

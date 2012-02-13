@@ -32,13 +32,6 @@ Site::Application.configure do
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
   
-  #I18n database fallback
-  #This is not enabled for the time being due to lookuptimes
-  #simple_backend = I18n::Backend::Simple.new
-  #db_backend = I18n::Backend::ActiveRecord.new
-  #
-  #config.i18n.backend = I18n::Backend::Chain.new(simple_backend,db_backend)
-  
   if File.exists?(File.join(Rails.root.to_s,'tmp', 'debug.txt'))
      require 'ruby-debug'
      Debugger.wait_connection = true

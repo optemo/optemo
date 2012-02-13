@@ -1,4 +1,11 @@
 GIT
+  remote: git://github.com/svenfuchs/i18n-active_record.git
+  revision: b631b05a96d578b6c01c4751cc1a0ba8a84406af
+  specs:
+    i18n-active_record (0.0.2)
+      i18n (>= 0.5.0)
+
+GIT
   remote: https://github.com/wildoats/sunspot.git
   revision: 01c365cb72bf3bf3610aa61cc2632586912bd3b7
   branch: optemo
@@ -200,6 +207,7 @@ DEPENDENCIES
   growl_notify
   guard-spork
   guard-test
+  i18n-active_record!
   linecache19 (= 0.5.13)
   mysql2 (> 0.3)
   progress_bar
