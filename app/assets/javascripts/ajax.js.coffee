@@ -1,7 +1,10 @@
-#/* AJAX Functionality */
+#//--------------------------------------//
+#//                AJAX                  //
+#//--------------------------------------//
 
 @module "optemo_module", ->
-
+  @loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false}
+  
   #Set up the AJAX send function for use with the back button
   $(document).ready ->
     $.history.init(optemo_module.ajaxsend,{unescape: true})
@@ -29,9 +32,6 @@
 
   @removeSilkScreen = ->
     $('#silkscreen, #outsidecontainer').hide()
-    # For ie 6, dropdown list has z-index issue. Show dropdown when popup hide.
-    if($.browser.msie and $.browser.version.substr<7)        
-      $('.jumpmenu').show()
     
   @current_height = -> 
     D = document
@@ -43,9 +43,6 @@
 
   #Optemo's Lightbox effect
   @applySilkScreen = (url,data,width,height,f) ->
-    # For ie 6, dropdown list has z-index issue. Hide dropdown when popup show.
-    if($.browser.msie and $.browser.version.substr<7)
-      $('jumpmenu').hide()
     #IE Compatibility
     iebody= if(document.compatMode and document.compatMode isnt "BackCompat") then document.documentElement else document.body
     dsoctop= if document.all then iebody.scrollTop else window.pageYOffset
@@ -68,12 +65,6 @@
         if (f)
             f()
       )
-
-  #//--------------------------------------//
-  #//                AJAX                  //
-  #//--------------------------------------//
-
-  @loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false}
 
   #/* Does a relatively generic ajax call and returns data to the handler below */
   @ajaxsend = (hash,myurl,mydata) ->
@@ -113,14 +104,8 @@
       )
 
   @ajaxerror = ->
-    lis = optemo_module.loading_indicator_state
-    lis.disable = false
-    clearTimeout(lis.spinner_timer) # clearTimeout can run on "null" without error
-    optemo_module.stop_spinner()
-    clearTimeout(lis.socket_error_timer) # We need to clear the timeout error here
-    lis.spinner_timer = lis.socket_error_timer = null
-    errorstr = undefined
-    if ((typeof(optemo_french) isnt "undefined") and optemo_french)
+    clear_loading()
+    if optemo_french?
       errorstr = '<div class="bb_poptitle"><label class="comp-title">Erreur</label><div class="bb_quickview_close"></div></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>'
     else
       errorstr = '<div class="bb_poptitle"><label class="comp-title">Error</label><div class="bb_quickview_close"></div></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>'
@@ -168,12 +153,7 @@
 
   #/* The ajax handler takes data from the ajax call and inserts the data into the #main part and then the #filtering part. */
   ajaxhandler = (data) ->
-    lis = optemo_module.loading_indicator_state
-    lis.disable = false
-    clearTimeout(lis.spinner_timer) # clearTimeout can run on "null" without error
-    optemo_module.stop_spinner()
-    clearTimeout(lis.socket_error_timer) # We need to clear the timeout error here
-    lis.spinner_timer = lis.socket_error_timer = null
+    clear_loading()
     if (rdr = /\[REDIRECT\](.*)/.exec(data))
       window.location.replace(rdr[1])
     else
@@ -183,6 +163,15 @@
         $('#main').html(parts[0])
         optemo_module.whenDOMready()
         return 0
+        
+  clear_loading = ->
+    if optemo_module.loading_indicator_state?
+      optemo_module.loading_indicator_state.disable = false
+      clearTimeout(optemo_module.loading_indicator_state.spinner_timer) # clearTimeout can run on "null" without error
+      optemo_module.stop_spinner()
+      clearTimeout(optemo_module.loading_indicator_state.socket_error_timer) # We need to clear the timeout error here
+      optemo_module.loading_indicator_state.spinner_timer = null
+      optemo_module.loading_indicator_state.socket_error_timer = null
 
   #Serialize an form into a hash, Warning: duplicate keys are dropped
   $.fn.serializeObject = ->
