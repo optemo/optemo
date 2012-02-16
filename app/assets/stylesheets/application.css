@@ -11,11 +11,10 @@
 *= require main_right_side
 *= require nav_bar
 *= require show_page_and_related
-*= require assist
 *= require jquery.autocomplete
 *= require jslider
 *= require slider
-*= require navbox
+*= require buttons
 */
 
 /* Global Declarations are in colour_and_buttons.scss.erb */

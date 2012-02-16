@@ -61,13 +61,11 @@ class CompareController < ApplicationController
   
   def correct_render
     if params[:ajax]
+      @search_view = true if params[:keyword] || !Session.search.keyword_search.blank?
       if Session.search.initial
         render 'ajax_landing', :layout => false
-      elsif (params[:keyword] || !Session.search.keyword_search.blank?)
-        render 'ajax_search', :layout => false
       else      
         render 'ajax', :layout => false
-       # end      
       end
     else
       render 'compare'

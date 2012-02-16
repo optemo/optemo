@@ -1,34 +1,86 @@
 <%# Cache specs here at the top of navbox partial to save on SQL calls and instantiations. Don't bother with Bin or Text specs since they are only used once each (though this might change in future, be careful) %>
 <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id); %>
-<div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %><%= "height:352px;" if no_variations %>">
-	<div class="topbar"<%= "style='height:320px;'" if no_variations %>>
-
-	  <div class="navboxcompare">
-    <% if landing %>
-      &nbsp;
-    <% else %>
-    		  <input type="checkbox"
-		       data-sku="<%= product.sku %>"
-		       class="optemo_compare_checkbox" />
-	        <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
-	    <span><%=t('products.compare.compare')%></span>
-	  </a>
-	  <% end %>
+<div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %>
+text-align: center;
+display: inline-block;
+vertical-align: top;
+float: none;
+height: inherit;">
+  <div class="navboxcompare">
+    <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
+    <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
+      <span><%=t('products.compare.compare')%></span>
+    </a>
+  </div>
+  
+  <%= image_tag(product.image_url(:medium), :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
+  
+  <div class="productinfo" data-sku=<%= product.sku %>>
+    <%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :class => "easylink", :title => t('products.compare.clickforspecs') %>
+    <div class="productspecs"><!--&--></div>
+    
+    <div class="price" <%=raw only_if_not_onsale(product) %>>
+      <%= t('products.show.ourprice')+(fr?.empty? ? "" : " ")+": "%>
+      <span><%= number_to_currency(cont_specs["price"]) %></span>
+    </div>
+    <div class="saleprice" <%=raw only_if_onsale(product) %>>
+      <%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": " %>
+      <span><%= number_to_currency(cont_specs["saleprice"]) %></span>
+    </div>	
+    <div class="save" <%=raw only_if_onsale(product) %>>
+      <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
+      <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
+    </div>
+    <div class="saleends" <%=raw only_if_onsale(product) %>>
+      <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
+      <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
     </div>
 
-		<%= image_tag(product.image_url(:medium), :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
-
-    <%= render partial: "product_info", locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, no_variations: no_variations} %>
-  </div>
-  <div style="padding-left:20px">
-    <div class="spacer buttons">
-      <div class="left">
-        <div class="right">
-          <a href="http://www.bestbuy.ca/order/addtocart.ashx?accessories=<%= product.sku %>" class="addtocart" data-sku="<%= product.sku %>">
-            <%=t BinSpec.cache_all(product.id)["isPreorderable"] ? 'products.preorder' : 'products.addtocart' %>
-          </a>
-        </div>
+    <% siblings = product.product_siblings -%>
+    <!-- Colour swatches -->
+    <% unless siblings.empty? %>
+      <div class="navboxcolours">
+        <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
+        <% siblings.each do |sibling| -%>
+          <% sibling_id = sibling.sibling_id -%>
+          <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
+          <% color = sibling_cat_specs["color"] %>
+          <%= link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+            <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"><!-- --></div>
+          <% end %>
+        <% end %>
+        &nbsp;
       </div>
-    </div>
+    <% end %>
+    
+    <% if cont_specs["customerRating"] && cont_specs["customerRating"] > 0 %>
+      <div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
+    <% end %>
   </div>
+  <!-- For each bundle of this product, show price and images for products it's bundled with -->
+  <!-- Bundles are not shown right now>
+  <% bundles = []#product.product_bundles -%>
+  <% unless bundles.empty? %>
+  <div class="bundlesbox">
+    <div class="bundleslabel"> <%= t('products.show.bundledwith') %>: </div>
+    <% bundles.each do |bundle| -%> 
+      <% bundle_id = bundle.bundle_id -%>
+      <% bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
+      <% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
+        <div class="bundlediv" data-url="<%= TextSpec.cacheone(bundle_id, "productUrl#{fr?}") %>">
+          <%= link_to TextSpec.cacheone(bundle_id, "productUrl#{fr?}"), :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
+            <% bundledesc = JSON.parse(TextSpec.cacheone(bundle_id, 'bundle').gsub("=>",":")) %>
+            <div class="sibling">
+              <% bundledesc[1..-1].each do |item| -%>
+                <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"] ) %>
+              <% end %>
+              <%= number_to_currency(bundle_cont_specs["saleprice"], precision: 2) %>
+            </div>
+          <% end %>
+        </div>
+    <% end %>
+    <div style="clear:left"><!-- -/-></div>
+  </div>
+  <% end %>
+  End of bundles-->
 </div>

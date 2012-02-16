@@ -1,4 +1,15 @@
 module CompareHelper
+  def main_boxes
+    res = []
+    @s.search.paginated_products.map{|p|Product.cached(p.id)}.each_slice(3) do |box1,box2,box3|
+      res << content_tag("div") do
+        render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
+        render(:partial => 'navbox', :locals => {product: box2, last_in_row: false}) +
+        render(:partial => 'navbox', :locals => {product: box3, last_in_row: true})
+      end
+    end
+    res.join(tag("div", :style => "height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto 8px;", class: "divider"))
+  end
 
   def product_title
     if I18n.locale == :fr
@@ -11,35 +22,7 @@ module CompareHelper
   def chosencats(feat)
     Session.search.userdatacats.select{|d|d.name == feat}.map{|x|x.value}
   end
-  
-  def main_boxes(landing = false)
-    res = ""
-    res << '<div class="rowdiv">'
-    prods = landing ? @s.search.products_landing[1..-1] : @s.search.paginated_products #The first products_landing is the hero product
-    # now the new mockup is only with featured products
-    if landing
-      res << "<div class='title_landing_type'>" + I18n.t("products.featuredproducts") + "</div>"
-      res << "<div style='clear:both;width: 0;height: 0;'><!-- --></div>"
-    end
-    products = prods.map{|p|Product.cached(landing ? p : p.id)}
-    loop do
-      row = products.shift(3)
-      #Check if any of the products have variations or bundles
-      #no_variations = row.inject(true){|ans,p| ans && p.product_bundles.empty?}
-      no_variations = row.inject(true){|ans,p| ans && p.product_siblings.empty?}
-      row.each_index do |i|
-        res << render(:partial => 'navbox', :locals => {product: row[i], landing: landing, last_in_row: i == row.length-1, no_variations: no_variations, bundles: row[i].product_bundles, siblings: row[i].product_siblings})
-      end
-      if products.empty?
-        break
-      else
-        res << '<div style="clear:both;height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto;"><!-- --></div>'
-      end
-    end
-    res << '<div style="clear:both;height:0;"><!-- --></div></div>'
-  end
-	
-	
+
 	def getDist(feat)
     num_buckets = 24
     discretized = Session.search.solr_cached.facet(feat.to_sym).rows

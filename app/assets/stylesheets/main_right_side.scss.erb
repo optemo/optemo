@@ -6,6 +6,64 @@
 
 
 #optemo_embedder {
+  .navbox
+  {
+    font-size: 0.85em;
+    margin: 8px 3px 12px 0;
+    padding-right: 2px;
+    width: 179px; /*+2 for the border*/
+    background: right center url(<%= asset_data_uri "seperatorbar.png" %>) no-repeat;
+    overflow: hidden;
+    text-align: center;
+    display: inline-block;
+    vertical-align: top;
+    /*zoom: 1; /* fix IE peekaboo issue */
+    float: none;
+    height: inherit;
+  }
+  .ie67 .navbox {
+    display: inline;
+    background-image: url(<%= asset_path "seperatorbar.png" %>);
+  }
+  
+  .divider {
+    height:1px;
+    width: 520px;
+    border-top:1px #ccc solid;
+    margin: 0 auto 8px;
+  }
+
+  .title {
+  	text-align: left;
+  	margin: 0 8px;
+  	padding-bottom: 4px;
+  	border-bottom:1px solid #CCCCCC;
+  	height: 28px;
+  	font-weight: bold;
+  	position:relative;
+  }
+
+  img.productimg {
+  	cursor: pointer;
+  }
+  .productinfo {
+  	padding-left: 20px;
+  	text-align: left;
+  }
+  .productspecs {
+  	font-size:0.8em;
+  	padding-bottom:6px;
+  }
+  .navboxcolours {
+    font-size:0.8em;
+    padding-bottom:5px;
+  }
+  .navboxcompare {
+  	font-size: 0.8em;
+  	text-align: left;
+  	padding-left: 15px;
+  }
+  
   .poptitle {
   	font-size: 1.13em;
   	color: #FFF;
