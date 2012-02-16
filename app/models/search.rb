@@ -84,6 +84,7 @@ class Search < ActiveRecord::Base
         with :product_type, Session.product_type_leaves
       end
       Session.features["filter"].each do |f|
+        puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
         if f.feature_type == "Continuous"
           facet f.name.to_sym, sort: :index
         elsif f.feature_type == "Binary"
@@ -152,6 +153,7 @@ class Search < ActiveRecord::Base
   end  
   def products
     @validated_keyword = keyword_search
+    #puts "hashed_product_type #{Session.porduct_type}"
     if (keyword_search)
       things = solr_cached
       res = grouping(things)
@@ -195,6 +197,9 @@ class Search < ActiveRecord::Base
   def products_list(things, total) #paginate products through sunspot pagination
     @products_size = total    
     @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
+   # @paginated_products.each do |p|
+   #   puts "p.product_type #{p.id}"
+   # end
    end
 
   def products_landing
