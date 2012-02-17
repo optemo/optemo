@@ -9,10 +9,13 @@ class Session
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
-  def self.product_type_leaves
-    ProductCategory.get_leaves(product_type)
+  def self.product_type_leaves(ptype = product_type)
+    ProductCategory.get_leaves(ptype)
   end
   
+  def self.product_type_ancestors(ptype = product_type ,level =nil)
+    ProductCategory.get_ancestors(ptype,level)
+  end
   def self.product_type_branch
     ProductCategory.get_ancestors(product_type)+[product_type]+ProductCategory.get_children(product_type)
   end
@@ -29,13 +32,14 @@ class Session
     #if an array of categories is given, dynamic features which apply only to those categories are shown
     dynamically_excluded = []
     # initialize features
-    self.features = Facet.where(product_type: product_type).includes(:dynamic_facets).order(:value).select do |f|
+    self.features = Facet.where("product_type= ?", product_type).includes(:dynamic_facets).order(:value).select do |f|
       #These are the subcategories for which this feature is only used for
       subcategories = f.dynamic_facets.map{|x|x.category}
       subcategories.empty? || #We don't store subcategories for features which are always used
       subcategories.any?{|e| categories.include? e} ||
       (dynamically_excluded << f && false) #If a feature is not selected, we need to note this
     end.group_by(&:used_for)
+   
     # Some filters of last search need to be removed when dynamic filters removed
     unless categories.empty?
       dynamically_excluded.each do |f|

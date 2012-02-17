@@ -58,7 +58,16 @@ class Search < ActiveRecord::Base
       mycats.group_by(&:name).each_pair do |name, group|
         cat_filters[name] = any_of do  #disjunction inside the category part
           group.each do |cats|
-            with cats.name.to_sym, cats.value
+            if cats.name == "category"
+              leaves = Session.product_type_leaves(cats.value)
+              puts "leaves_search #{leaves}"
+              if leaves
+                with cats.name.to_sym, leaves  
+              else
+                with cats.name.to_sym, cats.value
+              end
+            end
+           #with cats.name.to_sym, cats.value
           end
         end
       end
@@ -83,15 +92,17 @@ class Search < ActiveRecord::Base
       if (!search_term)
         with :product_type, Session.product_type_leaves
       end
+      
       Session.features["filter"].each do |f|
-        puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
-        if f.feature_type == "Continuous"
-          facet f.name.to_sym, sort: :index
-        elsif f.feature_type == "Binary"
-          facet f.name.to_sym
-        elsif f.feature_type == "Categorical" 
-            facet f.name.to_sym, exclude: cat_filters[f.name]
-        end
+        #puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
+    
+          if f.feature_type == "Continuous"
+            facet f.name.to_sym, sort: :index
+          elsif f.feature_type == "Binary"
+            facet f.name.to_sym
+          elsif f.feature_type == "Categorical" 
+              facet f.name.to_sym, exclude: cat_filters[f.name]
+          end
       end
     end
   end

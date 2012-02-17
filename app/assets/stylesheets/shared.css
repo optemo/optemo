@@ -54,6 +54,22 @@ body {
 	margin: 0 auto; 
 	width: 745px;
 }
+
+#optemo_embedder div#main {
+	width: 560px;
+	float: right;
+}
+
+#optemo_embedder .left-right-wrapper {
+	clear: both;
+	overflow: hidden;
+}
+
+#optemo_embedder #columnheader {
+	font-size: 0.8em;
+	padding-top: 4px;
+	height: 27px;
+}
 /* Header */
 
 #optemo_embedder h1 {

@@ -27,7 +27,7 @@ class CatSpec < ActiveRecord::Base
   def self.count_feat(feat)
     q = {}
     Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
-      puts "r.value #{r.value}"
+      puts "r.value #{r.value} #{r.count}"
       q[r.value] = r.count
     end
     q
