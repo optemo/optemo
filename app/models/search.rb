@@ -326,7 +326,7 @@ class Search < ActiveRecord::Base
     @userdatacats = []
     @parentcats=[]
     Maybe(p[:categorical]).each_pair do |k,v|
-      if k = "category"
+      if k == "category"
          temp=[]
          v.split("*").each do |cat|
            nested_cats = cat.split("+")
@@ -337,8 +337,8 @@ class Search < ActiveRecord::Base
          end
          temp.each do |t|
             @userdatacats << Userdatacat.new({:name => k, :value => t})
-          end
-          temp=[]
+         end
+         temp=[]
       else   
         v.split("*").each do |cat|
           @userdatacats << Userdatacat.new({:name => k, :value => cat})
