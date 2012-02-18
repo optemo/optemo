@@ -16,6 +16,10 @@ class Session
   def self.product_type_ancestors(ptype = product_type ,level =nil)
     ProductCategory.get_ancestors(ptype,level)
   end
+  
+  def self.product_type_subcategory(ptype=product_type)
+     ProductCategory.get_subcategories(ptype)
+  end
   def self.product_type_branch
     ProductCategory.get_ancestors(product_type)+[product_type]+ProductCategory.get_children(product_type)
   end

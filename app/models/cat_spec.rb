@@ -26,8 +26,9 @@ class CatSpec < ActiveRecord::Base
   
   def self.count_feat(feat)
     q = {}
+    feat= "product_type" if feat == "category"
     Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
-      puts "r.value #{r.value} #{r.count}"
+     # puts "r.value #{r.value} #{r.count}"
       q[r.value] = r.count
     end
     q

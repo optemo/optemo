@@ -20,7 +20,7 @@ module CompareHelper
   end
  
   def chosencats(feat)
-    Session.search.userdatacats.select{|d|d.name == feat}.map{|x|x.value}
+    (Session.search.userdatacats+Session.search.parentcats).select{|d|d.name == feat}.map{|x|x.value}
   end
 
 	def getDist(feat)
@@ -83,19 +83,19 @@ module CompareHelper
     return ret
   end
   
-  def cat_order(f, chosen_cats)
-    if (request.host =="keyword")
-       optionlist = CatSpec.count_feat(f.name)
+  def cat_order(f, chosen_cats, tree_level= 3)
+   optionlist={}
+    if (request.host =="keyword")       
        if f.name == "category"
-         leaves=[]
-         q={}
-         optionlist.each do |key, available_count|
-           leaves << "B"+key
+         leaves = CatSpec.count_feat(f.name)
+        # puts "leaves_compare #{leaves}"
+         Session.product_type_ancestors(leaves.keys, tree_level).each do |fp|
+           l = Session.product_type_leaves(fp)
+          # puts "first_ancestor #{fp} its leaves #{l}"
+           optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
          end
-        Session.product_type_ancestors(leaves, 3).each do |fp|
-          q[fp] = Session.product_type_leaves(fp).map{|e| optionlist[e[1,e.size-1]]}.compact.inject{|res,ele| res+ ele}
-        end
-         optionlist = q
+       else
+        optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
        end
     else 
       optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
@@ -106,7 +106,19 @@ module CompareHelper
     end
   	optionlist
   end
-  
+ 
+  def sub_level(product_type, tree_level= 4)
+    optionlist={}
+    leaves = CatSpec.count_feat("category")
+    ancestors = Session.product_type_ancestors(leaves.keys, tree_level)
+    subcategories = Session.product_type_subcategory(product_type).each do |sub|
+       if ancestors.include?(sub)
+        optionlist[sub] =  Session.product_type_leaves(sub).map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
+       end
+    end
+    #puts "sub_level #{ancestors} #{subcategories}"
+    optionlist
+  end
   def only_if_onsale(product)
     'style="display:none;"' unless BinSpec.cache_all(product.id)["onsale"]
   end

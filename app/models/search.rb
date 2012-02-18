@@ -3,7 +3,7 @@ require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size, :filters_cats, :filters_conts, :filters_bins
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size, :filters_cats, :filters_conts, :filters_bins
   attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :old_keyword
   
   self.per_page = 18 #for will_paginate
@@ -60,14 +60,11 @@ class Search < ActiveRecord::Base
           group.each do |cats|
             if cats.name == "category"
               leaves = Session.product_type_leaves(cats.value)
-              puts "leaves_search #{leaves}"
-              if leaves
-                with cats.name.to_sym, leaves  
-              else
-                with cats.name.to_sym, cats.value
-              end
+              #puts "leaves_search #{cats.value} #{leaves}"
+                with :product_type, leaves  
+            else
+              with cats.name.to_sym, cats.value
             end
-           #with cats.name.to_sym, cats.value
           end
         end
       end
@@ -101,7 +98,11 @@ class Search < ActiveRecord::Base
           elsif f.feature_type == "Binary"
             facet f.name.to_sym
           elsif f.feature_type == "Categorical" 
+            if f.name == "category"
+              facet :product_type, exclude: cat_filters[f.name]
+            else
               facet f.name.to_sym, exclude: cat_filters[f.name]
+            end
           end
       end
     end
@@ -130,7 +131,9 @@ class Search < ActiveRecord::Base
   def userdatabins
       @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
-  
+  def parentcats
+     @parentcats ||=[]
+  end
   def filters_cats
       @filters_cats ||= []
   end
@@ -321,10 +324,30 @@ class Search < ActiveRecord::Base
     
     #Categorical Features
     @userdatacats = []
+    @parentcats=[]
     Maybe(p[:categorical]).each_pair do |k,v|
-      v.split("*").each do |cat|
-        @userdatacats << Userdatacat.new({:name => k, :value => cat})
+      if k = "category"
+         temp=[]
+         v.split("*").each do |cat|
+           nested_cats = cat.split("+")
+           nested_cats.each do |subcat|
+              @parentcats << Userdatacat.new({:name => k , :value => temp.delete(subcat)})  if temp.include?(subcat)
+           end
+           temp << nested_cats.last if nested_cats.last 
+         end
+         temp.each do |t|
+            @userdatacats << Userdatacat.new({:name => k, :value => t})
+          end
+          temp=[]
+      else   
+        v.split("*").each do |cat|
+          @userdatacats << Userdatacat.new({:name => k, :value => cat})
+        end
       end
+    end
+    
+    @userdatacats.each do |cats|
+      puts "filter_categories #{cats.name} #{cats.value}"
     end
     
     unless(@old_keyword==keyword_search) 

@@ -12,7 +12,7 @@ class ProductCategory < ActiveRecord::Base
   
   def self.get_ancestors(nodes, level=nil)
     nodes = [nodes] unless nodes.class == Array
-    search = build_query(nodes, left="l_id < ", right="r_id > ", level)
+    search = build_query(nodes, left="l_id <= ", right="r_id >= ", level)
     if search
       CachingMemcached.cache_lookup("ProductCategory#{search.hash}") do
         ProductCategory.where(search).map(&:product_type)
@@ -58,7 +58,7 @@ class ProductCategory < ActiveRecord::Base
   def self.get_leaves (nodes)
     nodes = [nodes] unless nodes.class == Array
    # node = node[0..0] if Rails.env.test? #Only check first node for testing
-    search = build_query(nodes, left="l_id > ", right="r_id < ",nil)  
+    search = build_query(nodes, left="l_id >= ", right="r_id <= ",nil)  
     if search
       CachingMemcached.cache_lookup("ProductCategory_leaves#{search.hash}") do
         ProductCategory.where(search).where("l_id=(r_id-1)").map(&:product_type)
