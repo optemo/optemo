@@ -40,6 +40,9 @@ class Product < ActiveRecord::Base
       cat_specs.find_by_name(:product_type).value
     end
     
+    string :first_ancestors
+    string :second_ancestors
+    
    (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
     if (s.feature_type == "Continuous")
       float s.name.to_sym, trie: true do
@@ -56,6 +59,16 @@ class Product < ActiveRecord::Base
     end
    end
     autosuggest :product_name, :using => :instock?                  
+  end
+  
+  def first_ancestors
+    list = Session.product_type_ancestors(cat_specs.find_by_name(:product_type).value, 3)
+    list.join("") if list
+  end
+  
+  def second_ancestors
+    list = Session.product_type_ancestors(cat_specs.find_by_name(:product_type).value,4)
+    list.join("") if list
   end
   
   def eq_id_str

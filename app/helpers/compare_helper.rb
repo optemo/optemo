@@ -83,17 +83,20 @@ module CompareHelper
     return ret
   end
   
-  def cat_order(f, chosen_cats, tree_level= 3)
+  def cat_order(f, chosen_cats, tree_level= 1)
    optionlist={}
     if (request.host =="keyword")       
        if f.name == "category"
-         leaves = CatSpec.count_feat(f.name)
-        # puts "leaves_compare #{leaves}"
-         Session.product_type_ancestors(leaves.keys, tree_level).each do |fp|
-           l = Session.product_type_leaves(fp)
-          # puts "first_ancestor #{fp} its leaves #{l}"
-           optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
-         end
+       #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
+       #  leaves = CatSpec.count_feat(f.name)
+       # # puts "leaves_compare #{leaves}"
+       #  Session.product_type_ancestors(leaves.keys, tree_level).each do |fp|
+       #    l = Session.product_type_leaves(fp)
+       #   # puts "first_ancestor #{fp} its leaves #{l}"
+       #    optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
+       #  end
+       #***************
+         optionlist = CatSpec.count_feat(f.name, tree_level)
        else
         optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
        end
@@ -107,16 +110,24 @@ module CompareHelper
   	optionlist
   end
  
-  def sub_level(product_type, tree_level= 4)
+  def sub_level(product_type, tree_level= 2)
     optionlist={}
-    leaves = CatSpec.count_feat("category")
-    ancestors = Session.product_type_ancestors(leaves.keys, tree_level)
+   #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
+   # leaves = CatSpec.count_feat("category")
+   # ancestors = Session.product_type_ancestors(leaves.keys, tree_level)
+   # subcategories = Session.product_type_subcategory(product_type).each do |sub|
+   #    if ancestors.include?(sub)
+   #     optionlist[sub] =  Session.product_type_leaves(sub).map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
+   #    end
+   # end
+   #puts "sub_level #{ancestors} #{subcategories}"
+   #****************
+    second_ancestors = CatSpec.count_feat("category",tree_level)
     subcategories = Session.product_type_subcategory(product_type).each do |sub|
-       if ancestors.include?(sub)
-        optionlist[sub] =  Session.product_type_leaves(sub).map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
-       end
+      if second_ancestors.has_key?(sub) && second_ancestors[sub]>0
+        optionlist[sub] = second_ancestors[sub]
+      end
     end
-    #puts "sub_level #{ancestors} #{subcategories}"
     optionlist
   end
   def only_if_onsale(product)

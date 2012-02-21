@@ -100,6 +100,8 @@ class Search < ActiveRecord::Base
           elsif f.feature_type == "Categorical" 
             if f.name == "category"
               facet :product_type, exclude: cat_filters[f.name]
+              facet :first_ancestors, exclude: cat_filters[f.name]
+              facet :second_ancestors, exclude: cat_filters[f.name]
             else
               facet f.name.to_sym, exclude: cat_filters[f.name]
             end
@@ -323,6 +325,7 @@ class Search < ActiveRecord::Base
     end
     
     #Categorical Features
+    #for the category part, the parents and children are separated in order to be able to make the tree and also do a correct search
     @userdatacats = []
     @parentcats=[]
     Maybe(p[:categorical]).each_pair do |k,v|
@@ -357,6 +360,7 @@ class Search < ActiveRecord::Base
       @userdataconts = []
       @userdatabins = []
       @userdatacats = []
+      @parentcats= []
     end
 
   end

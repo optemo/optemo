@@ -24,11 +24,18 @@ class CatSpec < ActiveRecord::Base
     end
   end
   
-  def self.count_feat(feat)
+  def self.count_feat(feat,level=nil)
     q = {}
-    feat= "product_type" if feat == "category"
+    if feat == "category" && level == 1
+      feat= "first_ancestors"
+    elsif feat=="category" && level == 2
+      feat= "second_ancestors"
+    elsif feat=="category"
+      feat= "product_type"
+    end  
+    #debugger if feat== "first_ancestors"
     Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
-     # puts "r.value #{r.value} #{r.count}"
+      puts "r.value #{r.value} #{r.count}"
       q[r.value] = r.count
     end
     q
