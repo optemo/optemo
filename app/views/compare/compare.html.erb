@@ -1,4 +1,3 @@
-<% self.title = "#{@s.product_type.capitalize}" unless @indexload %>
 <% main_window = render :partial => (Session.search.initial ? 'landing' : 'discoverybrowser') unless @indexload %>
 <div class="left-right-wrapper">
 <div id="leftbar">
