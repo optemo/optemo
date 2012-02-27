@@ -36,7 +36,7 @@
           <% checked = chosen_cats.include?(k) %>
           <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >
             <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
-            <%= (available_count == 0) ?  t("#{Session.product_type}.specs.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
+            <%= (available_count == 0) ?  t("#{Session.product_type}.filter.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.filter.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
             <span class="av_count"><%= "(#{available_count})" unless checked %></span>
 			 <%if checked && f.name == "category"%>
 			  <% optionlist1 = sub_level(k) %>
@@ -44,7 +44,7 @@
 			   <% checked1 = chosen_cats.include?(k1) %>
 			  	 <div class="list_item hanging_indent" <%=raw "style='font-weight:normal;'" unless checked1 %> >
 			         <%= check_box_tag "categorical[#{f.name}]", (k + "+" + k1), checked1, :class => 'cat_filter' %>
-					<%= (available_count1 == 0) ?  t("#{Session.product_type}.specs.#{k1}.name",:default=>k1) : link_to(t("#{Session.product_type}.specs.#{k1}.name", :default=>k1), "#", :class => "checkbox_text") %>
+					<%= (available_count1 == 0) ?  t("#{Session.product_type}.filter.#{k1}.name",:default=>k1) : link_to(t("#{Session.product_type}.filter.#{k1}.name", :default=>k1), "#", :class => "checkbox_text") %>
 		            <span class="av_count"><%= "(#{available_count1})" unless checked1 %></span>
 				 </div>
 			  <%end%>
@@ -80,7 +80,7 @@
             data-max= '<%= datamax %>'
             data-distmin=<%= distribution_data.first[0] %>
             data-distmax=<%= distribution_data.first[1] %>
-            data-unit = "<%= t("#{Session.product_type}.specs.#{f.name}.unit", :default => '') %>" 
+            data-unit = "<%= t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>" 
             disabled="disabled"/>
         </span>
       </div>
@@ -90,11 +90,9 @@
     <% unchecked = dobj.nil? || dobj.value == false %>
     <% available_count = BinSpec.count_feat(f.name) %>
     <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-	<% if (request.host == "keyword" && available_count != 0) || request.host== "localhost"%>
       <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter' %>
-      <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym) : link_to( t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym), "#", :class => "checkbox_text") %>
+      <%= (available_count == 0) ? t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize) : link_to( t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize), "#", :class => "checkbox_text") %>
       <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
-	<%end%>
     </div>
   <% end %>
   </div>
