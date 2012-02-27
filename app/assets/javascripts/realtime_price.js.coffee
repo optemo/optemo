@@ -50,9 +50,9 @@
             #And also remove the add to cart button
             addlink = t.siblings('.shopnowhero') #See if we're dealing with the hero product 
             unless (addlink.length)
-              addlink = t.parent().siblings() #Otherwise we're dealing with the navbox
-            
-            addlink.after($('<div style="text-align: center;">').html(if optemo_french? then "(En rupture de stock)" else "(Out of stock)")).hide()
+              addlink = t #.parent().siblings() #Otherwise we're dealing with the navbox
+
+            # addlink.after($('<div style="text-align: center;">').html(if optemo_french? then "(En rupture de stock)" else "(Out of stock)")).hide()
             #And also remove the link from the image
             t.siblings("img.productimg").removeClass("productimg").removeAttr('title') #navbox
             t.parent().siblings("img.productimg").removeClass("productimg").removeAttr('title') #Hero
