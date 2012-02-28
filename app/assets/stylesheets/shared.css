@@ -72,9 +72,6 @@ body {
 }
 /* Header */
 
-#optemo_embedder h1 {
-	font-size: 2.1em;
-}
 #optemo_embedder #leftbar h2 {
 	margin: 0;
 	font-size: 0.9em;

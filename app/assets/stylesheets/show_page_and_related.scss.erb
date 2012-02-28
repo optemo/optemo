@@ -176,26 +176,37 @@ div#reviews {
   	padding-left: 1em;
   }
   .narrow_text {
-    margin: 17px 11px 0 12px;
+    margin: 10px 5px 0 7px;
     padding: 0;
   }
-  .narrow_text div {
-    height: 39px;
+  .narrow_text h1 {
+    text-align:left;
+  }
+  
+  .narrow_text h1 {
+  	font-size: 12px;
+  	font-weight: bold;
+  	margin:0 5px 6px 0;
+  }
+  
+  .refine_text, .french_refine_text {
+	  font-size: 14px;
+	  font-weight: bold;
+	  text-align: left;
+	  color: #000;
+  }
+  .fr .refine_text {
+	  margin-left: 26px; 
+  }
+  .french_refine_text {
+    font-size: 16.3px;
+	  margin-left: 26px; 
   }
   .narrow_text .en {
-    background: url(<%= asset_data_uri('refine_your_search.gif') %>);
-    width: 150px;
+    width: 164px;
   }
-  .narrow_text .fr {
-    background: url(<%= asset_data_uri('refine_your_search_fr.gif') %>);
-    width: 160px;
-    margin-left: -5px;
-  }
-  .ie67 .narrow_text .en {
-    background: url(<%= asset_path('refine_your_search.gif') %>);
-  }
-  .ie67 .narrow_text .fr {
-    background: url(<%= asset_path('refine_your_search_fr.gif') %>);
+  .fr .narrow_text h1 {
+    padding: 0 10px 0 8px;
   }
   .y_heading
   {
@@ -208,11 +219,14 @@ div#reviews {
     text-align: right;
     margin:0;
   }
+  .fr .y_heading {
+    height: 105px;
+  }
   .y_heading a.regular_reset, .y_bottom a.regular_reset{ 
     font-size: 11px;
     font-weight: bold;
     padding: 0;
-    margin: 2px 0 0;
+    margin: 7px 5px 0;
   }
   .nav_clear_btn, .nav_clear_btn:visited{
     font-size: 11px;
