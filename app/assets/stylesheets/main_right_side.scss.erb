@@ -158,6 +158,10 @@
     border-top: 1px solid #e1e1e1;
     font-size: 0.8em;
     margin: 6px 10px 0;
+    background: #ebebed;
+    padding: 0 0 5px 0;
+    -moz-border-radius: 6px; 
+  	-webkit-border-radius: 6px;
   }
 
   .nolinelink {
@@ -176,6 +180,46 @@
 
   .bundlediv:hover {
     border:1px solid blue;
+  }
+  .bundle_spacer {
+    background: #FFF;
+    height: 1px;
+    width: 100%;
+  }
+  .bundle_item {
+    padding: 8px 3px 8px 3px;
+    position: relative;
+    margin: 0 8px 0 8px;
+  }
+  .bundle_image {
+    background: url(<%= asset_data_uri('bundle_arrow.png') %>) no-repeat bottom right;
+    width: 22px;
+    height: 21px;
+    position: absolute;
+    top: 7px;
+    right: 1px;
+  }
+  .more_package_deals_plus {
+    background: url(<%= asset_data_uri('more_package_deals_plus.png') %>) no-repeat bottom right;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 0;
+    left: 18px; 
+  }
+  .bundle_package_stub_text {
+    margin: 7px 0 2px 34px;
+    padding: 2px;
+  }
+  .bundle_more_deals_stub {
+    position: relative;
+  }
+  .bundle_header {
+    font-size: 1.25em;
+    font-weight: bold;
+  }
+  .bundle_bullet_point {
+    padding-left: 3px;
   }
 
   .bundleslabel {
