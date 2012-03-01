@@ -38,6 +38,7 @@ gem 'i18n-active_record',
 # gem 'aws-s3', :require => 'aws/s3'
 gem 'sunspot_rails', :git=> "https://github.com/wildoats/sunspot.git", :branch=>"optemo"
 gem 'ruby_core_source'
+gem 'progress_bar'
 #gem 'sunspot_rails', '2.0.0.optemo', :path => 'vendor/plugins/sunspot'
 
 
@@ -52,7 +53,6 @@ end
 group :development do
    gem 'sunspot_solr', :git=> "https://github.com/wildoats/sunspot.git", :branch=>"optemo" # optional pre-packaged Solr distribution for use in development
    #gem 'sunspot_solr', '2.0.0.optemo', :path => 'vendor/plugins/sunspot' # optional pre-packaged Solr distribution for use in development
-   gem 'progress_bar'
 end
 
 # Bundle gems for the local environment. Make sure to
