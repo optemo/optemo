@@ -37,7 +37,7 @@ class Product < ActiveRecord::Base
     boolean :instock
     string :eq_id_str 
     string :product_type do
-      cat_specs.find_by_name(:product_type).value
+      cat_specs.find_by_name(:product_type).try(:value)
     end
     
     string :first_ancestors
@@ -62,13 +62,17 @@ class Product < ActiveRecord::Base
   end
   
   def first_ancestors
-    list = Session.product_type_ancestors(cat_specs.find_by_name(:product_type).value, 3)
-    list.join("") if list
+    if pt = cat_specs.find_by_name(:product_type)
+      list = Session.product_type_ancestors(pt.value, 3)
+      list.join("") if list
+    end
   end
   
   def second_ancestors
-    list = Session.product_type_ancestors(cat_specs.find_by_name(:product_type).value,4)
-    list.join("") if list
+    if pt = cat_specs.find_by_name(:product_type)
+      list = Session.product_type_ancestors(pt.value, 4)
+      list.join("") if list
+    end
   end
   
   def eq_id_str

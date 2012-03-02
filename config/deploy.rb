@@ -1,4 +1,4 @@
-set :stages, %w(staging production linode slicehost sandbox)
+set :stages, %w(sbox production linode slicehost sandbox)
 require 'capistrano/ext/multistage'
 require 'bundler/capistrano'
 # The next two lines are needed for integration with Ruby Version Manager:
