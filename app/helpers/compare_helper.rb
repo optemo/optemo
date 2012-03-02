@@ -2,13 +2,20 @@ module CompareHelper
   def main_boxes
     res = []
     @s.search.paginated_products.map{|p|Product.cached(p.id)}.each_slice(3) do |box1,box2,box3|
-      res << content_tag("div") do
-        render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
-        render(:partial => 'navbox', :locals => {product: box2, last_in_row: false}) +
-        render(:partial => 'navbox', :locals => {product: box3, last_in_row: true})
+      res << content_tag("div", :style => "padding: 10px 0") do
+        content_tag("div", :style => "position: relative; overflow:hidden; zoom:1;") do
+          render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
+          render(:partial => 'navbox', :locals => {product: box2, last_in_row: false}) +
+          render(:partial => 'navbox', :locals => {product: box3, last_in_row: true}) +
+          tag(:div, {:class => 'navbox_grey_separator_image_left'}) +
+          tag(:div, {:class => 'navbox_grey_separator_image_right'}) +
+          render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
+          render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
+          render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
+        end
       end
     end
-    res.join(tag("div", :style => "height:1px;width: 520px;border-top:1px #ccc solid;margin: 0 auto 8px;", class: "divider"))
+    res.join(tag("div", :style => "height:1px;width: 520px;border-top:1px #ccc solid;margin: 10px auto 4px;", class: "divider"))
   end
 
   def product_title

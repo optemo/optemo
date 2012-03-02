@@ -58,33 +58,5 @@
        <div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
      <% end %>
    </div>
-   <!-- For each bundle of this product, show price and images for products it's bundled with -->
-   <!-- Bundles are not shown right now -->
-   <!-- To see the UI piece, uncomment this block. There seem to be no bundles showing up at the moment. ZAT 02/27/2012
-   <% bundles = product.product_bundles -%>
-   <% unless bundles.empty? %>
-   <div class="bundlesbox">
-     <div class="bundleslabel"> <%= t('products.show.bundledwith') %>: </div>
-     <% bundles.each do |bundle| -%> 
-       <% bundle_id = bundle.bundle_id -%>
-       <% bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
-       <% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
-         <div class="bundlediv" data-url="<%= TextSpec.cacheone(bundle_id, "productUrl#{fr?}") %>">
-           <%= link_to TextSpec.cacheone(bundle_id, "productUrl#{fr?}"), :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
-             <% bundledesc = JSON.parse(TextSpec.cacheone(bundle_id, 'bundle').gsub("=>",":")) %>
-             <div class="sibling">
-               <% bundledesc[1..-1].each do |item| -%>
-                 <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"] ) %>
-               <% end %>
-               <%= number_to_currency(bundle_cont_specs["saleprice"], precision: 2) %>
-             </div>
-           <% end %>
-         </div>
-     <% end %>
-     <div style="clear:left"><!-/- -/-></div>
-   </div>
-   <% else %>
-     <%= render partial: 'bundle' %>
-   <% end %> -->
  </div>
 <%end%>

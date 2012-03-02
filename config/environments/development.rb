@@ -17,7 +17,7 @@ Site::Application.configure do
   config.action_controller.perform_caching = false
   
   # In production, Apache or nginx will already do this
-  config.serve_static_assets = false # false by default
+  config.serve_static_assets = true # false by default
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # This used to be "assets.optemo.com" but that requires an entry in /etc/hosts

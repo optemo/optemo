@@ -6,13 +6,11 @@
 
 
 #optemo_embedder {
-  .navbox
-  {
+  .navbox {
     font-size: 0.85em;
-    margin: 8px 3px 12px 0;
-    padding-right: 2px;
-    width: 179px; /*+2 for the border*/
-    background: right center url(<%= asset_data_uri "seperatorbar.png" %>) no-repeat;
+    margin: 8px 3px 0 0;
+    padding: 0 2px 12px 0;
+    width: 178px; /*+2 for the border*/
     overflow: hidden;
     text-align: center;
     display: inline-block;
@@ -22,7 +20,6 @@
   }
   .ie67 .navbox {
     display: inline !important;
-    background-image: url(<%= asset_path "seperatorbar.png" %>);
   }
   
   .divider {
@@ -152,26 +149,55 @@
   .stars img {
     float: left;
   }
-
-  .bundlesbox {
-    text-align: left;
-    border-top: 1px solid #e1e1e1;
-    font-size: 0.8em;
-    margin: 6px 10px 0;
-    background: #ebebed;
-    padding: 0 0 5px 0;
-    -moz-border-radius: 6px; 
-  	-webkit-border-radius: 6px;
+  .navbox_grey_separator_image_left, .navbox_grey_separator_image_right {
+    height: 750px;
+    width: 1px;
+    position: absolute;
+    top: 5px;
+    left: 185px;
+    background: right center url(<%= asset_data_uri "navbox_grey_separator_bar.gif" %>) no-repeat;
   }
-
+  .navbox_grey_separator_image_right {
+    left: 372px;
+  }
+  .ie67 .navbox_grey_separator_image_left, .ie67 .navbox_grey_separator_image_right {
+    background-image: url(<%= asset_path "navbox_grey_separator_bar.gif" %>);
+  }
   .nolinelink {
     text-decoration: none;
   }
-
   .nolinelink:hover {
     text-decoration: none;
   }
 
+  /* Bundle Boxes */
+
+  .bundle_box_border_container {
+    width: 175px;
+    padding-right: 2px;
+    margin: 3px 3px -11px;
+    display: inline-block;
+    vertical-align:top;
+  }
+  .bundlesbox {
+    text-align: left;
+    font-size: 0.8em;
+    margin: 6px 11px 11px 7px;
+    width: 162px;
+    background: #ebebed;
+    padding-bottom: 5px;
+    -moz-border-radius: 6px; 
+  	-webkit-border-radius: 6px;
+  }
+  .ie67 .bundle_box_border_container {
+    display: inline !important;
+  }
+  .ie7 .bundle_box_border_container {
+    width: 178px;
+  }
+  .ie67 .bundlesbox {
+    width: 161px;
+  }
   .bundlediv {
     padding-bottom: 5px;
     min-height: 35px;
@@ -181,38 +207,51 @@
   .bundlediv:hover {
     border:1px solid blue;
   }
-  .bundle_spacer {
+  .bundle_spacer, .bundle_first_spacer {
     background: #FFF;
     height: 1px;
     width: 100%;
   }
-  .bundle_item {
+  .bundle_item, .bundle_first_item {
     padding: 8px 3px 8px 3px;
     position: relative;
     margin: 0 8px 0 8px;
   }
+  .bundle_item, .bundle_spacer {
+    display: none;
+  }
   .bundle_image {
-    background: url(<%= asset_data_uri('bundle_arrow.png') %>) no-repeat bottom right;
-    width: 22px;
-    height: 21px;
+    width: 20px;
+    height: 20px;
     position: absolute;
     top: 7px;
     right: 1px;
+    background: url(<%= asset_data_uri('bundle_arrow.gif') %>) no-repeat bottom right;
+  }
+  .ie67 .bundle_image {
+    background-image: url(<%= asset_path('bundle_arrow.gif') %>);    
   }
   .more_package_deals_plus {
-    background: url(<%= asset_data_uri('more_package_deals_plus.png') %>) no-repeat bottom right;
     width: 16px;
     height: 16px;
     position: absolute;
-    top: 0;
-    left: 18px; 
+    top: 1px;
+    left: 12px; 
+    background: url(<%= asset_data_uri('more_package_deals_plus.gif') %>) no-repeat bottom right;
+  }
+  .ie67 .more_package_deals_plus {
+    background-image: url(<%= asset_path('more_package_deals_plus.gif') %>);  
+  } 
+  .ie6 .more_package_deals_plus {
+    left: -18px;
   }
   .bundle_package_stub_text {
-    margin: 7px 0 2px 34px;
+    margin: 7px 0 2px 31px;
     padding: 2px;
   }
   .bundle_more_deals_stub {
     position: relative;
+    cursor: pointer;
   }
   .bundle_header {
     font-size: 1.25em;
@@ -221,11 +260,11 @@
   .bundle_bullet_point {
     padding-left: 3px;
   }
-
   .bundleslabel {
     padding-left: 5px;
     padding-bottom: 5px;
   }
+
 
   .colorslabel {
     margin-bottom: 2px;

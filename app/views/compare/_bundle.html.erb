@@ -1,25 +1,30 @@
-<div class="bundlesbox">
-  <div class="bundle_item">
-    <div class="bundle_header">
-      Package Deals:<br>
-      $159.97
-    </div>
-    <div class="bundle_bullet_point">• Lowepro Camera Bag</div>
-    <div class="bundle_bullet_point">• PNY 16GB Memory Card</div>  
-    <div class="bundle_image"></div>
+<!-- For each bundle of this product, show price and images for products it's bundled with -->
+<!-- Bundles are not shown right now -->
+<%if product && product.id%>
+	<% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
+  <% bundles = product.product_bundles -%>
+  <% unless bundles.empty? %>
+  <div class="bundlesbox">
+    <div class="bundleslabel"> <%= t('products.show.bundledwith') %>: </div>
+    <% bundles.each do |bundle| -%> 
+      <% bundle_id = bundle.bundle_id -%>
+      <% bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
+      <% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
+        <div class="bundlediv" data-url="<%= TextSpec.cacheone(bundle_id, "productUrl#{fr?}") %>">
+          <%= link_to TextSpec.cacheone(bundle_id, "productUrl#{fr?}"), :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
+            <% bundledesc = JSON.parse(TextSpec.cacheone(bundle_id, 'bundle').gsub("=>",":")) %>
+            <div class="sibling">
+              <% bundledesc[1..-1].each do |item| -%>
+                <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"] ) %>
+              <% end %>
+              <%= number_to_currency(bundle_cont_specs["saleprice"], precision: 2) %>
+            </div>
+          <% end %>
+        </div>
+    <% end %>
+    <div style="clear:left"><!-- --></div>
   </div>
-  <div class="bundle_spacer"></div>
-  <div class="bundle_item">
-    <div class="bundle_header">
-      $159.97
-    </div>
-    <div class="bundle_bullet_point">• Lowepro Camera Bag</div>
-    <div class="bundle_bullet_point">• PNY 16GB Memory Card</div>  
-    <div class="bundle_image"></div>
-  </div>
-  <div class="bundle_spacer"></div>
-  <div class="bundle_more_deals_stub">
-    <div class="bundle_package_stub_text">More Package Deals</div>
-    <div class="more_package_deals_plus"></div>
-  </div>
-</div>
+  <% else %>
+    <%= render partial: 'testing_bundle', :locals => {product: product, last_in_row: last_in_row}%>
+  <% end %>
+<% end %>

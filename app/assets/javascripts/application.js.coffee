@@ -42,7 +42,12 @@
   $('#back-to-top-bottom').live "click", ->
     $('body,html').animate({scrollTop: 0}, 800)
     return false
-  
+
+  $('.bundle_more_deals_stub').live 'click', ->
+    $(this).siblings('.bundle_item').slideToggle()
+    $(this).siblings('.bundle_spacer').slideToggle()
+    return false
+
   ### Bundles are disabled for now
   //Bundle link
   $('.bundlediv').live('click', function() {
