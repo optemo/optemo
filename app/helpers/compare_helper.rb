@@ -30,13 +30,18 @@ module CompareHelper
     (Session.search.userdatacats+Session.search.parentcats).select{|d|d.name == feat}.map{|x|x.value}
   end
 
+  def getRanges(feat)
+    num_ranges = 7
+    Ranges.getRange(feat, num_ranges)
+  end  
+
 	def getDist(feat)
     num_buckets = 24
     discretized = Session.search.solr_cached.facet(feat.to_sym).rows
     if (!discretized.empty?)
       min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
       max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
-   
+    
       min = discretized.first.value
       max = discretized.last.value
       step = (max - min + 0.00000001) / num_buckets
