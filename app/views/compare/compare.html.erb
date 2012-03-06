@@ -1,5 +1,5 @@
 <% unless @indexload %>
-  <% main_window = (render :partial => 'navigator_bar') + (render :partial => (Session.search.initial ? 'landing' : 'discoverybrowser')) %>
+  <% main_window = (render :partial => 'navigator_bar', :locals => {:landing => true}) + (render :partial => (Session.search.initial ? 'landing' : 'discoverybrowser')) %>
 <% end %>
 
 <div class="left-right-wrapper">
