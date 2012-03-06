@@ -34,9 +34,9 @@ module CompareHelper
     num_ranges = 7
     Ranges.getRange(feat, num_ranges)
   end  
+
 	def getDist(feat)
     num_buckets = 24
-    Ranges.getRange(feat, num_buckets)
     discretized = Session.search.solr_cached.facet(feat.to_sym).rows
     if (!discretized.empty?)
       min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
