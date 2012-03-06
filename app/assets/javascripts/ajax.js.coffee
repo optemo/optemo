@@ -158,9 +158,9 @@
       window.location.replace(rdr[1])
     else
       parts = data.split('[BRK]')
-      if (parts.length == 2) 
+      if (parts.length == 3) 
         $('#ajaxfilter').empty().append(parts[1])
-        $('#main').html(parts[0])
+        $('#main').html(parts[2] + parts[0])
         optemo_module.whenDOMready()
         return 0
         
@@ -189,7 +189,7 @@
   #/* LiveInit functions */
   $(".bb_quickview_close, #silkscreen").live 'click', ->
     optemo_module.removeSilkScreen()
-    if (optemo_module.lastpage? and optemo_module.lastpage)
+    if (optemo_module.lastpage? and optemo_module.lasthash)
       #There was an error in the last request
       $("#actioncount").html(optemo_module.lasthash) #Undo the last action
       optemo_module.ajaxcall("/")

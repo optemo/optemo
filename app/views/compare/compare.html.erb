@@ -1,4 +1,7 @@
-<% main_window = render :partial => (Session.search.initial ? 'landing' : 'discoverybrowser') unless @indexload %>
+<% unless @indexload %>
+  <% main_window = (render :partial => 'navigator_bar') + (render :partial => (Session.search.initial ? 'landing' : 'discoverybrowser')) %>
+<% end %>
+
 <div class="left-right-wrapper">
 <div id="leftbar">
 	<!-- The Filters section -->
