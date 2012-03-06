@@ -47,5 +47,9 @@ class ApplicationController < ActionController::Base
     #s.id = mysession_id
     #s.ab_testing_type = ab_testing_type
     # We are passing in the category id from javascript
+
+    # To use ranges instead of sliders for continuous variables, uncomment this line
+    # s.use_ranges_instead_of_sliders = true
+
   end
 end

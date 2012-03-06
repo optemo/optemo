@@ -33,57 +33,71 @@
       <% optionlist = cat_order(f, chosen_cats) %>
       <div class="categorical<%= " brand" if f.name == "brand" %>">
 	    <% optionlist.each do |k,available_count| %>
-          <% checked = chosen_cats.include?(k) %>
-          <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >
-            <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
-            <%= (available_count == 0) ?  t("#{Session.product_type}.filter.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.filter.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
-            <span class="av_count"><%= "(#{available_count})" unless checked %></span>
-			 <%if checked && f.name == "category"%>
-			  <% optionlist1 = sub_level(k) %>
-			  <% optionlist1.each do |k1,available_count1| %>
-			   <% checked1 = chosen_cats.include?(k1) %>
-			  	 <div class="list_item hanging_indent" <%=raw "style='font-weight:normal;'" unless checked1 %> >
-			         <%= check_box_tag "categorical[#{f.name}]", (k + "+" + k1), checked1, :class => 'cat_filter' %>
-					<%= (available_count1 == 0) ?  t("#{Session.product_type}.filter.#{k1}.name",:default=>k1) : link_to(t("#{Session.product_type}.filter.#{k1}.name", :default=>k1), "#", :class => "checkbox_text") %>
+        <% checked = chosen_cats.include?(k) %>
+        <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >
+          <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
+          <%= (available_count == 0) ?  t("#{Session.product_type}.filter.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.filter.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
+          <span class="av_count"><%= "(#{available_count})" unless checked %></span>
+			    <% if checked && f.name == "category" %>
+			      <% optionlist1 = sub_level(k) %>
+			      <% optionlist1.each do |k1,available_count1| %>
+			        <% checked1 = chosen_cats.include?(k1) %>
+			  	    <div class="list_item hanging_indent" <%=raw "style='font-weight:normal;'" unless checked1 %> >
+                <%= check_box_tag "categorical[#{f.name}]", (k + "+" + k1), checked1, :class => 'cat_filter' %>
+					      <%= (available_count1 == 0) ?  t("#{Session.product_type}.filter.#{k1}.name",:default=>k1) : link_to(t("#{Session.product_type}.filter.#{k1}.name", :default=>k1), "#", :class => "checkbox_text") %>
 		            <span class="av_count"><%= "(#{available_count1})" unless checked1 %></span>
-				 </div>
-			  <%end%>
-			 <%end%>
-          </div>	
-        <% end %>
+				      </div>
+			      <% end %> <%# optionlist1.each %>
+			    <% end %> <%# if checked %>
+        </div>	
+      <% end %> <%# optionlist.each %>
       </div>
-    <% end %>
+    <% end %> <%# else %>
   <% when "Continuous" %>
     <%= render partial: 'filter_label', locals: {f: f} %>
-    <%# Check continuous features for data, instead of graying them, we just don't show them %>
-    <% distribution_data = getDist(f.name) -%>
-    <% if distribution_data.blank? -%>
-      	<div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
-    <% elsif distribution_data.first[2] == distribution_data.first[3] %>
-      <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
-    <% else %>
-      <div style="position:relative">
-        <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
-        <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
-        <% step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil) -%>
-        <% datamin = roundedInterval(distribution_data.first[2],step,true) -%>
-        <% datamax = roundedInterval(distribution_data.first[3],step,false) -%>
-        <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
-        <span class="sliderspan">
-          <input 
-            class="slider" 
-            type="slider" 
-            name="superfluous[<%= f.name %>]"
-            value="<%= [(current.min.nil? ? datamin : current.min),(current.max.nil? ? datamax : current.max)].join(";") %>"
-            data-step='<%= step %>'
-            data-min= '<%= datamin %>'
-            data-max= '<%= datamax %>'
-            data-distmin=<%= distribution_data.first[0] %>
-            data-distmax=<%= distribution_data.first[1] %>
-            data-unit = "<%= t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>" 
-            disabled="disabled"/>
-        </span>
-      </div>
+    <% if Session.use_ranges_instead_of_sliders %>
+      <% range_data = getRanges(f.name) %>
+      <% range_data.each do |r| %>
+        <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
+        <% unchecked = dobj.nil? || dobj.value == false %>
+        <% available_count = r["count"] %>
+        <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+          <%= check_box_tag "continuous[#{f.name}]", "#{r['min']};#{r['max']}", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter', :"data-min" => r["min"], :"data-max" => r["max"] %>
+          <%= (r["min"].to_s + " &ndash; " + r["max"].to_s).html_safe %>
+          <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
+        </div>
+      <% end %> <%# range_data.each %>
+    <% else %> <%# Use sliders still, not ranges %>
+      <%# Check continuous features for data, instead of graying them, we just don't show them %>
+      <% distribution_data = getDist(f.name) -%>
+      <% if distribution_data.blank? -%>
+        	<div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
+      <% elsif distribution_data.first[2] == distribution_data.first[3] %>
+        <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
+      <% else %>
+        <div style="position:relative">
+          <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
+          <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
+          <% step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil) -%>
+          <% datamin = roundedInterval(distribution_data.first[2],step,true) -%>
+          <% datamax = roundedInterval(distribution_data.first[3],step,false) -%>
+          <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
+          <span class="sliderspan">
+            <input 
+              class="slider" 
+              type="slider" 
+              name="superfluous[<%= f.name %>]"
+              value="<%= [(current.min.nil? ? datamin : current.min),(current.max.nil? ? datamax : current.max)].join(";") %>"
+              data-step='<%= step %>'
+              data-min= '<%= datamin %>'
+              data-max= '<%= datamax %>'
+              data-distmin=<%= distribution_data.first[0] %>
+              data-distmax=<%= distribution_data.first[1] %>
+              data-unit = "<%= t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>" 
+              disabled="disabled"/>
+          </span>
+        </div>
+      <% end %>
     <% end %>
   <% when "Binary" %>
     <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
