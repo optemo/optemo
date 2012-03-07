@@ -158,9 +158,10 @@
       window.location.replace(rdr[1])
     else
       parts = data.split('[BRK]')
-      if (parts.length == 3) 
-        $('#ajaxfilter').empty().append(parts[1])
-        $('#main').html(parts[2] + parts[0])
+      if (parts.length == 3)
+        $('#optemo_topbar').empty().append(parts[0])
+        $('#optemo_filter').empty().append(parts[1])
+        $('#optemo_content').empty().append(parts[2])
         optemo_module.whenDOMready()
         return 0
         

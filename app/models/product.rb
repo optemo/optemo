@@ -32,8 +32,7 @@ class Product < ActiveRecord::Base
     text :description do
       text_specs.find_by_name("longDescription").try(:value)
     end
-    text :sku 
-    var = 1
+    text :sku
     boolean :instock
     string :eq_id_str 
     string :product_type do
