@@ -97,7 +97,7 @@
     else
       $.ajax(
         #type: (mydata==null)?"GET":"POST",
-        data: if(typeof mydata is "undefined" or mydata is null) then "" else mydata,
+        data: if mydata? then mydata else "",
         url: myurl or "/compare",
         success: ajaxhandler,
         error: optemo_module.ajaxerror
@@ -158,13 +158,35 @@
       window.location.replace(rdr[1])
     else
       parts = data.split('[BRK]')
-      if (parts.length == 3)
-        $('#optemo_topbar').empty().append(parts[0])
-        $('#optemo_filter').empty().append(parts[1])
-        $('#optemo_content').empty().append(parts[2])
+      IEwrapper_pre = "<!--[if lte IE 6]>
+      <div id='IE' class='ie6 ie67'>
+      <![endif]-->
+      <!--[if IE 7]>
+      <div id='IE' class='ie7 ie67'>
+      <![endif]-->
+      <!--[if IE 8]>
+      <div id='IE' class='ie8'>
+      <![endif]-->
+      <!--[if gte IE 9]>
+      <div id='IE'>
+      <![endif]-->"
+      IEwrapper_post = "<!--[if IE]>
+      </div>
+      <![endif]-->"
+      if parts.length == 4
+        #Initial landing page
+        #Create dynamic/static divs in content
+        $('#optemo_content').empty().append("<div></div><div>"+parts.pop()+"</div>")
+      else
+        $('#optemo_content').empty()
+        
+      if parts.length == 3
+        $('#optemo_topbar').addClass("optemo").empty().append(IEwrapper_pre + parts[0] + IEwrapper_post)
+        $('#optemo_filter').addClass("optemo").empty().append(IEwrapper_pre + parts[1] + IEwrapper_post)
+        $('#optemo_content div:first').addClass("optemo").append(IEwrapper_pre + parts[2] + IEwrapper_post)
         optemo_module.whenDOMready()
         return 0
-        
+
   clear_loading = ->
     if optemo_module.loading_indicator_state?
       optemo_module.loading_indicator_state.disable = false

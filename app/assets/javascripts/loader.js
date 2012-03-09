@@ -19,16 +19,17 @@ OPT_REMOTE += temp_element.host;
 
 //Function for executing code at DOMReady
 //function opt_s(f){/in/.test(document.readyState)?setTimeout('opt_s('+f+')',9):f()}
-function opt_insert(d) {
-  var opt_t = document.getElementById("optemo_embedder");
+function opt_insert(d,name) {
+  var opt_t = document.getElementById(name);
   if (opt_t) {
     var se = document.createElement("div");
-    se.id = "opt_new";
+    se.className = "optemo";
     se.innerHTML = d;
     opt_t.appendChild(se);
-    optemo_module.whenDOMready();
+    if (name == "optemo_filter")
+      optemo_module.whenDOMready();
   } else
-    setTimeout(function(){opt_insert(d);d=null;},10);
+    setTimeout(function(){opt_insert(d,name);d=null;name=null;},10);
 }
 //Load the correct history on reload
 var opt_history = location.hash.replace(/^#/, '');
@@ -119,7 +120,11 @@ JSONP.get(OPT_REMOTE, opt_options, function (data) {
     else {
       data_to_append = data;
     }
-    opt_insert(data_to_append);
+    parts = data_to_append.split("[BRK]");
+    opt_insert(parts[0],"optemo_topbar");
+    opt_insert(parts[2],"optemo_content");
+    opt_insert(parts[3],"optemo_content");
+    opt_insert(parts[1],"optemo_filter");
 
     // We have to load all scripts in order, but using labJS is too heavy. So, we do a recursive serial loader function.
     // Although serial should == slow, the javascript we're loading should only be one file in production.
@@ -160,7 +165,11 @@ JSONP.get(OPT_REMOTE, opt_options, function (data) {
     } 
   }
   else {
-    opt_insert(data);
+    parts = data_to_append.split("[BRK]");
+    opt_insert(parts[0],"optemo_topbar");
+    opt_insert(parts[2],"optemo_content");
+    opt_insert(parts[3],"optemo_content");
+    opt_insert(parts[1],"optemo_filter");
   }
 });
 // Private function for the register_remote socket. Takes data, splits according to rules, does replace() according to rules.
@@ -170,12 +179,14 @@ function opt_parse_data_by_pattern(mydata, split_pattern_string, replacement_fun
   data_to_add = mydata.split(split_regexp);
   data_to_append = new Array();
   data_to_append.push(data_to_add[0]);
-  for (i = 0; i < images.length; i++) {
-    if (images[i].match(new RegExp("http:\/\/"))) 
-      data_to_append.push(images[i]);
-    else
-      data_to_append.push(replacement_function(images[i]));
-    data_to_append.push(data_to_add[i+1]);
+  if (images != null) {
+    for (i = 0; i < images.length; i++) {
+      if (images[i].match(new RegExp("http:\/\/"))) 
+        data_to_append.push(images[i]);
+      else
+        data_to_append.push(replacement_function(images[i]));
+      data_to_append.push(data_to_add[i+1]);
+    }
   }
   return data_to_append.join("\n");
 }

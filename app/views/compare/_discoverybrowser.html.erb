@@ -5,7 +5,7 @@
 <%= render "spellcheck" if @search_view %>
 <div id="product_content">
     <div class='border-content'>	
-    <%=raw main_boxes %>
+    <%= raw main_boxes %>
     <span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span>
     </div>
     <%= render partial: "pagination", locals: {bottom: true} %>

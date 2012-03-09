@@ -11,7 +11,7 @@ html {
   height: 100%;
 }*/
 
-#optemo_embedder {
+.optemo {
   .ie6 *, .ie7 * {
     margin: 0 0 0 0;
     padding: 0 0 0 0;
@@ -21,7 +21,7 @@ html {
 /*--------------------------------------//
 //            Color Picker              //
 //--------------------------------------*/
-#optemo_embedder {
+.optemo {
   .swatch {
   	width: 13px;
   	height: 13px;
@@ -64,7 +64,7 @@ html {
   }
 
   .y_bottom {
-    margin: 12px 0 -12px;
+    margin: 12px 0 0px;
     padding-right: 6px;
     padding-bottom: 3px;
   	overflow:hidden;
@@ -75,13 +75,6 @@ html {
     font-weight: bold;
   }
 
-
-  #IE.ie8 .y_bottom, #IE.ie7 .y_bottom{
-    margin-bottom: -4px;
-  }
-  #IE.ie6 .y_bottom {
-    margin-bottom: -12px;
-  }
   #IE .y_bottom {
     background: url(<%= asset_path 'IE/y_bottom_bg.gif' %>) repeat-x;
     height: 25px;

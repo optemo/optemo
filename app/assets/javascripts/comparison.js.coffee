@@ -24,7 +24,7 @@
   
   #Remove from comparison cookie and update comparison count
   remove_comparison_from_skus = (prod_sku) ->
-    optemo_module.removeValueFromCookie(optemo_module.cmpcookie, prod_sku+","+$('#main').attr('data-product_type'), 1)
+    optemo_module.removeValueFromCookie(optemo_module.cmpcookie, prod_sku+","+window.opt_category_id, 1)
     #Update comparison number
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
     changeNavigatorCompareBtn(skus.length)
@@ -37,7 +37,7 @@
     if t.is(':checked')  # save the comparison item
       if (sku_size < 5) 
         loadspecs(t.attr('data-sku'))
-        optemo_module.addValueToCookie(optemo_module.cmpcookie, t.attr('data-sku')+','+$('#main').attr('data-product_type'), 1)
+        optemo_module.addValueToCookie(optemo_module.cmpcookie, t.attr('data-sku')+','+window.opt_category_id, 1)
       else
         if (!(typeof(optemo_french) == "undefined") && optemo_french)
           alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.")
