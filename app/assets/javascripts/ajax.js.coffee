@@ -177,13 +177,11 @@
         #Initial landing page
         #Create dynamic/static divs in content
         $('#optemo_content').empty().append("<div></div><div>"+parts.pop()+"</div>")
-      else
-        $('#optemo_content').empty()
         
       if parts.length == 3
         $('#optemo_topbar').addClass("optemo").empty().append(IEwrapper_pre + parts[0] + IEwrapper_post)
         $('#optemo_filter').addClass("optemo").empty().append(IEwrapper_pre + parts[1] + IEwrapper_post)
-        $('#optemo_content div:first').addClass("optemo").append(IEwrapper_pre + parts[2] + IEwrapper_post)
+        $('#optemo_content').addClass("optemo").find('div:first').empty().append(IEwrapper_pre + parts[2] + IEwrapper_post)
         optemo_module.whenDOMready()
         return 0
 

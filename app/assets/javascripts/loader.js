@@ -23,7 +23,7 @@ function opt_insert(d,name) {
   var opt_t = document.getElementById(name);
   if (opt_t) {
     var se = document.createElement("div");
-    se.className = "optemo";
+    opt_t.className = "optemo";
     se.innerHTML = d;
     opt_t.appendChild(se);
     if (name == "optemo_filter")
