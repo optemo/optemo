@@ -9,9 +9,8 @@
     cookie = readCookie(name)
     if (cookie) 
       #Remove items that don't match the current product class
-      c_product_type = $('#main').attr('data-product_type')
       skus = $.grep cookie.split('*'), (value) ->
-        return value.split(',')[1] is c_product_type
+        return value.split(',')[1] is window.opt_category_id
       #Remove product_type from cookie values
       skus = $.map skus, (value) ->
         return value.split(',')[0]

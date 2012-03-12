@@ -5,8 +5,8 @@ class Session
   cattr_accessor :features # Gets the feature customizations which allow the site to be configured
   cattr_accessor :ranges # Uses ranges for continuous data instead of sliders
 
-  def initialize (product_type = ProductCategory.first.product_type)
-    self.product_type = product_type
+  def initialize (product_type = nil)
+    self.product_type = product_type || ProductCategory.first.product_type
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   

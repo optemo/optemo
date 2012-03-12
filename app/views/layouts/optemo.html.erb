@@ -5,46 +5,17 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <title>Site - Optemo <%= Rails.env %></title>
 <meta name="fragment" content="!">
-<% if @indexload %>
-  <%= stylesheet_link_tag :application %>
-<% end %>
+<%= stylesheet_link_tag :application %>
 </head>
 
 <body style="font-size:0.75em;font-family: arial, helvetica, sans-serif;margin:0;">
-<script type="text/javascript">optemo_french = <%= fr? == "_fr" ? "true" : "null" %></script>
-<div id="optemo_embedder">
-    <!--[if lte IE 6]>
-    <div id="IE" class="ie6 ie67">
-    <![endif]-->
-    <!--[if IE 7]>
-    <div id="IE" class="ie7 ie67">
-    <![endif]-->
-    <!--[if IE 8]>
-    <div id="IE" class="ie8">
-    <![endif]-->
-    <!--[if gte IE 9]>
-    <div id="IE">
-    <![endif]-->
-<div id="mycenter">
-   <div class="bd">
-    <%= yield %>
-   </div>
-</div>
-<div id="silkscreen">&nbsp;</div>
-<div id="loading"><%#=t('products.show.loading')%></div>
-<div id="outsidecontainer"><div id="info">&nbsp;</div></div>
-
-<!--[if IE]>
-</div>
-<![endif]-->
-</div>
-
-
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<%= javascript_include_tag :application %>
-
-<% if @indexload %>
-<noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality, please enable javascript.</div></noscript>
-<% end %>
+  <script type="text/javascript">optemo_french = <%= fr? == "_fr" ? "true" : "null" %></script>
+  
+  <%= yield %>
+  
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <%= javascript_include_tag :application %>
+  
+  <script type="text/javascript">window.opt_category_id = "<%= Session.product_type %>";optemo_module.whenDOMready();</script>
 </body>
 </html>

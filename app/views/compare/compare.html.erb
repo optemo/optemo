@@ -1,25 +1,70 @@
-<% unless @indexload %>
-  <% main_window = (render :partial => 'navigator_bar', :locals => {:landing => true}) + (render :partial => (Session.search.initial ? 'landing' : 'discoverybrowser')) %>
-<% end %>
-
-<div class="left-right-wrapper">
+<div>
 <div id="leftbar">
 	<!-- The Filters section -->
-	<div id="filterbar" class="leftboxes">
-		<div id="ajaxfilter">
-			<% unless @indexload %>
-				<%= render :partial => 'filter', :locals => {:s => Session, :current_search => Session.search} %>
-			<% end  %>
-		</div>
+	<div id="optemo_filter" class="optemo">
+	  <!--[if lte IE 6]>
+    <div id="IE" class="ie6 ie67">
+    <![endif]-->
+    <!--[if IE 7]>
+    <div id="IE" class="ie7 ie67">
+    <![endif]-->
+    <!--[if IE 8]>
+    <div id="IE" class="ie8">
+    <![endif]-->
+    <!--[if gte IE 9]>
+    <div id="IE">
+    <![endif]-->
+		<%= render :partial => 'filter', :locals => {:s => Session, :current_search => Session.search} %>
+		<!--[if IE]>
+    </div>
+    <![endif]-->
 	</div>
-	<div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
 </div>
-<div id="main" data-product_type='<%= Session.product_type %>'>
-	<% if @indexload %>
-		<div id="opt_discovery"></div>
-	<% else %>
-		<%= main_window %>
-	<% end %>
+<div id="main">
+  <div id="optemo_topbar" class="optemo">
+    <!--[if lte IE 6]>
+    <div id="IE" class="ie6 ie67">
+    <![endif]-->
+    <!--[if IE 7]>
+    <div id="IE" class="ie7 ie67">
+    <![endif]-->
+    <!--[if IE 8]>
+    <div id="IE" class="ie8">
+    <![endif]-->
+    <!--[if gte IE 9]>
+    <div id="IE">
+    <![endif]-->
+    <%= render :partial => 'navigator_bar', :locals => {:landing => true} %>
+    <!--[if IE]>
+    </div>
+    <![endif]-->
+  </div>
+  <div id="optemo_content" class="optemo">
+    <div>
+      <!--[if lte IE 6]>
+      <div id="IE" class="ie6 ie67">
+      <![endif]-->
+      <!--[if IE 7]>
+      <div id="IE" class="ie7 ie67">
+      <![endif]-->
+      <!--[if IE 8]>
+      <div id="IE" class="ie8">
+      <![endif]-->
+      <!--[if gte IE 9]>
+      <div id="IE">
+      <![endif]-->
+      <%= render :partial => (Session.search.initial ? 'landing' : 'discoverybrowser') %>
+      <!--[if IE]>
+      </div>
+      <![endif]-->
+    </div>
+    <div>
+      <!--Static Content-->
+      <div id="silkscreen">&nbsp;</div>
+      <div id="loading"><%#=t('products.show.loading')%></div>
+      <div id="outsidecontainer"><div id="info">&nbsp;</div></div>
+    </div>
+  </div>
 </div>
 </div>
 
