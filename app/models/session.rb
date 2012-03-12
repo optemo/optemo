@@ -3,7 +3,7 @@ class Session
   cattr_accessor :product_type # The product type which is an integer hash of the current category_id plus retailer
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :features # Gets the feature customizations which allow the site to be configured
-  cattr_accessor :use_ranges_instead_of_sliders # Uses ranges for continuous data instead of sliders
+  cattr_accessor :ranges # Uses ranges for continuous data instead of sliders
 
   def initialize (product_type = ProductCategory.first.product_type)
     self.product_type = product_type

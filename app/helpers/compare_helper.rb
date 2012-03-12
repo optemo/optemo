@@ -29,10 +29,14 @@ module CompareHelper
   def chosencats(feat)
     (Session.search.userdatacats+Session.search.parentcats).select{|d|d.name == feat}.map{|x|x.value}
   end
+  
+  def chosenconts(feat)
+    Session.search.userdataconts+Session.search.parentconts
+  end  
 
   def getRanges(feat)
     num_ranges = 7
-    Ranges.getRange(feat, num_ranges)
+    Ranges.cacherange(feat, num_ranges)
   end  
 
 	def getDist(feat)

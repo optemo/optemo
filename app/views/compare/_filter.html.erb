@@ -55,18 +55,22 @@
     <% end %> <%# else %>
   <% when "Continuous" %>
     <%= render partial: 'filter_label', locals: {f: f} %>
-    <% if Session.use_ranges_instead_of_sliders %>
-      <% range_data = getRanges(f.name) %>
-      <% range_data.each do |r| %>
-        <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
-        <% unchecked = dobj.nil? || dobj.value == false %>
-        <% available_count = r["count"] %>
-        <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-          <%= check_box_tag "continuous[#{f.name}]", "#{r['min']};#{r['max']}", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter', :"data-min" => r["min"], :"data-max" => r["max"] %>
-          <%= (r["min"].to_s + " &ndash; " + r["max"].to_s).html_safe %>
-          <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
-        </div>
-      <% end %> <%# range_data.each %>
+    <% chosen_conts = chosenconts(f.name) %>
+
+	<% if Session.ranges %>
+	      <% range_data = getRanges(f.name) %>
+	      <% range_data.each do |r| %>
+	        <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
+	        <% unchecked = dobj.nil? || dobj.value == false %>
+	        <% available_count = r["count"] %>
+	        <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+	          <%= check_box_tag "continuous[#{f.name}]", "#{r['min']};#{r['max']}", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter', :"data-min" => r["min"], :"data-max" => r["max"] %>
+	          <%= (r["min"].to_s + " &ndash; " + r["max"].to_s).html_safe %>
+	          <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
+	        </div>
+	      <% end %> <%# range_data.each %>
+	
+
     <% else %> <%# Use sliders still, not ranges %>
       <%# Check continuous features for data, instead of graying them, we just don't show them %>
       <% distribution_data = getDist(f.name) -%>
