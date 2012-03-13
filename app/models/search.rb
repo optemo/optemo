@@ -45,13 +45,12 @@ class Search < ActiveRecord::Base
           end
         end
       end  
-    
-      if sortby == "saleprice_factor"
-        order_by(:saleprice, :asc)
-      elsif sortby == "saleprice_factor_asc"   
-        order_by(:saleprice, :desc) 
-      elsif sortby  
-        order_by(sortby.to_sym, :desc) 
+      
+      if sortby
+        sorting = sortby.split("_")
+        order_by(sorting[0].to_sym, sorting[1].to_sym)
+      else
+        sorting = ["utility", "desc"]
       end
 
       cat_filters = {} #Used for faceting exclude so that the counts are right
