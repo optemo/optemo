@@ -89,7 +89,6 @@ class Search < ActiveRecord::Base
       if (!search_term)
         with :product_type, Session.product_type_leaves
       end
-      
       Session.features["filter"].each do |f|
         #puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
     
@@ -134,8 +133,13 @@ class Search < ActiveRecord::Base
       @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
   def parentcats
-     @parentcats ||=[]
+    @parentcats ||=[]
   end
+  
+  def parentconts
+    @parentconts ||=[]
+  end  
+  
   def filters_cats
       @filters_cats ||= []
   end
@@ -307,6 +311,7 @@ class Search < ActiveRecord::Base
     @filters_bins =  []
     
     @userdataconts = []
+    @parentconts=[]
     r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
       #Split range into min and max
@@ -361,6 +366,7 @@ class Search < ActiveRecord::Base
       @userdatabins = []
       @userdatacats = []
       @parentcats= []
+      @parentconts= []
     end
 
   end

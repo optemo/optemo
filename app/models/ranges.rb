@@ -27,11 +27,11 @@ module Ranges
 	
 	def self.count(feat, min, max)
 	  a = Session.search.solr_cached.facet(feat.to_sym).rows.map{|r| [r.value]*r.count}.flatten
-	  a.map{|p| p if (p<max && p>=min)}.compact.size  
+	  a.map{|p| p if (p == min||(p<max && p>=min))}.compact.size  
 	end
 	  
   def self.cacherange(feat, num) 
-     Rails.cache.fetch("Ranges#{feat}#{num}") do
+     Rails.cached.fetch("Ranges#{feat}#{num}") do
        self.getRange(feat, num)
      end
    end
