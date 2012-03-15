@@ -7,15 +7,15 @@ module CompareHelper
           render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
           render(:partial => 'navbox', :locals => {product: box2, last_in_row: false}) +
           render(:partial => 'navbox', :locals => {product: box3, last_in_row: true}) +
-          content_tag(:div, nil, class: 'navbox_grey_separator_image_left') +
-          content_tag(:div, nil, class: 'navbox_grey_separator_image_right') +
+          content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
+          content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right') +
           render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
           render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
           render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
         end
       end
     end
-    res.join(content_tag("div", nil, class: "divider"))
+    res.join(content_tag("div", raw("<!-- -->"), class: "divider"))
   end
 
   def product_title
