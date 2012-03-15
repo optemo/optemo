@@ -12,15 +12,6 @@ class Product < ActiveRecord::Base
   has_many :product_siblings
   has_many :product_bundles
 
-  #define_index do
-  #  #fields
-  #  indexes "LOWER(title)", :as => :title
-  #  indexes "product_type", :as => :product_type
-  #  set_property :enable_star => true
-  #  set_property :min_prefix_len => 2
-  #  ThinkingSphinx.updates_enabled = false
-  #  ThinkingSphinx.deltas_enabled = false
-  #end
   attr_writer :product_name
   
   searchable do
@@ -115,41 +106,6 @@ class Product < ActiveRecord::Base
     else
       @brand ||= cat_specs.cache_all(id)["brand"]
     end
-  end
-  
-  def tinyTitle
-    @tinyTitle ||= [brand.gsub("Hewlett-Packard", "HP"),(cat_specs.cache_all(id)["model"] || model || cat_specs.cache_all(id)["mpn"]).split(' ')[0]].join(' ')
-  end
-  
-  def mobile_descurl
-    "/show/"+[id,brand,cat_specs.cache_all(id)["model"] || model || cat_specs.cache_all(id)["mpn"]].join('-').tr(' /','_-')
-  end
-  
-  def display(attr, data) # This function is probably superceded by resolutionmaxunit, etc., defined in the appropriate YAML file (e.g. printer_us.yml)
-    if data.nil?
-      return 'Unknown'
-    elsif data == false
-      return "None"
-    elsif data == true
-      return "Yes"
-    else
-      ending = case attr
-        # The following lines are definitely superceded, as noted above
-#        when /zoom/
-#          ' X'
-#        when /[^p][^a][^p][^e][^r]size/
-#          ' in.' 
-        when /(item|package)(weight)/
-          data = data.to_f/100
-          ' lbs'
-        when /focal/
-          ' mm.'
-        when /ttp/
-          ' seconds'
-        else ''
-      end
-    end
-    data.to_s+ending
   end
   
   def image_url(imgSize) #creates the url to a product's image given and sku and image size (small, medium, large, 150 -> predetermined sizes)
