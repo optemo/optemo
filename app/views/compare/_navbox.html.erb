@@ -1,12 +1,7 @@
 <%# Cache specs here at the top of navbox partial to save on SQL calls and instantiations. Don't bother with Bin or Text specs since they are only used once each (though this might change in future, be careful) %>
 <%if product && product.id%>
 	<% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
- <div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %>
- text-align: center;
- display: inline-block;
- vertical-align: top;
- float: none;
- height: inherit;">
+ <div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %>">
    <div class="navboxcompare">
      <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
      <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
