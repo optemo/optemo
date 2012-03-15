@@ -29,18 +29,29 @@ module CompareHelper
   def chosencats(feat)
     (Session.search.userdatacats+Session.search.parentcats).select{|d|d.name == feat}.map{|x|x.value}
   end
+  
+  def chosenconts(feat)
+    Session.search.userdataconts+Session.search.parentconts
+  end  
 
   def getRanges(feat)
     num_ranges = 7
-    Ranges.getRange(feat, num_ranges)
+    Ranges.cacherange(feat, num_ranges)
   end  
 
+  #def displayRanges(feat)
+  #  ranges = getRanges(feat)
+  #  ranges.each do |r| 
+  #    
+  #  end  
+  #end 
+   
 	def getDist(feat)
     num_buckets = 24
     discretized = Session.search.solr_cached.facet(feat.to_sym).rows
     if (!discretized.empty?)
-      min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
-      max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
+      min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
+      max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
     
       min = discretized.first.value
       max = discretized.last.value
@@ -53,7 +64,7 @@ module CompareHelper
       #Normalize to a max of 1
       maxval = dist.max
       dist.map!{|i| i.to_f / maxval}
-      
+      debugger
       [[min,max]+[min_all,max_all],dist]
     else
       []
