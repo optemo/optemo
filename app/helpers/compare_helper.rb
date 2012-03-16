@@ -64,7 +64,6 @@ module CompareHelper
       #Normalize to a max of 1
       maxval = dist.max
       dist.map!{|i| i.to_f / maxval}
-      debugger
       [[min,max]+[min_all,max_all],dist]
     else
       []
@@ -179,4 +178,11 @@ module CompareHelper
     end
   end
   
+  def product_type_link(type,name)
+    if (type == Session.product_type)
+      content_tag("b", name)
+    else
+      link_to name, "?category_id=#{type}" 
+    end
+  end
 end
