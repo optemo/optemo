@@ -12,12 +12,7 @@
   #****Public Functions****
   # Submit a categorical filter, e.g. brand.
   @whenDOMready = ->
-    if ($("#landingpage_indicator").length == 0)
-      # If they exist, hide the Best Buy landing page elements
-      bb_divs = $("#pagecontentmain2 [id^=ctl00_CP_ContentSlot], #pagecontentmain2 .std-bottommargin")
-      if (bb_divs.length != 0) # Make sure they exist
-        bb_divs.each() ->
-          $(this).hide()
+    optemo_module.BestBuyLandingElements()
     optemo_module.SliderInit()
     optemo_module.getRealtimePrices() if (optemo_module? && typeof(optemo_module.getRealtimePrices) == "function")
     optemo_module.load_comparisons()
@@ -35,6 +30,17 @@
       optemo_module.ajaxcall("/compare/create", selections)
     else
       optemo_module.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections) )
+
+  @BestBuyLandingElements = ->
+    bb_divs = $("#pagecontentmain2 [id^=ctl00_CP_ContentSlot], #pagecontentmain2 .std-bottommargin")
+    if ($("#landingpage_indicator").length == 0)
+      # If they exist, hide the Best Buy landing page elements
+      if (bb_divs.length != 0) # Make sure they exist
+        bb_divs.hide()
+    else
+      # show them again for landing page
+      if (bb_divs.length != 0) # Make sure they exist
+        bb_divs.show()
 
   @removeSilkScreen = ->
     $('#silkscreen, #outsidecontainer').hide()
