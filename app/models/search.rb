@@ -58,7 +58,7 @@ class Search < ActiveRecord::Base
         cat_filters[name] = any_of do  #disjunction inside the category part
           group.each do |cats|
             if cats.name == "category"
-              leaves = Session.product_type_leaves(cats.value)
+              leaves = ProductCategory.get_leaves(cats.value)
               #puts "leaves_search #{cats.value} #{leaves}"
                 with :product_type, leaves  
             else

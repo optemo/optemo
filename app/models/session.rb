@@ -11,19 +11,8 @@ class Session
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
-  def self.product_type_leaves(ptype = product_type)
-    ProductCategory.get_leaves(ptype)
-  end
-  
-  def self.product_type_ancestors(ptype = product_type ,level =nil)
-    ProductCategory.get_ancestors(ptype,level)
-  end
-  
-  def self.product_type_subcategory(ptype=product_type)
-     ProductCategory.get_subcategories(ptype)
-  end
-  def self.product_type_branch
-    ProductCategory.get_ancestors(product_type)+[product_type]+ProductCategory.get_children(product_type)
+  def self.product_type_leaves
+    ProductCategory.get_leaves(product_type)
   end
   
   def self.retailer

@@ -112,8 +112,8 @@ module CompareHelper
        #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
        #  leaves = CatSpec.count_feat(f.name)
        # # puts "leaves_compare #{leaves}"
-       #  Session.product_type_ancestors(leaves.keys, tree_level).each do |fp|
-       #    l = Session.product_type_leaves(fp)
+       #  (ProductCategory.get_ancestors(leaves.keys, tree_level)+leaves.keys).each do |fp|
+       #    l = ProductCategory.get_leaves(fp)
        #   # puts "first_ancestor #{fp} its leaves #{l}"
        #    optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
        #  end
@@ -136,16 +136,16 @@ module CompareHelper
     optionlist={}
    #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
    # leaves = CatSpec.count_feat("category")
-   # ancestors = Session.product_type_ancestors(leaves.keys, tree_level)
-   # subcategories = Session.product_type_subcategory(product_type).each do |sub|
+   # ancestors = ProductCategory.get_ancestors(leaves.keys, tree_level) + leaves.keys
+   # subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
    #    if ancestors.include?(sub)
-   #     optionlist[sub] =  Session.product_type_leaves(sub).map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
+   #     optionlist[sub] =  ProductCategory.get_leaves(sub).map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
    #    end
    # end
    #puts "sub_level #{ancestors} #{subcategories}"
    #****************
     second_ancestors = CatSpec.count_feat("category",tree_level)
-    subcategories = Session.product_type_subcategory(product_type).each do |sub|
+    subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
       if second_ancestors.has_key?(sub) && second_ancestors[sub]>0
         optionlist[sub] = second_ancestors[sub]
       end

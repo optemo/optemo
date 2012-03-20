@@ -53,14 +53,14 @@ class Product < ActiveRecord::Base
   
   def first_ancestors
     if pt = cat_specs.find_by_name(:product_type)
-      list = Session.product_type_ancestors(pt.value, 3)
+      list = ProductCategory.get_ancestors(pt.value, 3) << pt.value
       list.join("") if list
     end
   end
   
   def second_ancestors
     if pt = cat_specs.find_by_name(:product_type)
-      list = Session.product_type_ancestors(pt.value, 4)
+      list = ProductCategory.get_ancestors(pt.value, 4) << pt.value
       list.join("") if list
     end
   end
