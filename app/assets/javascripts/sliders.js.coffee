@@ -64,9 +64,17 @@
     step = 6
     shapelayer = Raphael(element,length,height)
     h = height - 1
+    
+    # Add a temporary element to the DOM so that we can read the CSS properties.
+    # This allows dynamic selection of fill and stroke color based on futureshop/bestbuy layout without more complicated logic
+    temporary_element = $("<p></p>").addClass("slider_dist_fill").hide().appendTo("body");
+    strokeColor = temporary_element.css("color")
+    fillColor = temporary_element.css("background-color")
+    temporary_element.remove();
+    
     t = shapelayer.path
-      fill: "#bad0f2"
-      stroke: "#039"
+      fill: fillColor
+      stroke: strokeColor
       opacity: 0.75
     t.moveTo(0,height);
     pos = 7 #Initial value
