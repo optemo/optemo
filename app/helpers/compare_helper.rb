@@ -31,7 +31,9 @@ module CompareHelper
   end
   
   def chosenconts(feat)
-    Session.search.userdataconts+Session.search.parentconts
+    c = []
+    (Session.search.userdataconts+Session.search.parentconts).select{|d| d.name == feat}.each{|x| c << {:min => x[:min], :max => x[:max]}}  
+    c
   end  
 
   def getRanges(feat)
@@ -64,7 +66,6 @@ module CompareHelper
       #Normalize to a max of 1
       maxval = dist.max
       dist.map!{|i| i.to_f / maxval}
-      debugger
       [[min,max]+[min_all,max_all],dist]
     else
       []

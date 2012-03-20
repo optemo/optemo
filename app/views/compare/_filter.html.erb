@@ -56,34 +56,20 @@
   <% when "Continuous" %>
     <%= render partial: 'filter_label', locals: {f: f} %>
     <% chosen_conts = chosenconts(f.name) %>
-
-	 <% if false%>
+	 <% if Session.ranges%>
 	   <% range_data = getRanges(f.name) %>
-	   <% range_data.each_with_index do |r, ind| %>
-		 	<% checked = chosen_conts.include?(r) %>
-		    <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >
-	     <% dobj = @s.search.userdataconts.select{|udb| udb.name == f.name}.first %>
-	     <% unchecked = dobj.nil? || dobj.value == false %>
-	     <% available_count = Ranges.count(f.name, r["min"], r["max"])%>
-	     <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-	       <%= check_box_tag "continuous[#{f.name}]", "#{r['min']};#{r['max']}", checked ,:disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :"data-min" => r["min"], :"data-max" => r["max"], :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
-			  <%if r["min"]==r["max"]%>
-				<%= (r["min"].to_s).html_safe %>
-			  <%else%>	
-			  	<%if ind==0%>
-					<%= (" Below " + r["max"].to_s).html_safe %>
-			  	<%elsif ind==range_data.size-1%>
-					<%= (r["min"].to_s + " and above").html_safe %>	
-			  	<%else%>		
-	       			<%= (r["min"].to_s + " &ndash; " + r["max"].to_s).html_safe %>
-			  	<%end%>
-			  <%end%>
-	       <span class="av_count"><%= "(#{available_count})" if !checked %></span>
-	     </div>
-	   <% end %> <%# range_data.each %> 
+	      <% range_data.each do |r| %>
+			<% checked = chosen_conts.include?(r)%>
+	        <% available_count = Ranges.count(f.name, r[:min], r[:max]) %>
+	        <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' if checked %>>
+	          <%= check_box_tag "continuous[#{f.name}]", "#{r[:min]};#{r[:max]}", checked ,:disabled => available_count == 0 ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :"data-min" => r[:min], :"data-max" => r[:max] %>
+	<%= (available_count == 0) ?  "#{r[:min]}-#{r[:max]}" : link_to("#{r[:min]}-#{r[:max]}", "#", :class => "checkbox_text") %>
+	          <span class="av_count"><%= "(#{available_count})" unless checked %></span>
+	        </div>
+	      <% end %> <%# range_data.each %>
 	
     <% else %> <%# Use sliders still, not ranges %>
-      <%# Check continuous features for data, instead of graying them, we just don't show them %>
+      <%# Check continuous features for data, instead of greying them, we just don't show them %>
       <% distribution_data = getDist(f.name) -%>
       <% if distribution_data.blank? -%>
         	<div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>

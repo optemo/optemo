@@ -6,7 +6,7 @@ module Ranges
 	  if (!discretized.empty?)
 	    min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
 	    max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
-	    if feat=="price"
+	    if feat=="saleprice"
 	      p_min = discretized.first.value
 	      p_max = discretized.last.value
 	      rs  = self.price_ranges(p_min, p_max)
@@ -26,15 +26,20 @@ module Ranges
 	end
 	
 	def self.count(feat, min, max)
+	  # this is a hack, should be rewriten
+	  temp = Session.search.userdataconts
+    Session.search.userdataconts = []
 	  a = Session.search.solr_cached.facet(feat.to_sym).rows.map{|r| [r.value]*r.count}.flatten
-	  a.map{|p| p if (p == min||(p<max && p>=min))}.compact.size  
+	  c = a.map{|p| p if (p == min||(p<max && p>=min))}.compact.size  
+	  Session.search.userdataconts = temp
+	  c
 	end
 	  
   def self.cacherange(feat, num) 
-     Rails.cached.fetch("Ranges#{feat}#{num}") do
+     Rails.cache.fetch("Ranges#{feat}#{num}") do
        self.getRange(feat, num)
      end
-   end
+  end
 
  def self.price_ranges(min, max)
    prs = [0,50,100, 200, 300, 500, 1000, 2000, 3000, 5000, 1000000]
