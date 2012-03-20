@@ -4,25 +4,15 @@ class Session
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :features # Gets the feature customizations which allow the site to be configured
   cattr_accessor :ranges # Uses ranges for continuous data instead of sliders
+  cattr_accessor :futureshop # Uses futureshop stylesheets instead of Best Buy (see 'optemo' layout file)
 
   def initialize (product_type = nil)
     self.product_type = product_type || ProductCategory.first.product_type
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
-  def self.product_type_leaves(ptype = product_type)
-    ProductCategory.get_leaves(ptype)
-  end
-  
-  def self.product_type_ancestors(ptype = product_type ,level =nil)
-    ProductCategory.get_ancestors(ptype,level)
-  end
-  
-  def self.product_type_subcategory(ptype=product_type)
-     ProductCategory.get_subcategories(ptype)
-  end
-  def self.product_type_branch
-    ProductCategory.get_ancestors(product_type)+[product_type]+ProductCategory.get_children(product_type)
+  def self.product_type_leaves
+    ProductCategory.get_leaves(product_type)
   end
   
   def self.retailer
