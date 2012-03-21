@@ -11,6 +11,7 @@ class Product < ActiveRecord::Base
   has_one :product_bundle, :foreign_key=>:bundle_id
   has_many :product_siblings
   has_many :product_bundles
+  has_one :equivalence
 
   attr_writer :product_name
   
@@ -96,9 +97,7 @@ class Product < ActiveRecord::Base
   end
   
   scope :instock, :conditions => {:instock => true}
-  scope :current_type, lambda {
-    {:conditions => {:product_type => Session.product_type}}
-  }
+  scope :current_type, lambda{ joins(:cat_specs).where(cat_specs: {name: "product_type", value: Session.product_type_leaves})}
     
   def brand
     if I18n.locale == :fr
