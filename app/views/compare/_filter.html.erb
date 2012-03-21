@@ -36,7 +36,7 @@
         <% checked = chosen_cats.include?(k) %>
         <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %>>
           <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
-          <%= (available_count == 0) ?  t("#{Session.product_type}.filter.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.filter.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
+          <%= (available_count == 0) ?  t("#{Session.product_type}.filter.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.filter.#{k}.name", :default=>["#{k}.name".to_sym,k]), "#", :class => "checkbox_text") %>
           <span class="av_count"><%= "(#{available_count})" unless checked %></span>
 			    <% if checked && f.name == "category" %>
 			      <% optionlist1 = sub_level(k) %>

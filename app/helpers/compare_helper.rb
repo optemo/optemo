@@ -110,7 +110,7 @@ module CompareHelper
   def cat_order(f, chosen_cats, tree_level= 1)
    optionlist={}
     if (request.host =="keyword")       
-       if f.name == "product_type"
+       if f.name == "category"
        #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
        #  leaves = CatSpec.count_feat(f.name)
        # # puts "leaves_compare #{leaves}"
