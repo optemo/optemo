@@ -26,11 +26,15 @@ module Ranges
 	end
 	
 	def self.count(feat, min, max)
-	  # this is a hack, should be rewriten
-	  #temp = Session.search.userdataconts
+    # this is a hack, should be rewriten
+    #temp = Session.search.userdataconts
     #Session.search.userdataconts = []
-	  #a = Session.search.solr_cached.facet(feat.to_sym).rows.map{|r| [r.value]*r.count}.flatten
-	  c = Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}  
+    #a = Session.search.solr_cached.facet(feat.to_sym).rows.map{|r| [r.value]*r.count}.flatten
+    if (feat == "saleprice")
+      c = Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}
+    else
+      c = Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value<=max && p.value>=min }.inject(0){|sum,elem|sum+elem.count}
+    end
 	  #Session.search.userdataconts = temp
 	  c
 	end

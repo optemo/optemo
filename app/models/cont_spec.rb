@@ -13,13 +13,6 @@ class ContSpec < ActiveRecord::Base
     end
   end
   
-  #Deprecated, don't use this method as there are other methods with similar information
-  def self.all
-    CachingMemcached.cache_lookup("ContSpecsAll#{Session.product_type_id}") do
-      joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").select("search_products.product_id, group_concat(cont_specs.name) AS names, group_concat(cont_specs.value) AS vals").where(:search_products => {:search_id => Session.product_type_id}).group(:product_id).all
-    end
-  end
-  
   # This probably isn't needed anymore, but is a good example of how to do class caching if we want to do it in future.
   def self.featurecache(p_id, feat) 
     @@cs = {} unless defined? @@cs
@@ -28,15 +21,6 @@ class ContSpec < ActiveRecord::Base
       find_all_by_product_type(Session.product_type).each {|f| @@cs[(Session.product_type + f.product_id.to_s + f.name)] = f}
     end
     @@cs[(Session.product_type + p_id + feat)]
-  end
-  
-  def self.allMinMax(feat)
-    mycats = Array(Maybe(Session.search).userdatacats.group_by{|x|x.name}["product_type"])
-    q = SearchProduct.fq_categories(mycats).joins("INNER JOIN cont_specs ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {name: feat}).select("cont_specs.value")
-    CachingMemcached.cache_lookup("SQL-#{q.to_sql.hash}") do
-      all = q.map(&:value).compact
-      [all.min,all.max]
-    end
   end
   
   def == (other)

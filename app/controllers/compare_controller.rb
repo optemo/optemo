@@ -43,7 +43,7 @@ class CompareController < ApplicationController
   def classVariables(search)
     Session.search = search
     @search_view = true if params[:keyword] || !Session.search.keyword_search.blank?
-    Session.set_features(search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value})
+    Session.set_features(search.userdatacats.select{|d| d.name == 'category'}.map{|d| d.value})
   end
   
   def correct_render
