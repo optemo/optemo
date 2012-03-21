@@ -38,7 +38,7 @@
           <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
           <%= (available_count == 0) ?  t("#{Session.product_type}.filter.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.filter.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
           <span class="av_count"><%= "(#{available_count})" unless checked %></span>
-			    <% if checked && f.name == "category" %>
+			    <% if checked && f.name == "product_type" %>
 			      <% optionlist1 = sub_level(k) %>
 			      <% optionlist1.each do |k1,available_count1| %>
 			        <% checked1 = chosen_cats.include?(k1) %>

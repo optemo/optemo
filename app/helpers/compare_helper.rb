@@ -110,7 +110,7 @@ module CompareHelper
   def cat_order(f, chosen_cats, tree_level= 1)
    optionlist={}
     if (request.host =="keyword")       
-       if f.name == "category"
+       if f.name == "product_type"
        #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
        #  leaves = CatSpec.count_feat(f.name)
        # # puts "leaves_compare #{leaves}"
@@ -137,7 +137,7 @@ module CompareHelper
   def sub_level(product_type, tree_level= 2)
     optionlist={}
    #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
-   # leaves = CatSpec.count_feat("category")
+   # leaves = CatSpec.count_feat("product_type")
    # ancestors = ProductCategory.get_ancestors(leaves.keys, tree_level) + leaves.keys
    # subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
    #    if ancestors.include?(sub)
@@ -146,7 +146,7 @@ module CompareHelper
    # end
    #puts "sub_level #{ancestors} #{subcategories}"
    #****************
-    second_ancestors = CatSpec.count_feat("category",tree_level)
+    second_ancestors = CatSpec.count_feat("product_type",tree_level)
     subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
       if second_ancestors.has_key?(sub) && second_ancestors[sub]>0
         optionlist[sub] = second_ancestors[sub]

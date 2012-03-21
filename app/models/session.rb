@@ -29,7 +29,7 @@ class Session
     # initialize features
     self.features = Facet.where("product_type= ?", product_type).includes(:dynamic_facets).order(:value).select do |f|
       #These are the subcategories for which this feature is only used for
-      subcategories = f.dynamic_facets.map{|x|x.category}
+      subcategories = f.dynamic_facets.map{|x|x.product_type}
       subcategories.empty? || #We don't store subcategories for features which are always used
       subcategories.any?{|e| categories.include? e} ||
       (dynamically_excluded << f && false) #If a feature is not selected, we need to note this

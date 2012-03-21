@@ -57,7 +57,7 @@ class Search < ActiveRecord::Base
       mycats.group_by(&:name).each_pair do |name, group|
         cat_filters[name] = any_of do  #disjunction inside the category part
           group.each do |cats|
-            if cats.name == "category"
+            if cats.name == "product_type"
               leaves = ProductCategory.get_leaves(cats.value)
               #puts "leaves_search #{cats.value} #{leaves}"
                 with :product_type, leaves  
@@ -104,7 +104,7 @@ class Search < ActiveRecord::Base
           elsif f.feature_type == "Binary"
             facet f.name.to_sym
           elsif f.feature_type == "Categorical" 
-            if f.name == "category"
+            if f.name == "product_type"
               facet :product_type, exclude: cat_filters[f.name]
               facet :first_ancestors, exclude: cat_filters[f.name]
               facet :second_ancestors, exclude: cat_filters[f.name]
@@ -343,7 +343,7 @@ class Search < ActiveRecord::Base
     @userdatacats = []
     @parentcats=[]
     Maybe(p[:categorical]).each_pair do |k,v|
-      if k == "category"
+      if k == "product_type"
          temp=[]
          v.split("*").each do |cat|
            nested_cats = cat.split("+")

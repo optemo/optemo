@@ -31,7 +31,7 @@ class ContSpec < ActiveRecord::Base
   end
   
   def self.allMinMax(feat)
-    mycats = Array(Maybe(Session.search).userdatacats.group_by{|x|x.name}["category"])
+    mycats = Array(Maybe(Session.search).userdatacats.group_by{|x|x.name}["product_type"])
     q = SearchProduct.fq_categories(mycats).joins("INNER JOIN cont_specs ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {name: feat}).select("cont_specs.value")
     CachingMemcached.cache_lookup("SQL-#{q.to_sql.hash}") do
       all = q.map(&:value).compact

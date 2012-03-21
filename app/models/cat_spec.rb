@@ -26,11 +26,11 @@ class CatSpec < ActiveRecord::Base
   
   def self.count_feat(feat,level=nil)
     q = {}
-    if feat == "category" && level == 1
+    if feat == "product_type" && level == 1
       feat= "first_ancestors"
-    elsif feat=="category" && level == 2
+    elsif feat=="product_type" && level == 2
       feat= "second_ancestors"
-    elsif feat=="category"
+    elsif feat=="product_type"
       feat= "product_type"
     end
     Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
@@ -41,7 +41,7 @@ class CatSpec < ActiveRecord::Base
   
   def self.order(feat)
     h={}
-    q = Facet.where(used_for: feat, product_type: Session.product_type, feature_type: "CatOption")
+    q = Facet.where(used_for: "ordering", product_type: Session.product_type, feature_type: feat)
     CachingMemcached.cache_lookup("CatOrder#{q.to_sql.hash}") do
       q.each{|f| h[f.name] = f.value}
     end
