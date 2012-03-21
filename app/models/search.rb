@@ -9,9 +9,8 @@ class Search < ActiveRecord::Base
   self.per_page = 18 #for will_paginate
   
   def solr_cached(opt = nil)
-    #@solr_cached = nil if opt #Clear cache
-    #@solr_cached ||= solr_search(opt || {})
-    @solr_cached = solr_search(opt || {})
+    @solr_cached = nil if opt #Clear cache
+    @solr_cached ||= solr_search(opt || {})
   end
   
   def solr_search(opt = {})
@@ -426,7 +425,7 @@ class Search < ActiveRecord::Base
     false
   end
 
-  private :products_list, :grouping, :solr_search
+  private :products_list, :grouping
 
 end
 
