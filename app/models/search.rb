@@ -18,7 +18,6 @@ class Search < ActiveRecord::Base
     mycats = opt[:mycats] || userdatacats
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || @validated_keyword
-   
     filtering = Product.search do
    
       if search_term
@@ -59,8 +58,7 @@ class Search < ActiveRecord::Base
           group.each do |cats|
             if cats.name == "category"
               leaves = ProductCategory.get_leaves(cats.value)
-              #puts "leaves_search #{cats.value} #{leaves}"
-                with :product_type, leaves  
+              with :product_type, leaves  
             else
               with cats.name.to_sym, cats.value
             end
@@ -72,9 +70,17 @@ class Search < ActiveRecord::Base
       mybins.each do |bins|
         with bins.name.to_sym, bins.value
       end
-      myconts.each do |conts|
-        with (conts.name.to_sym), conts.min||0..conts.max||1000000
+      cont_filters = {}
+      myconts.group_by(&:name).each_pair do |name, group|
+        cont_filters[name] = any_of do  #disjunction inside the category part
+          group.each do |conts|
+            with conts.name.to_sym, conts.min||0..conts.max||1000000
+          end
+        end
       end
+      #myconts.each do |conts|
+      #  with (conts.name.to_sym), conts.min||0..conts.max||1000000
+      #end
       
       spellcheck :count => 4
       with :instock, 1
@@ -311,12 +317,14 @@ class Search < ActiveRecord::Base
     
     @userdataconts = []
     @parentconts=[]
-    r = /(?<min>[\d.]*);(?<max>[\d.]*)/
+    #r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
-      #Split range into min and max
-      if res = r.match(v)
-        @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
-      end
+      v.split("*").each do |cont|
+        r = /(?<min>[\d.]*);(?<max>[\d.]*)/
+        if res = r.match(v)
+          @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
+        end
+      end    
     end
     
     #Binary Features
@@ -416,7 +424,7 @@ class Search < ActiveRecord::Base
     false
   end
 
-  private :products_list, :grouping, :solr_search
+  private :products_list, :grouping
 
 end
 

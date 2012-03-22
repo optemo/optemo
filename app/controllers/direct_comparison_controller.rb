@@ -18,7 +18,7 @@ class DirectComparisonController < ApplicationController
       p
     end
     #Sort products by category_id
-    @products.sort!{|a,b|@sp["Categorical"][a.id]["category"] <=> @sp["Categorical"][b.id]["category"]}
+    @products.sort!{|a,b|@sp["Categorical"][a.id]["product_type"] <=> @sp["Categorical"][b.id]["product_type"]}
     # Calculate best value for each feature, to display as bold
     # We need to create a search in order for getFilters to work. This seems like a bit of a hack but I'm not totally
     # sure how the filter splitting code works. There is code left over that uses @s.continuous["filter"]

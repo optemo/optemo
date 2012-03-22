@@ -1,17 +1,17 @@
 module Ranges
   
 	def self.getRange(feat, num)
-	  discretized = Session.search.solr_cached.facet(feat.to_sym).rows
+	  discretized = Session.search.solr_search({mybins: [], mycats: [], myconts: []}).facet(feat.to_sym).rows
 	  rs = []
 	  if (!discretized.empty?)
 	    min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
 	    max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
-	    if feat=="price"
+	    if feat=="saleprice"
 	      p_min = discretized.first.value
 	      p_max = discretized.last.value
 	      rs  = self.price_ranges(p_min, p_max)
       else    
-	      grouped_data = Kmeans.compute(num, Session.search.solr_cached.facet(feat.to_sym).rows.map{|r| [r.value]*r.count}.flatten)
+	      grouped_data = Kmeans.compute(num, discretized.map{|r| [r.value]*r.count}.flatten)
 	      debugger if grouped_data.nil?
         #grouped_data.each do  |g|
         #  puts "#{g.min}-#{g.max} (#{g.count.to_s})"
@@ -20,24 +20,26 @@ module Ranges
   	      rs << {:min => g.min, :max => g.max} 
   	    end
 	    end 
-    end   
-      #puts feat
-	  rs
-	end
-	
-	def self.count(feat, min, max)
-	  a = Session.search.solr_cached.facet(feat.to_sym).rows.map{|r| [r.value]*r.count}.flatten
-	  a.map{|p| p if (p == min||(p<max && p>=min))}.compact.size  
-	end
-	  
+    end
+    rs
+  end
+  
+  def self.count(feat, min, max)
+    if (feat == "saleprice")
+      Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}
+    else
+      Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value<=max && p.value>=min }.inject(0){|sum,elem|sum+elem.count}
+    end
+  end
+    
   def self.cacherange(feat, num) 
-     Rails.cached.fetch("Ranges#{feat}#{num}") do
+     Rails.cache.fetch("Ranges#{feat}#{num}") do
        self.getRange(feat, num)
      end
-   end
+  end
 
  def self.price_ranges(min, max)
-   prs = [0,50,100, 200, 300, 500, 1000, 2000, 3000, 5000, 1000000]
+   prs = [0,50,100, 150, 175, 200, 300, 500, 1000, 2000, 3000, 5000, 1000000]
    rs = []
    prs.each_with_index do |pr, ind| 
      if rs.empty? && pr>min 

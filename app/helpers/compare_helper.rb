@@ -31,7 +31,9 @@ module CompareHelper
   end
   
   def chosenconts(feat)
-    Session.search.userdataconts+Session.search.parentconts
+    c = []
+    (Session.search.userdataconts+Session.search.parentconts).select{|d| d.name == feat}.each{|x| c << {:min => x[:min], :max => x[:max]}}  
+    c
   end  
 
   def getRanges(feat)
@@ -81,10 +83,10 @@ module CompareHelper
   end
   
   def sortby
-    current_sorting_option = Session.search.sortby || "utility"
+    current_sorting_option = Session.search.sortby || "utility_desc"
     Session.features["sortby"].map do |f| 
       suffix = f.style.length > 0 ? '_' + f.style : ''
-      content_tag :li, (current_sorting_option == (f.name+suffix)) ? t("specs."+f.name+suffix) : link_to(t("specs."+f.name+suffix), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
+      content_tag :li, (current_sorting_option == (f.name+suffix)) ? t(Session.product_type+".sortby."+f.name+suffix+".name") : link_to(t(Session.product_type+".sortby."+f.name+suffix+".name"), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
     end.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
   
@@ -135,7 +137,7 @@ module CompareHelper
   def sub_level(product_type, tree_level= 2)
     optionlist={}
    #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
-   # leaves = CatSpec.count_feat("category")
+   # leaves = CatSpec.count_feat("product_type")
    # ancestors = ProductCategory.get_ancestors(leaves.keys, tree_level) + leaves.keys
    # subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
    #    if ancestors.include?(sub)
@@ -144,7 +146,7 @@ module CompareHelper
    # end
    #puts "sub_level #{ancestors} #{subcategories}"
    #****************
-    second_ancestors = CatSpec.count_feat("category",tree_level)
+    second_ancestors = CatSpec.count_feat("product_type",tree_level)
     subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
       if second_ancestors.has_key?(sub) && second_ancestors[sub]>0
         optionlist[sub] = second_ancestors[sub]
