@@ -21,12 +21,12 @@ GIT
       escape (~> 0.0.4)
 
 PATH
-  remote: /Users/zev/.rvm/gems/ruby-1.9.3-p0/gems/linecache19-0.5.13
+  remote: /usr/local/rvm/gems/ruby-1.9.3-p0/gems/linecache19-0.5.13
   specs:
     linecache19 (0.5.13)
 
 PATH
-  remote: /Users/zev/.rvm/gems/ruby-1.9.3-p0/gems/ruby-debug-base19-0.11.26
+  remote: /usr/local/rvm/gems/ruby-1.9.3-p0/gems/ruby-debug-base19-0.11.26
   specs:
     ruby-debug-base19 (0.11.26)
 
