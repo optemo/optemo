@@ -1,16 +1,16 @@
 <%# Cache specs here at the top of navbox partial to save on SQL calls and instantiations. Don't bother with Bin or Text specs since they are only used once each (though this might change in future, be careful) %>
 <%if product && product.id%>
-	<% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
- <div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %>">
-   <div class="navboxcompare">
-     <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
-     <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
-       <span><%=t('products.compare.compare')%></span>
-     </a>
-   </div>
-   
-   <%= image_tag(product.image_url(:medium), :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
-   
+  <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
+  <div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %>">
+    <div class="navboxcompare">
+      <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
+      <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
+        <span><%=t('products.compare.compare')%></span>
+      </a>
+    </div>
+    <div class="imageholder">
+      <%= image_tag(product.image_url(:medium), :class => "productimg", alt: "", :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
+    </div>
    <div class="productinfo" data-sku=<%= product.sku %>>
      <%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :class => "easylink", :title => t('products.compare.clickforspecs') %>
      <div class="productspecs"><!--&--></div>

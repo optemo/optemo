@@ -6,14 +6,15 @@
 *= require awesome_buttons
 *= require colour_and_buttons
 *= require direct_comparison
-*= require filter_boxes
-*= require main_nav_controls
+*= require bestbuy/filter_boxes
+*= require bestbuy/main_nav_controls
+*= require bestbuy/main_right_side
 *= require main_right_side
-*= require nav_bar
-*= require show_page_and_related
+*= require bestbuy/nav_bar
+*= require bestbuy/show_page_and_related
 *= require jquery.autocomplete
 *= require jslider
-*= require slider
+*= require bestbuy/slider
 *= require buttons
 */
 
