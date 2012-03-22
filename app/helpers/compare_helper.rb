@@ -4,14 +4,18 @@ module CompareHelper
     Session.search.paginated_products.map{|p|Product.cached(p.id)}.each_slice(3) do |box1,box2,box3|
       res << content_tag("div", :style => "padding: 10px 0") do
         content_tag("div", :class => "row_bounding_box") do
-          render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
+          navbox_content = render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
           render(:partial => 'navbox', :locals => {product: box2, last_in_row: false}) +
           render(:partial => 'navbox', :locals => {product: box3, last_in_row: true}) +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
-          content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right') +
-          render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
-          render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
-          render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
+          content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
+          if box1.product_bundles || (box2 && box2.product_bundles) || (box3 && box3.product_bundles)
+            navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
+            render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
+            render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
+          else
+            navbox_content
+          end
         end
       end
     end

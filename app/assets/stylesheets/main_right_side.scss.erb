@@ -184,17 +184,18 @@
     display: inline-block;
     vertical-align:top;
   }
-  .bundlesbox {
+  .bundlesbox, .bundlesbox_spacer {
     text-align: left;
     font-size: 0.8em;
     margin: 6px 11px 11px 7px;
     width: 162px;
-    background: #ebebed;
     padding-bottom: 5px;
     -moz-border-radius: 6px; 
   	-webkit-border-radius: 6px;
   }
-  
+  .bundlesbox {
+    background: #ebebed;
+  }
   .bundlesbox a { color: #000000; text-decoration: none; }
   .bundlesbox a:visited { color: #000000;}
   .bundlesbox a:hover {	text-decoration: underline; }
@@ -205,7 +206,7 @@
   .ie7 .bundle_box_border_container {
     width: 178px;
   }
-  .ie67 .bundlesbox {
+  .ie67 .bundlesbox, .ie67 .bundlesbox_spacer {
     width: 161px;
   }
   .bundlediv {

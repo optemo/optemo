@@ -54,4 +54,8 @@
      <% end %>
    </div>
  </div>
+<% else # Render a navbox shell so that the rendering is consistent -%>
+  <div class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %> height:240px;">
+    &nbsp;
+  </div>
 <%end%>
