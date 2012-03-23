@@ -1,17 +1,17 @@
 module Ranges
   
 	def self.getRange(feat, num)
-	  @discretized ||= Session.search.solr_search({mybins: [], mycats: [], myconts: []}).facet(feat.to_sym).rows
+	  discretized = Session.search.solr_search({mybins: [], mycats: [], myconts: []}).facet(feat.to_sym).rows
 	  rs = []
-	  if (!@discretized.empty?)
-	    min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {@discretized.first.value}
-	    max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {@discretized.last.value}
+	  if (!discretized.empty?)
+	    min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
+	    max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
 	    if feat=="saleprice"
-	      p_min = @discretized.first.value
-	      p_max = @discretized.last.value
+	      p_min = discretized.first.value
+	      p_max = discretized.last.value
 	      rs  = self.price_ranges(p_min, p_max)
       else    
-	      grouped_data = Kmeans.compute(num, @discretized.map{|r| [r.value]*r.count}.flatten)
+	      grouped_data = Kmeans.compute(num, discretized.map{|r| [r.value]*r.count}.flatten)
 	      #debugger
 	      debugger if grouped_data.nil?
         #grouped_data.each do  |g|
@@ -26,10 +26,14 @@ module Ranges
   end
   
   def self.count(feat, min, max)
+     opt = {}
+     opt[:mybins] = Session.search.userdatabins
+     opt[:mycats] = Session.search.userdatacats
+     opt[:myconts] = Session.search.userdataconts.map{|c| c unless c.name==feat}.compact
     if (feat == "saleprice")
-      Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}
+      Session.search.solr_search(opt).facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}
     else
-      Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value<=max && p.value>=min }.inject(0){|sum,elem|sum+elem.count}
+      Session.search.solr_search(opt).facet(feat.to_sym).rows.select{|p| p.value<=max && p.value>=min }.inject(0){|sum,elem|sum+elem.count}
     end
   end
 
