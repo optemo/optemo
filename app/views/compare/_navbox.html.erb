@@ -11,49 +11,60 @@
     <div class="imageholder">
       <%= image_tag(product.image_url(:medium), :class => "productimg", alt: "", :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
     </div>
-   <div class="productinfo" data-sku=<%= product.sku %>>
-     <%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :class => "easylink", :title => t('products.compare.clickforspecs') %>
-     <div class="productspecs"><!--&--></div>
-     
-     <div class="price" <%=raw only_if_not_onsale(product) %>>
-       <%= t('products.show.ourprice')+(fr?.empty? ? "" : " ")+": "%>
-       <span><%= number_to_currency(cont_specs["price"]) %></span>
-     </div>
-     <div class="saleprice" <%=raw only_if_onsale(product) %>>
-       <%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": " %>
-       <span><%= number_to_currency(cont_specs["saleprice"]) %></span>
-     </div>	
-     <div class="save" <%=raw only_if_onsale(product) %>>
-       <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
-       <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
-     </div>
-     <div class="saleends" <%=raw only_if_onsale(product) %>>
-       <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
-       <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
-     </div>
+    <div class="productinfo" data-sku=<%= product.sku %>>
+      <%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :class => "easylink", :title => t('products.compare.clickforspecs') %>
+      <div class="productspecs"><!--&--></div>
+      <div class="price" <%=raw only_if_not_onsale(product) %>>
+        <%= t('products.show.ourprice')+(fr?.empty? ? "" : " ")+": "%>     
+        <% if Session.futureshop -%>
+          <% p = cont_specs["price"] -%>
+          <span class="price_dollars"><%= number_to_currency(p.to_i, :precision => 0) %></span>
+          <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2).to_f * 100).to_i %></span>
+        <% else -%>
+          <span><%= number_to_currency(cont_specs["price"]) %></span>
+        <% end -%>
+      </div>
+      <div class="saleprice" <%=raw only_if_onsale(product) %>>
+        <%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": " %>
+        <% if Session.futureshop -%>
+          <% p = cont_specs["saleprice"] -%>
+          <span class="price_dollars"><%= number_to_currency(p.to_i, :precision => 0) %></span>
+          <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2).to_f * 100).to_i %></span>
+        <% else %>
+          <span><%= number_to_currency(cont_specs["saleprice"]) %></span>
+        <% end %>
+      </div>	
+      <div class="save" <%=raw only_if_onsale(product) %>>
+        <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
+        <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
+      </div>
+      <div class="saleends" <%=raw only_if_onsale(product) %>>
+        <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
+        <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
+      </div>
  
-     <% siblings = product.product_siblings -%>
-     <!-- Colour swatches -->
-     <% unless siblings.empty? %>
-       <div class="navboxcolours">
-         <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
-         <% siblings.each do |sibling| -%>
-           <% sibling_id = sibling.sibling_id -%>
-           <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
-           <% color = sibling_cat_specs["color"] %>
-           <%= link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
-             <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"><!-- --></div>
-           <% end %>
-         <% end %>
-         &nbsp;
-       </div>
-     <% end %>
+      <% siblings = product.product_siblings -%>
+      <!-- Colour swatches -->
+      <% unless siblings.empty? %>
+        <div class="navboxcolours">
+          <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
+          <% siblings.each do |sibling| -%>
+            <% sibling_id = sibling.sibling_id -%>
+            <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
+            <% color = sibling_cat_specs["color"] %>
+            <%= link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+              <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"><!-- --></div>
+            <% end %>
+          <% end %>
+          &nbsp;
+        </div>
+      <% end %>
      
-     <% if cont_specs["customerRating"] && cont_specs["customerRating"] > 0 %>
-       <div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
-     <% end %>
-   </div>
- </div>
+      <% if cont_specs["customerRating"] && cont_specs["customerRating"] > 0 %>
+        <div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
+      <% end %>
+    </div>
+  </div>
 <% else # Render a navbox shell so that the rendering is consistent -%>
   <div class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %> height:240px;">
     &nbsp;

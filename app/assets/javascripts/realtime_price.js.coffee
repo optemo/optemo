@@ -27,10 +27,20 @@
               c.find('.saleends').hide()
                         
             #Update the saleprice
-            c.find('.saleprice > span').html((if optemo_french? then "" else "$") + this.salePrice + (if optemo_french? then " $" else ""))
+            if c.find('.saleprice > span.price_dollars') # We are doing the Futureshop layout
+              c.find('.saleprice > span.price_dollars').html(parseInt(this.salePrice))
+              c.find('.saleprice > span.price_cents').html(parseInt(100 * (this.salePrice - parseInt(this.salePrice))))
+            else # Do the regular layout
+              c.find('.saleprice > span').html((if optemo_french? then "" else "$") + this.salePrice + (if optemo_french? then " $" else ""))
+
             #Update the regularprice
-            c.find('.price > span').html((if optemo_french? then "" else "$") + this.regularPrice + (if optemo_french? then " $" else ""))
+            if c.find('.saleprice > span.price_dollars') # We are doing the Futureshop layout
+              c.find('.saleprice > span.price_dollars').html(parseInt(this.regularPrice))
+              c.find('.saleprice > span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
+            else # Do the regular layout
+              c.find('.price > span').html((if optemo_french? then "" else "$") + this.regularPrice + (if optemo_french? then " $" else ""))
             #Update the savings
+            # Check this and fix the code as necessary
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
             current_savings = c.find('.save > span').html()
             if current_savings? && !(savings is current_savings or savings is current_savings[1..-1]) 
