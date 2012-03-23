@@ -98,7 +98,7 @@ class Search < ActiveRecord::Base
         #puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
     
           if f.feature_type == "Continuous"
-            facet f.name.to_sym, sort: :index
+            facet f.name.to_sym, sort: :index, exclude: cont_filters[f.name]
           elsif f.feature_type == "Binary"
             facet f.name.to_sym
           elsif f.feature_type == "Categorical" 
