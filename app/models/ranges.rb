@@ -21,21 +21,22 @@ module Ranges
   	      rs << {:min => g.min, :max => g.max} 
   	    end
 	    end 
-    end   
-      #puts feat
-	  rs
-	end
-	
-	def self.count(feat, min, max)
-	  c = Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}  
-	  #Session.search.userdataconts = temp
-	  c
-	end
-	  
+    end
+    rs
+  end
+  
+  def self.count(feat, min, max)
+    if (feat == "saleprice")
+      Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}
+    else
+      Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value<=max && p.value>=min }.inject(0){|sum,elem|sum+elem.count}
+    end
+  end
+
   def self.cacherange(feat, num) 
-    # Rails.cache.fetch("Ranges#{feat}#{num}") do
+     Rails.cache.fetch("Ranges#{feat}#{num}") do
        self.getRange(feat, num)
-    # end
+     end
   end
 
  def self.price_ranges(min, max)

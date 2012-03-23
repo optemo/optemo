@@ -20,6 +20,16 @@ GIT
     sunspot_solr (2.0.0.pre.111215)
       escape (~> 0.0.4)
 
+PATH
+  remote: /usr/local/rvm/gems/ruby-1.9.3-p0/gems/linecache19-0.5.13
+  specs:
+    linecache19 (0.5.13)
+
+PATH
+  remote: /usr/local/rvm/gems/ruby-1.9.3-p0/gems/ruby-debug-base19-0.11.26
+  specs:
+    ruby-debug-base19 (0.11.26)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -101,8 +111,6 @@ GEM
     hike (1.2.1)
     i18n (0.6.0)
     json (1.6.5)
-    linecache19 (0.5.13)
-      ruby_core_source (>= 0.1.4)
     mail (2.3.0)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -157,10 +165,6 @@ GEM
       json (~> 1.4)
     rsolr (1.0.6)
       builder (>= 2.1.2)
-    ruby-debug-base19 (0.11.26)
-      columnize (>= 0.3.1)
-      linecache19 (>= 0.5.11)
-      ruby_core_source (>= 0.1.4)
     ruby-debug19 (0.11.6)
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
@@ -208,12 +212,12 @@ DEPENDENCIES
   guard-spork
   guard-test
   i18n-active_record!
-  linecache19 (= 0.5.13)
+  linecache19 (= 0.5.13)!
   mysql2 (> 0.3)
   progress_bar
   rails (= 3.1.1)
   rb-fsevent
-  ruby-debug-base19 (= 0.11.26)
+  ruby-debug-base19 (= 0.11.26)!
   ruby-debug19
   ruby-prof
   ruby_core_source

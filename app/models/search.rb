@@ -58,8 +58,7 @@ class Search < ActiveRecord::Base
           group.each do |cats|
             if cats.name == "category"
               leaves = ProductCategory.get_leaves(cats.value)
-              #puts "leaves_search #{cats.value} #{leaves}"
-                with :product_type, leaves  
+              with :product_type, leaves  
             else
               with cats.name.to_sym, cats.value
             end

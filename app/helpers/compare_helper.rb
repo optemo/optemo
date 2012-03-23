@@ -4,14 +4,18 @@ module CompareHelper
     Session.search.paginated_products.map{|p|Product.cached(p.id)}.each_slice(3) do |box1,box2,box3|
       res << content_tag("div", :style => "padding: 10px 0") do
         content_tag("div", :class => "row_bounding_box") do
-          render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
+          navbox_content = render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
           render(:partial => 'navbox', :locals => {product: box2, last_in_row: false}) +
           render(:partial => 'navbox', :locals => {product: box3, last_in_row: true}) +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
-          content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right') +
-          render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
-          render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
-          render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
+          content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
+          if box1.product_bundles || (box2 && box2.product_bundles) || (box3 && box3.product_bundles)
+            navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
+            render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
+            render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
+          else
+            navbox_content
+          end
         end
       end
     end
@@ -83,10 +87,10 @@ module CompareHelper
   end
   
   def sortby
-    current_sorting_option = Session.search.sortby || "utility"
+    current_sorting_option = Session.search.sortby || "utility_desc"
     Session.features["sortby"].map do |f| 
       suffix = f.style.length > 0 ? '_' + f.style : ''
-      content_tag :li, (current_sorting_option == (f.name+suffix)) ? t("specs."+f.name+suffix) : link_to(t("specs."+f.name+suffix), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
+      content_tag :li, (current_sorting_option == (f.name+suffix)) ? t(Session.product_type+".sortby."+f.name+suffix+".name") : link_to(t(Session.product_type+".sortby."+f.name+suffix+".name"), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
     end.join(content_tag(:span, "  |  ", :class => "seperater"))
   end
   
@@ -137,7 +141,7 @@ module CompareHelper
   def sub_level(product_type, tree_level= 2)
     optionlist={}
    #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
-   # leaves = CatSpec.count_feat("category")
+   # leaves = CatSpec.count_feat("product_type")
    # ancestors = ProductCategory.get_ancestors(leaves.keys, tree_level) + leaves.keys
    # subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
    #    if ancestors.include?(sub)
@@ -146,7 +150,7 @@ module CompareHelper
    # end
    #puts "sub_level #{ancestors} #{subcategories}"
    #****************
-    second_ancestors = CatSpec.count_feat("category",tree_level)
+    second_ancestors = CatSpec.count_feat("product_type",tree_level)
     subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
       if second_ancestors.has_key?(sub) && second_ancestors[sub]>0
         optionlist[sub] = second_ancestors[sub]
