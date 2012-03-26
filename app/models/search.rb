@@ -47,10 +47,11 @@ class Search < ActiveRecord::Base
       
       if sortby
         sorting = sortby.split("_")
-        order_by(sorting[0].to_sym, sorting[1].to_sym)
       else
+        #Default
         sorting = ["utility", "desc"]
       end
+      order_by(sorting[0].to_sym, sorting[1].to_sym)
 
       cat_filters = {} #Used for faceting exclude so that the counts are right
       mycats.group_by(&:name).each_pair do |name, group|
@@ -107,7 +108,7 @@ class Search < ActiveRecord::Base
               facet :first_ancestors, exclude: cat_filters[f.name]
               facet :second_ancestors, exclude: cat_filters[f.name]
             else
-              facet f.name.to_sym, exclude: cat_filters[f.name]
+              facet f.name.to_sym, sort: :index, exclude: cat_filters[f.name]
             end
           end
       end

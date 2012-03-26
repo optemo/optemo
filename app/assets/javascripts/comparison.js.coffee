@@ -87,7 +87,7 @@
     else
       width = 566
 
-    optemo_module.applySilkScreen '/comparison/' + skus.join(","), null, width, 580, ->
+    optemo_module.applySilkScreen '/comparison/' + skus.join(",") + "?category_id=" + opt_category_id, null, width, 580, ->
       # Jquery 1.5 would finish all the requests before building the comparison matrix once
       # With 1.4.2 we can't do that. Keep code for later.
       # $.when.apply(this,reqs).done();
