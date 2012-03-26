@@ -76,6 +76,10 @@ module CompareHelper
     end
   end
 
+  def displayRanges(feat, ranges)
+    getRanges(feat)
+  end
+
   def missing_spec_name_translation?(name)
     missing = false
     begin

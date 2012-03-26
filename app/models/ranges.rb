@@ -34,7 +34,7 @@ module Ranges
   end
 
   def self.cacherange(feat, num) 
-     Rails.cache.fetch("Ranges#{feat}#{num}") do
+     Rails.cache.fetch("Ranges#{Session.product_type}#{feat}#{num}") do
        self.getRange(feat, num)
      end
   end
