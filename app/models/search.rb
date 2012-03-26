@@ -317,11 +317,10 @@ class Search < ActiveRecord::Base
     
     @userdataconts = []
     @parentconts=[]
-    #r = /(?<min>[\d.]*);(?<max>[\d.]*)/
+    r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
       v.split("*").each do |cont|
-        r = /(?<min>[\d.]*);(?<max>[\d.]*)/
-        if res = r.match(v)
+        if res = r.match(cont)
           @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
         end
       end    
@@ -359,10 +358,6 @@ class Search < ActiveRecord::Base
           @userdatacats << Userdatacat.new({:name => k, :value => cat})
         end
       end
-    end
-    
-    @userdatacats.each do |cats|
-      puts "filter_categories #{cats.name} #{cats.value}"
     end
     
     unless(@old_keyword==keyword_search) 
