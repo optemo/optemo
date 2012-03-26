@@ -9,7 +9,6 @@
 *= require bestbuy/filter_boxes
 *= require bestbuy/main_nav_controls
 *= require bestbuy/main_right_side
-*= require main_right_side
 *= require bestbuy/nav_bar
 *= require bestbuy/show_page_and_related
 *= require jquery.autocomplete

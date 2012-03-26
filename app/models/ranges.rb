@@ -26,14 +26,10 @@ module Ranges
   end
   
   def self.count(feat, min, max)
-     opt = {}
-     opt[:mybins] = Session.search.userdatabins
-     opt[:mycats] = Session.search.userdatacats
-     opt[:myconts] = Session.search.userdataconts.map{|c| c unless c.name==feat}.compact
     if (feat == "saleprice")
-      Session.search.solr_search(opt).facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}
+      Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}
     else
-      Session.search.solr_search(opt).facet(feat.to_sym).rows.select{|p| p.value<=max && p.value>=min }.inject(0){|sum,elem|sum+elem.count}
+      Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value<=max && p.value>=min }.inject(0){|sum,elem|sum+elem.count}
     end
   end
 
