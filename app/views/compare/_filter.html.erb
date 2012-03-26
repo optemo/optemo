@@ -31,7 +31,7 @@
     <% else %>
       <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
       <% optionlist = cat_order(f, chosen_cats) %>
-      <div class="categorical<%= " brand" if f.name == "brand" %>">
+      <div class="categorical"> <%# <%= " brand" if f.name == "brand" % >" %>
 	    <% optionlist.each do |k,available_count| %>
         <% checked = chosen_cats.include?(k) %>
         <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %>>

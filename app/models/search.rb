@@ -107,7 +107,7 @@ class Search < ActiveRecord::Base
               facet :first_ancestors, exclude: cat_filters[f.name]
               facet :second_ancestors, exclude: cat_filters[f.name]
             else
-              facet f.name.to_sym, exclude: cat_filters[f.name]
+              facet f.name.to_sym, sort: :index, exclude: cat_filters[f.name]
             end
           end
       end
