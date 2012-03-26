@@ -31,7 +31,7 @@
     <% else %>
       <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
       <% optionlist = cat_order(f, chosen_cats) %>
-      <div class="categorical<%= " brand" if f.name == "brand" %>">
+      <div class="categorical"> <%# <%= " brand" if f.name == "brand" % >" %>
 	    <% optionlist.each do |k,available_count| %>
         <% checked = chosen_cats.include?(k) %>
         <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %>>
@@ -55,18 +55,18 @@
     <% end %> <%# else %>
   <% when "Continuous" %>
     <%= render partial: 'filter_label', locals: {f: f} %>
-    <% chosen_conts = chosenconts(f.name) %>
-	 <% if Session.ranges%>
-	   <% range_data = getRanges(f.name) %>
-	      <% range_data.each do |r| %>
-			<% checked = chosen_conts.include?(r)%>
-	        <% available_count = Ranges.count(f.name, r[:min], r[:max]) %>
-	        <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' if checked %>>
-	          <%= check_box_tag "continuous[#{f.name}]", "#{r[:min]};#{r[:max]}", checked ,:disabled => available_count == 0 ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :"data-min" => r[:min], :"data-max" => r[:max] %>
-	<%= (available_count == 0) ?  "#{r[:min]}-#{r[:max]}" : link_to("#{r[:min]}-#{r[:max]}", "#", :class => "checkbox_text") %>
-	          <span class="av_count"><%= "(#{available_count})" unless checked %></span>
-	        </div>
-	      <% end %> <%# range_data.each %>
+    <% if Session.ranges %>
+      <% chosen_conts = chosenconts(f.name) %>
+      <%# debugger if f.name == "maxresolution" %>
+      <% getRanges(f.name).each do |r| %>
+        <% checked = chosen_conts.include?(r) %>
+        <% available_count = Ranges.count(f.name, r[:min], r[:max]) %>
+        <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' if checked %>>
+          <%= check_box_tag "continuous[#{f.name}]", "#{r[:min]};#{r[:max]}", checked ,:disabled => available_count == 0 ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :"data-min" => r[:min], :"data-max" => r[:max] %>
+          <%= (available_count == 0) ?  "#{r[:min]}-#{r[:max]}" : link_to("#{r[:min]}-#{r[:max]}", "#", :class => "checkbox_text") %>
+          <span class="av_count"><%= "(#{available_count})" unless checked %></span>
+        </div>
+      <% end %> <%# getRanges.each %>
 	
     <% else %> <%# Use sliders still, not ranges %>
       <%# Check continuous features for data, instead of greying them, we just don't show them %>

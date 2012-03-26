@@ -47,10 +47,11 @@ class Search < ActiveRecord::Base
       
       if sortby
         sorting = sortby.split("_")
-        order_by(sorting[0].to_sym, sorting[1].to_sym)
       else
+        #Default
         sorting = ["utility", "desc"]
       end
+      order_by(sorting[0].to_sym, sorting[1].to_sym)
 
       cat_filters = {} #Used for faceting exclude so that the counts are right
       mycats.group_by(&:name).each_pair do |name, group|
@@ -98,7 +99,7 @@ class Search < ActiveRecord::Base
         #puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
     
           if f.feature_type == "Continuous"
-            facet f.name.to_sym, sort: :index
+            facet f.name.to_sym, sort: :index, exclude: cont_filters[f.name]
           elsif f.feature_type == "Binary"
             facet f.name.to_sym
           elsif f.feature_type == "Categorical" 
@@ -107,7 +108,7 @@ class Search < ActiveRecord::Base
               facet :first_ancestors, exclude: cat_filters[f.name]
               facet :second_ancestors, exclude: cat_filters[f.name]
             else
-              facet f.name.to_sym, exclude: cat_filters[f.name]
+              facet f.name.to_sym, sort: :index, exclude: cat_filters[f.name]
             end
           end
       end
@@ -317,11 +318,10 @@ class Search < ActiveRecord::Base
     
     @userdataconts = []
     @parentconts=[]
-    #r = /(?<min>[\d.]*);(?<max>[\d.]*)/
+    r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
       v.split("*").each do |cont|
-        r = /(?<min>[\d.]*);(?<max>[\d.]*)/
-        if res = r.match(v)
+        if res = r.match(cont)
           @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
         end
       end    
@@ -359,10 +359,6 @@ class Search < ActiveRecord::Base
           @userdatacats << Userdatacat.new({:name => k, :value => cat})
         end
       end
-    end
-    
-    @userdatacats.each do |cats|
-      puts "filter_categories #{cats.name} #{cats.value}"
     end
     
     unless(@old_keyword==keyword_search) 

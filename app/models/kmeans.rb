@@ -47,12 +47,12 @@ class  Kmeans
      end    
     end while z > thresh
      # postprocessing if one cluster is collapsed
-     labels = labels.map{|l| labels.uniq.index(l)} if labels.uniq.size <labels.max+1
+     #labels = labels.map{|l| labels.uniq.index(l)} if labels.uniq.size <labels.max+1
      # split if there is only one cluster
-     if labels.uniq.size ==1
-       (0...number_clusters-1).to_a.each{|i| labels[i] = i}
-       (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
-     end
+     #if labels.uniq.size ==1
+     #  (0...number_clusters-1).to_a.each{|i| labels[i] = i}
+     #  (number_clusters-1...labels.size).to_a.each{|i| labels[i] = number_clusters -1}
+     #end
      labels
   end
   

@@ -128,12 +128,13 @@ module CompareHelper
        else
         optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
        end
-    else 
-      optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
-  	  order = CatSpec.order(f.name)
-      unless order.empty?
-        optionlist = optionlist.to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? a[1]-1000000 : order[a[0]]) <=> (chosen_cats.include?(b[0]) ? b[1]-1000000 : order[b[0]])} 
-      end
+    else
+      optionlist = CatSpec.count_feat(f.name)
+      #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
+  	  #order = CatSpec.order(f.name)
+      #unless order.empty?
+      #  optionlist = optionlist.to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? a[1]-1000000 : order[a[0]]) <=> (chosen_cats.include?(b[0]) ? b[1]-1000000 : order[b[0]])} 
+      #end
     end
   	optionlist
   end
