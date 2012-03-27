@@ -76,6 +76,32 @@ module CompareHelper
     end
   end
 
+  def displayRanges(feat, ranges)
+    dr = []
+    ranges.each_with_index do |r, ind| 
+      if r[:min] == r[:max] 
+       if feat == "saleprice" 
+         dr << "$#{r[:min]}"
+       else
+         dr <<  "#{r[:min]}" + t("#{Session.product_type}.filter.#{feat}.unit") 
+       end   
+      elsif ind==0
+        if feat == "saleprice" 
+          dr << "Below "+t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:max]}"
+        else
+          dr << "#{r[:max]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+" and below"
+        end      
+      else
+        if feat == "saleprice"
+          dr << t("#{Session.product_type}.filter.#{feat}.unit") +"#{r[:min]} - "+t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:max]}"
+        else
+          dr << "#{r[:min]}"+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit")
+        end    
+      end   
+    end   
+    dr
+  end
+
   def missing_spec_name_translation?(name)
     missing = false
     begin
@@ -131,10 +157,10 @@ module CompareHelper
     else
       optionlist = CatSpec.count_feat(f.name)
       #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
-  	  #order = CatSpec.order(f.name)
-      #unless order.empty?
-      #  optionlist = optionlist.to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? a[1]-1000000 : order[a[0]]) <=> (chosen_cats.include?(b[0]) ? b[1]-1000000 : order[b[0]])} 
-      #end
+  	  order = CatSpec.order(f.name)
+      unless order.empty?
+        optionlist = optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] } 
+      end
     end
   	optionlist
   end
