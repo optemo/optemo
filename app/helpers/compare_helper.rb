@@ -80,15 +80,23 @@ module CompareHelper
     dr = []
     ranges.each_with_index do |r, ind| 
       if r[:min] == r[:max] 
-        dr << "#{r[:min]}"
+       if feat == "saleprice" 
+         dr << "$#{r[:min]}"
+       else
+         dr <<  "#{r[:min]}" + t("#{Session.product_type}.filter.#{feat}.unit") 
+       end   
       elsif ind==0
-        if feat == "saleprice"
-          dr << "Below #{r[:max]}"
+        if feat == "saleprice" 
+          dr << "Below "+t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:max]}"
         else
-          dr << "#{r[:max]} and below"
+          dr << "#{r[:max]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+" and below"
         end      
       else
-        dr << "#{r[:min]} - #{r[:max]}"
+        if feat == "saleprice"
+          dr << t("#{Session.product_type}.filter.#{feat}.unit") +"#{r[:min]} - "+t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:max]}"
+        else
+          dr << "#{r[:min]}"+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit")
+        end    
       end   
     end   
     dr
