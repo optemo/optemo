@@ -91,6 +91,12 @@ module CompareHelper
         else
           dr << "#{r[:max]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+" and below"
         end      
+      elsif ind==(ranges.size-1)
+        if feat == "saleprice" 
+          dr << t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:min]}"+" and above"
+        else
+          dr << "#{r[:min]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+" and above"
+        end 
       else
         if feat == "saleprice"
           dr << t("#{Session.product_type}.filter.#{feat}.unit") +"#{r[:min]} - "+t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:max]}"
