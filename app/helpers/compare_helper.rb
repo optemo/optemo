@@ -77,7 +77,21 @@ module CompareHelper
   end
 
   def displayRanges(feat, ranges)
-    getRanges(feat)
+    dr = []
+    ranges.each_with_index do |r, ind| 
+      if r[:min] == r[:max] 
+        dr << "#{r[:min]}"
+      elsif ind==0
+        if feat == "saleprice"
+          dr << "Below #{r[:max]}"
+        else
+          dr << "#{r[:max]} and below"
+        end      
+      else
+        dr << "#{r[:min]} - #{r[:max]}"
+      end   
+    end   
+    dr
   end
 
   def missing_spec_name_translation?(name)
