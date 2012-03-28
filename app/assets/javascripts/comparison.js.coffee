@@ -296,7 +296,7 @@
     return false
   
   #Clear all comparison options
-  $('#optemo_embedder .nav_clear_btn').live "click", ->
+  $('.nav_clear_btn').live "click", ->
     #Uncheck currently checked navboxes
     $('.optemo_compare_checkbox:checked').each ->
       $(this).attr('checked', '')
@@ -331,6 +331,6 @@
     return false
   
   #Comparison btn on navigation page
-  $('#optemo_embedder .nav-compare-btn').live("click", show_comparison_window)
+  $('.nav-compare-btn').live("click", show_comparison_window)
   
   #/* End of LiveInit Functions */
