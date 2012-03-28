@@ -145,8 +145,8 @@ module CompareHelper
   
   def cat_order(f, chosen_cats, tree_level= 1)
    optionlist={}
-    if (request.host =="keyword")       
-       if f.name == "category"
+    if (request.host =="keyword")
+       if f.name == "product_type"
        #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
        #  leaves = CatSpec.count_feat(f.name)
        # # puts "leaves_compare #{leaves}"
@@ -156,18 +156,29 @@ module CompareHelper
        #    optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
        #  end
        #***************
-         optionlist = CatSpec.count_feat(f.name, tree_level)
+        optionlist = CatSpec.count_feat(f.name, tree_level)
        else
         optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
        end
     else
-      optionlist = CatSpec.count_feat(f.name)
-      #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
-  	  order = CatSpec.order(f.name)
-      unless order.empty?
-        optionlist = optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] } 
+      if f.name == "product_type"
+        optionlist = {}
+        children = ProductCategory.get_subcategories(Session.product_type)
+        leaves = CatSpec.count_feat(f.name)
+        children.each do |fp|
+          l = ProductCategory.get_leaves(fp)
+          optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
+        end
+     else
+        optionlist = CatSpec.count_feat(f.name)
+        #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
+        order = CatSpec.order(f.name)
+        unless order.empty?
+          optionlist = optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] } 
+        end
       end
     end
+    
   	optionlist
   end
  
