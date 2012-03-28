@@ -15,13 +15,13 @@
   	  </div>
   	<% end %>
   </div>
-  <% if defined? landing %>
+  <% if defined? landing and landing %>
     <%= link_to(root_path, {:class=>'seeall'}) do %>
       <%=t 'products.seeall' %> <div><!-- --></div>
     <% end %>
   <% else %>
-    <%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>"nav_compare_btn#{'_bottom' if defined? bottom}"})  %>
-    <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :rel => "nofollow", :title => t('products.compare.cleardesc') %>
+    <%= link_to(t(Session.product_type+".compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey optemo_embedder nav-compare-btn', :id=>"nav_compare_btn#{'_bottom' if defined? bottom}"})  %>
+    <%= link_to t('products.compare.clear'), "#", :class => "regular_reset nav_clear_btn", :rel => "nofollow", :title => t('products.compare.cleardesc') %>
     <% if request.host == "keyword" && !defined?(bottom) %>
     	<%= render 'pagination_search' %>
     <% end %>	
