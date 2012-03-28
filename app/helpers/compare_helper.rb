@@ -41,7 +41,7 @@ module CompareHelper
   end  
 
   def getRanges(feat)
-    num_ranges = 7
+    num_ranges = 6
     Ranges.cacherange(feat, num_ranges)
   end  
 
@@ -78,30 +78,30 @@ module CompareHelper
 
   def displayRanges(feat, ranges)
     dr = []
-    ranges.each_with_index do |r, ind| 
+    ranges.each_with_index do |r, ind|  
       if r[:min] == r[:max] 
-       if feat == "saleprice" 
+       if feat == "saleprice" && I18n.locale = :en
          dr << "$#{r[:min]}"
        else
-         dr <<  "#{r[:min]}" + t("#{Session.product_type}.filter.#{feat}.unit") 
+         dr <<  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
        end   
       elsif ind==0
-        if feat == "saleprice" 
-          dr << "Below "+t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:max]}"
+        if feat == "saleprice" && I18n.locale = :en
+          dr << "Below $#{r[:max]}"
         else
-          dr << "#{r[:max]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+" and below"
+          dr << "#{r[:max]} "+ t("#{Session.product_type}.filter.#{feat}.unit")+" and below"
         end      
       elsif ind==(ranges.size-1)
-        if feat == "saleprice" 
-          dr << t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:min]}"+" and above"
+        if feat == "saleprice" && I18n.locale = :en
+          dr << "$#{r[:min]} and above"
         else
-          dr << "#{r[:min]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+" and above"
+          dr << "#{r[:min]} "+ t("#{Session.product_type}.filter.#{feat}.unit")+" and above"
         end 
       else
-        if feat == "saleprice"
-          dr << t("#{Session.product_type}.filter.#{feat}.unit") +"#{r[:min]} - "+t("#{Session.product_type}.filter.#{feat}.unit")+"#{r[:max]}"
+        if feat == "saleprice" && I18n.locale = :en
+          dr << "$#{r[:min]} - $#{r[:max]}"
         else
-          dr << "#{r[:min]}"+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit")
+          dr << "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
         end    
       end   
     end   
