@@ -33,22 +33,8 @@ class CatSpec < ActiveRecord::Base
     elsif feat=="product_type"
       feat= "product_type"
     end
-    if feat == "brand"
-      Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
-        name = ""
-        r.value.split.each do |word|
-          if word =~ /^[Ll][Gg]/
-            name << "LG "
-          else
-            name << word.capitalize << " "
-          end
-        end
-        q[name] = r.count
-      end
-    else
-      Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
-        q[r.value] = r.count
-      end
+    Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
+      q[r.value] = r.count
     end
     q
   end
