@@ -5,7 +5,7 @@
 *= require futureshop/development
 *= require shared
 *= require awesome_buttons
-*= require colour_and_buttons
+*= require futureshop/colour_and_buttons
 *= require direct_comparison
 *= require futureshop/filter_boxes
 *= require futureshop/main_nav_controls

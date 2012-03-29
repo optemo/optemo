@@ -3,7 +3,6 @@ class Session
   cattr_accessor :product_type # The product type which is an integer hash of the current category_id plus retailer
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :features # Gets the feature customizations which allow the site to be configured
-  cattr_accessor :ranges # Uses ranges for continuous data instead of sliders
   cattr_accessor :futureshop # Uses futureshop stylesheets instead of Best Buy (see 'optemo' layout file)
 
   def initialize (product_type = nil)

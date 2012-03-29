@@ -1,6 +1,10 @@
 <div class="<%= isfr? ? :fr : :en %>"><div class="y_heading">
   <div class="narrow_text">
-    <div><h1><%= t('products.compare.shoph1') + raw(product_title) %></h1><div class="refine_text"><%= t('products.compare.refineyoursearch1') %></div><div class="french_refine_text"> <%= t('products.compare.refineyoursearch2') %></div></div>
+    <div>
+      <%= "<h1> #{t('products.compare.shoph1') + raw(product_title)} </h1>" unless Session.futureshop %>
+      <div class="refine_text"><%= t('products.compare.refineyoursearch1') %></div>
+      <div class="french_refine_text"> <%= t('products.compare.refineyoursearch2') %></div>
+    </div>
     <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
   </div>
 </div>
@@ -55,20 +59,20 @@
     <% end %> <%# else %>
   <% when "Continuous" %>
     <%= render partial: 'filter_label', locals: {f: f} %>
-    <% if Session.ranges %>
+    <% if f.ui == "ranges" %>
       <% chosen_conts = chosenconts(f.name) %>
       <%ranges = getRanges(f.name)%>
   	  <%displayed_ranges = displayRanges(f.name, ranges)%>
       <% getRanges(f.name).each_with_index do |r, ind| %>
         <% checked = chosen_conts.include?(r) %>
         <% available_count = Ranges.count(f.name, r[:min], r[:max]) %>
-		<%if available_count >0 %>
+		    <%if available_count >0 %>
         	<div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' if checked %>>
           	<%= check_box_tag "continuous[#{f.name}]", "#{r[:min]};#{r[:max]}", checked ,:disabled => available_count == 0 ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :"data-min" => r[:min], :"data-max" => r[:max] %>
           	<%= (available_count == 0) ?  displayed_ranges[ind] : link_to(displayed_ranges[ind], "#", :class => "checkbox_text") %>
           	<span class="av_count"><%= "(#{available_count})" unless checked %></span>
         	</div>
-		<%end%>	
+		    <% end %>	
       <% end %> <%# getRanges.each %>
 	
     <% else %> <%# Use sliders still, not ranges %>

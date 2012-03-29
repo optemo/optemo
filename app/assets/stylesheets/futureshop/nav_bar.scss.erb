@@ -27,14 +27,10 @@
   	min-height: 744px; /* Empirically determined; used for embedded LPH layout */
   }
   #navigator_bar {
-  	border-top: 1px solid #d0d0d0;
-  	border-left: 1px solid #d0d0d0;
-  	border-right: 1px solid #d0d0d0;
-    background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-    background-image:-o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
+    background-image: -moz-linear-gradient(center bottom, #FFFFFF, #CCCCCC);
+    background-image: -o-linear-gradient(bottom, rgb(0,0,0), rgb(204,204,204));
+    background-image: -webkit-gradient(linear, left bottom, left top, from(#FFFFFF), to(#CCCCCC));
     height: 75px;
-    overflow: hidden;
     overflow: hidden;
     position: relative;
     margin-bottom: 1px;
@@ -167,7 +163,12 @@
     font-size: 11px;
     height: 27px;
     padding: 13px 0 0 15px;
-    margin: 0;
+    margin: 0 0 10px;
+    position: relative;
+    background: #e7e7e7;
+    text-align: center;
+    border: 1px #cecece solid;
+    border-top: 0;
   }
   #IE.ie7 ul#sorting_method_box, #IE.ie6 ul#sorting_method_box{
     height: 30px;
