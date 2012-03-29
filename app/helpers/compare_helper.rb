@@ -166,8 +166,8 @@ module CompareHelper
         children = ProductCategory.get_subcategories(Session.product_type)
         leaves = CatSpec.count_feat(f.name)
         children.each do |fp|
-          l = ProductCategory.get_leaves(fp)
-          optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
+          l = ProductCategory.get_leaves(fp)          
+          optionlist[fp] = l.map{|e| leaves[e]}.compact.inject(0){|res,ele| res+ele}
         end
      else
         optionlist = CatSpec.count_feat(f.name)
@@ -178,8 +178,7 @@ module CompareHelper
         end
       end
     end
-    
-  	optionlist
+    optionlist
   end
  
   def sub_level(product_type, tree_level= 2)
