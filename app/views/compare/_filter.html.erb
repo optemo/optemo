@@ -1,7 +1,7 @@
 <div class="<%= isfr? ? :fr : :en %>"><div class="y_heading">
   <div class="narrow_text">
     <div>
-      <%= "<h1> #{t('products.compare.shoph1') + raw(product_title)} </h1>" unless Session.futureshop %>
+      <%= raw "<h1> #{t('products.compare.shoph1') + product_title} </h1>" unless Session.futureshop %>
       <div class="refine_text"><%= t('products.compare.refineyoursearch1') %></div>
       <div class="french_refine_text"> <%= t('products.compare.refineyoursearch2') %></div>
     </div>
