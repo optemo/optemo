@@ -49,9 +49,6 @@ class ApplicationController < ActionController::Base
 
     # We are passing in the category id from javascript
 
-    # To use ranges instead of sliders for continuous variables, uncomment this line
-     s.ranges = true
-
     # To use Future Shop stylesheets instead of Best Buy, flick the following switch
     # s.futureshop = true
 
