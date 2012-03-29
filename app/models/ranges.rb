@@ -32,27 +32,27 @@ module Ranges
   end
 
   def self.cacherange(feat, num) 
-     Rails.cache.fetch("Ranges#{Session.product_type}#{feat}#{num}") do
-       self.getRange(feat, num)
-     end
+    Rails.cache.fetch("Ranges#{Session.product_type}#{feat}#{num}") do
+      self.getRange(feat, num)
+    end
   end
 
- def self.price_ranges(min, max)
-   prs = [0, 50, 100, 150, 200, 300, 500, 1000, 2000, 3000, 5000, 1000000]
-   rs = []
-   prs.each_with_index do |pr, ind|
-     if max<prs.last
-       if rs.empty? && pr>min 
-         rs << {:min => prs[ind-1], :max => pr}
-       elsif !rs.empty? && max>pr 
-         rs << {:min => prs[ind-1], :max => pr}
-         if max>=pr && max<prs[ind+1]
-           rs << {:min => pr, :max => prs[ind+1]}
-         end 
-       end
+  def self.price_ranges(min, max)
+    prs = [0, 50, 100, 150, 200, 300, 500, 1000, 2000, 3000, 5000, 1000000]
+    rs = []
+    prs.each_with_index do |pr, ind|
+      if max<prs.last
+        if rs.empty? && pr>min 
+          rs << {:min => prs[ind-1], :max => pr}
+        elsif !rs.empty? && max>pr 
+          rs << {:min => prs[ind-1], :max => pr}
+          if max>=pr && max<prs[ind+1]
+            rs << {:min => pr, :max => prs[ind+1]}
+          end 
+        end
+      end
     end
-   end
-   rs
- end
+    rs
+  end
 
 end	
