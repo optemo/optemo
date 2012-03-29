@@ -4,11 +4,9 @@ module Ranges
 	  discretized = Session.search.solr_search({mybins: [], mycats: [], myconts: []}).facet(feat.to_sym).rows
 	  rs = []
 	  if (!discretized.empty?)
-	    min_all = CachingMemcached.cache_lookup("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
-	    max_all = CachingMemcached.cache_lookup("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
 	    if feat=="saleprice"
-	      p_min = discretized.first.value
-	      p_max = discretized.last.value
+	      p_min = discretized.map{|d| d.value}.min
+	      p_max = discretized.map{|d| d.value}.max
 	      rs  = self.price_ranges(p_min, p_max)
       else    
 	      grouped_data = Kmeans.compute(num, discretized.map{|r| [r.value]*r.count}.flatten)
