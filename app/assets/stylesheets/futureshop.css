@@ -4,7 +4,7 @@
 * the top of the compiled file, but it's generally better to create a new file per style scope.
 *= require futureshop/development
 *= require shared
-*= require awesome_buttons
+*= require futureshop/awesome_buttons
 *= require futureshop/colour_and_buttons
 *= require direct_comparison
 *= require futureshop/filter_boxes

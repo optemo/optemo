@@ -132,14 +132,15 @@ module CompareHelper
     emptystars = 5 - fullstars - halfstar
     ret = ""
     fullstars.times do
-      ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowStar.gif" /> '
+      ret += '<div class="ratingStar"><!-- --></div> '
     end
     halfstar.times do
-      ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowhalfstar.gif" /> '
+      ret += '<div class="ratingHalfStar"><!-- --></div>'
     end
     emptystars.times do
-      ret += '<img src="http://bestbuy.ca/images/common/pictures/emptystar.gif" /> '
+      ret += '<div class="ratingEmptyStar"><!-- --></div>'
     end
+    ret += "&nbsp;" + numstars.to_s + " /5" if Session.futureshop
     return ret
   end
   
