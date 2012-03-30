@@ -236,3 +236,18 @@ module CompareHelper
     end
   end
 end
+
+module WillPaginate
+  module ViewHelpers
+    def page_entries_info(collection, options = {})
+      entry_name = options[:entry_name] ||
+        (collection.empty? ? 'entry' :
+          collection.first.class.name.underscore.sub('_', ' '))
+      if Session.futureshop
+        t('will_paginate.page_entries_info.futureshop_multi_page_html', :current_page => collection.current_page, :total_pages => collection.total_pages)
+      else # Best Buy
+        t('will_paginate.page_entries_info.multi_page_html', :from => collection.offset + 1, :to => collection.offset + collection.length, :count => collection.total_entries)
+      end
+    end
+  end
+end
