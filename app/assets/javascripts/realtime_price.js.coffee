@@ -43,11 +43,14 @@
             # Check this and fix the code as necessary
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
             current_savings = c.find('.save > span').html()
-            if current_savings? && !(savings is current_savings or savings is current_savings[1..-1]) 
-              c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
-              #Remove saleEnd data because we don't have accurate ones
+            if current_savings? && !(savings is current_savings or savings is current_savings[1..-1])
+              if c.find('.saleprice > span.price_dollars') # We are doing the Futureshop layout
+                c.find('.futureshop_sale_background > span').html("Save " + (if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
+              else # Best buy layout
+                c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
+                #Remove saleEnd data because we don't have accurate ones
               c.find('.saleends').hide()
-            
+              
             #Set checked flag to true
             c.attr("data-checked", true)
           )
