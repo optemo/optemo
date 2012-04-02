@@ -235,6 +235,15 @@ module CompareHelper
       link_to name, "?category_id=#{type}" 
     end
   end
+  
+  def product_image(product,size)
+    if BinSpec.find_by_product_id_and_name(product.id, "missingImage")
+      #Load missing image placeholder
+      content_tag("div","",class: "imageholder")
+    else
+      image_tag(product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku)
+    end
+  end
 end
 
 module WillPaginate
