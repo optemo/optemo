@@ -10,6 +10,9 @@
     padding: 14px 0 5px 37px;
     float: left;
   }
+  .watermark a {
+    color: #333;
+  }
   #product_content .border-content {
     border: 1px solid #d0d0d0;
   }
@@ -36,7 +39,7 @@
     margin-bottom: 1px;
   }
   #IE #navigator_bar {
-    background: url(<%= asset_path "IE/navigator_bar_bg.gif" %>) repeat-x;
+    background: url(<%= asset_path "IE/futureshop_navigator_bar_bg.gif" %>) repeat-x;
   }
   #navigator_bar_bottom {
   	padding: 0;
@@ -63,7 +66,7 @@
     height: 49px;
   }
   #IE.ie7 #navigator_bar_top, #IE.ie6 #navigator_bar_top {
-    height: 51px;
+    height: 50px;
   }
   #navigator_bar_top #navtitle {
     margin: 15px 17px;
@@ -78,8 +81,10 @@
     padding: 8px 0 8px;
     text-align: center;
     font-weight: bold;
-    font-family: Verdana, sans-serif;
-     
+    font-family: Verdana, sans-serif;     
+  }
+  #IE #navigator_bar a#nav_compare_btn {
+    top: 21px;
   }
   #navigator_bar a.nav-compare-btn:hover, #navigator_bar a.nav-compare-btn:visited {
     color: #fff;
@@ -112,7 +117,7 @@
     background-image:-webkit-gradient(linear, left bottom, left top, from(#8B0D1A), to(#BF1623));
   }
   #IE .seeall {
-    background: url(<%= asset_path 'blue_button.jpg' %>) no-repeat;
+    background: url(<%= asset_path 'IE/red_seeall_button.gif' %>) no-repeat;
     border: 0;
     margin-right: 0;
   }
@@ -128,10 +133,6 @@
   }
   #IE .seeall div {
     display: inline;
-    zoom: 1;
-  }
-  .ie67 .seeall div {
-    background: url(<%= asset_path 'gt_blue.gif' %>);
     zoom: 1;
   }
   #navigator_bar_bottom a#nav_compare_btn_bottom {
@@ -156,7 +157,7 @@
     top: 2px;
   }
   #IE #navigator_bar_top {
-    background: url(<%= asset_path "IE/nav_top_bg.gif" %>) repeat;    
+    background: url(<%= asset_path "IE/futureshop_nav_top_bg.gif" %>) repeat;    
   }
   ul#sorting_method_box {
     list-style-type: none;

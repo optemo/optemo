@@ -8,7 +8,7 @@
 .optemo {
   .navbox {
     font-size: 0.85em;
-    margin: 8px 3px 0 0;
+    margin: 2px 3px 0 0;
     padding: 0 2px 12px 0;
     width: 178px; /*+2 for the border*/
     overflow: hidden;
@@ -68,6 +68,7 @@
   	font-size: 0.8em;
   	text-align: left;
   	padding-left: 15px;
+  	line-height: 20px;
   }
   
   .poptitle {
@@ -141,6 +142,16 @@
     margin-top: -1px;
     margin-left: 18px;
   }
+  .ie67 .futureshop_price {
+    background: url(<%= asset_path "futureshop_price_background.gif" %>) no-repeat;    
+    position: relative;
+  }
+  .ie7 .futureshop_price {
+    margin-top: -6px;
+  }
+  .ie6 .futureshop_price {
+    margin-top: -4px;
+  }
   .futureshop_sale_background {
     background: url(<%= asset_data_uri "futureshop_sale_background.gif" %>) no-repeat;    
     width: 75px;
@@ -149,6 +160,20 @@
     color: #333;
     margin-left: 33px;
     font-size: 0.8em;
+  }
+  .ie67 .futureshop_sale_background {
+    background: url(<%= asset_path "futureshop_sale_background.gif" %>) no-repeat;    
+    position: relative;
+    padding-bottom: 0;
+  }
+  .ie7 .futureshop_sale_background span {
+    top: 0;
+    left: 2px;
+    position: absolute;
+  }
+  .ie6 .futureshop_sale_background span {
+   /* margin-top: -3px; */
+     margin-left: 2px;
   }
   .price .price_dollars, .saleprice .price_dollars {
     font-size: 1.6em;
@@ -189,15 +214,24 @@
     width: 13px;
     height: 12px;
   }
+  .ie67 .ratingStar {
+    background: url(<%= asset_path "futureshopStar.gif"%>);
+  }
   .ratingHalfStar {
     background: url(<%= asset_data_uri "futureshophalfstar.gif"%>);
     width: 13px;
     height: 12px;
   }
+  .ie67 .ratingHalfStar {
+    background: url(<%= asset_path "futureshophalfstar.gif"%>);
+  }
   .ratingEmptyStar {
     background: url(<%= asset_data_uri "futureshopemptystar.gif"%>);
     width: 13px;
     height: 12px;
+  }
+  .ie67 .ratingEmptyStar {
+    background: url(<%= asset_path "futureshopemptystar.gif"%>);
   }
   .row_bounding_box {
     position: relative;
