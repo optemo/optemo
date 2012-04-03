@@ -28,8 +28,11 @@ gem 'capistrano'
 gem 'capistrano-ext'
 
 gem 'i18n-active_record',
-      :git => 'git://github.com/svenfuchs/i18n-active_record.git',
-      :require => 'i18n/active_record'
+      #:git => 'git://github.com/svenfuchs/i18n-active_record.git',
+      #Set_table_name is deprecated, so we'll use this patched version
+      :git => 'git://github.com/Studentify/i18n-active_record.git',
+      :require => 'i18n/active_record',
+      :ref => 'd5fa751dda'
 
 # Bundle the extra gems:
 # gem 'bj'
@@ -72,7 +75,6 @@ group :test do
   gem 'guard-spork'
   gem 'rb-fsevent'
   gem 'ruby-prof'
-  gem 'growl_notify'
 	gem 'factory_girl_rails'
 end
 

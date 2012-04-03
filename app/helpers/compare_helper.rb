@@ -9,7 +9,8 @@ module CompareHelper
           render(:partial => 'navbox', :locals => {product: box3, last_in_row: true}) +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
-          if box1.product_bundles || (box2 && box2.product_bundles) || (box3 && box3.product_bundles)
+          if !box1.product_bundles.empty? || (box2 && !box2.product_bundles.empty?) || (box3 && !box3.product_bundles.empty?)
+            debugger
             navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
@@ -123,7 +124,7 @@ module CompareHelper
     Session.features["sortby"].map do |f| 
       suffix = f.style.length > 0 ? '_' + f.style : ''
       content_tag :li, (current_sorting_option == (f.name+suffix)) ? t(Session.product_type+".sortby."+f.name+suffix+".name") : link_to(t(Session.product_type+".sortby."+f.name+suffix+".name"), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
-    end.join(content_tag(:span, "  |  ", :class => "seperater"))
+    end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))
   end
   
   def stars(numstars)
@@ -132,14 +133,15 @@ module CompareHelper
     emptystars = 5 - fullstars - halfstar
     ret = ""
     fullstars.times do
-      ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowStar.gif" /> '
+      ret += '<div class="ratingStar"><!-- --></div> '
     end
     halfstar.times do
-      ret += '<img src="http://bestbuy.ca/images/common/pictures/yellowhalfstar.gif" /> '
+      ret += '<div class="ratingHalfStar"><!-- --></div>'
     end
     emptystars.times do
-      ret += '<img src="http://bestbuy.ca/images/common/pictures/emptystar.gif" /> '
+      ret += '<div class="ratingEmptyStar"><!-- --></div>'
     end
+    ret += "&nbsp;" + numstars.to_s + " /5" if Session.futureshop?
     return ret
   end
   
@@ -169,7 +171,10 @@ module CompareHelper
           l = ProductCategory.get_leaves(fp)          
           optionlist[fp] = l.map{|e| leaves[e]}.compact.inject(0){|res,ele| res+ele}
         end
-     else
+      elsif f.name == "brand" # To ensure alphabetical sorting (regardless of capitalization)
+        optionlist = CatSpec.count_feat(f.name)
+        optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+      else
         optionlist = CatSpec.count_feat(f.name)
         #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
         order = CatSpec.order(f.name)
@@ -232,6 +237,30 @@ module CompareHelper
       content_tag("b", name)
     else
       link_to name, "?category_id=#{type}" 
+    end
+  end
+  
+  def product_image(product,size)
+    if BinSpec.find_by_product_id_and_name(product.id, "missingImage")
+      #Load missing image placeholder
+      content_tag("div","",class: "imageholder")
+    else
+      image_tag(product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku)
+    end
+  end
+end
+
+module WillPaginate
+  module ViewHelpers
+    def page_entries_info(collection, options = {})
+      entry_name = options[:entry_name] ||
+        (collection.empty? ? 'entry' :
+          collection.first.class.name.underscore.sub('_', ' '))
+      if Session.futureshop?
+        t('will_paginate.page_entries_info.futureshop_multi_page_html', :current_page => collection.current_page, :total_pages => collection.total_pages)
+      else # Best Buy
+        t('will_paginate.page_entries_info.multi_page_html', :from => collection.offset + 1, :to => collection.offset + collection.length, :count => collection.total_entries)
+      end
     end
   end
 end

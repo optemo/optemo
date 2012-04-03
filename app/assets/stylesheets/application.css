@@ -4,8 +4,8 @@
 * the top of the compiled file, but it's generally better to create a new file per style scope.
 *= require bestbuy/development
 *= require shared
-*= require awesome_buttons
-*= require colour_and_buttons
+*= require bestbuy/awesome_buttons
+*= require bestbuy/colour_and_buttons
 *= require direct_comparison
 *= require bestbuy/filter_boxes
 *= require bestbuy/main_nav_controls

@@ -22,7 +22,8 @@ en:
         notapplicable:          "Not Applicable"
     will_paginate:
       page_entries_info:
-        multi_page_html: "<b>%{from}&nbsp;-&nbsp;%{to}</b> of <b>%{count}</b>"
+        multi_page_html:            "<b>%{from}&nbsp;-&nbsp;%{to}</b> of <b>%{count}</b>"
+        futureshop_multi_page_html: "Page <b>%{current_page}</b> of %{total_pages}"
     products:
         featuredproducts:       "Featured Products"
         sortby:                 "Sort By"
@@ -41,16 +42,19 @@ en:
             clickforspecs:    "Click for product specifications"
             clickforcompare:  "Click to compare products"
             reset:            "Reset All"
+            futureshop_reset: "» Reset All"
             resetdesc:        "Clear all filters"
             clear:            "Clear Selected Products"
             cleardesc:        "Clear the product selection"
             compare:          "Compare"
+            futureshop_compare: "» Compare"
             closewindow:      "Close Window"
             save:             "Save"
             morespecs:        "More Specs"
             lessspecs:        "Less Specs"
             shoph1:           "Shop "
             refineyoursearch1: "REFINE YOUR SEARCH"
+            futureshop_refineyoursearch1: "Refine Your Search"
             refineyoursearch2: ""
         show:
             title:          "Product Details"
