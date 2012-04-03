@@ -61,12 +61,14 @@
     outsidecontainer = $('#outsidecontainer')
     if (outsidecontainer.css('display') isnt 'block') 
       $('#info').html("").css({'height' : "560px", 'width' : (width-46)+'px'})
+    wWidth = $(window).width()
+    # Position with equal L/R margins
+    lPosition = parseInt((wWidth - width) / 2.0)
     outsidecontainer.css(
-      'left' : '100px',
+      'left' : lPosition,
       'top' : (dsoctop+5)+'px',
       'width' : (width||560)+'px',
       'display' : 'inline' )
-    wWidth = $(window).width()
     $('#silkscreen').css({'height' : optemo_module.current_height()+'px', 'display' : 'inline', 'width' : wWidth + 'px'})
     if (data)
       $('#info').html(data).css('height','')
