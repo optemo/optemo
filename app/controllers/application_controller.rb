@@ -46,11 +46,5 @@ class ApplicationController < ActionController::Base
     s = Session.new(params[:category_id]) 
     #s.id = mysession_id
     #s.ab_testing_type = ab_testing_type
-
-    # We are passing in the category id from javascript
-
-    # To use Future Shop stylesheets instead of Best Buy, flick the following switch
-    # s.futureshop = true
-
   end
 end

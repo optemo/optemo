@@ -9,7 +9,8 @@ module CompareHelper
           render(:partial => 'navbox', :locals => {product: box3, last_in_row: true}) +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
-          if box1.product_bundles || (box2 && box2.product_bundles) || (box3 && box3.product_bundles)
+          if !box1.product_bundles.empty? || (box2 && !box2.product_bundles.empty?) || (box3 && !box3.product_bundles.empty?)
+            debugger
             navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
@@ -123,7 +124,7 @@ module CompareHelper
     Session.features["sortby"].map do |f| 
       suffix = f.style.length > 0 ? '_' + f.style : ''
       content_tag :li, (current_sorting_option == (f.name+suffix)) ? t(Session.product_type+".sortby."+f.name+suffix+".name") : link_to(t(Session.product_type+".sortby."+f.name+suffix+".name"), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
-    end.join(content_tag(:span, "  |  ", :class => "seperater"))
+    end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))
   end
   
   def stars(numstars)
@@ -140,7 +141,7 @@ module CompareHelper
     emptystars.times do
       ret += '<div class="ratingEmptyStar"><!-- --></div>'
     end
-    ret += "&nbsp;" + numstars.to_s + " /5" if Session.futureshop
+    ret += "&nbsp;" + numstars.to_s + " /5" if Session.futureshop?
     return ret
   end
   
@@ -243,7 +244,7 @@ module WillPaginate
       entry_name = options[:entry_name] ||
         (collection.empty? ? 'entry' :
           collection.first.class.name.underscore.sub('_', ' '))
-      if Session.futureshop
+      if Session.futureshop?
         t('will_paginate.page_entries_info.futureshop_multi_page_html', :current_page => collection.current_page, :total_pages => collection.total_pages)
       else # Best Buy
         t('will_paginate.page_entries_info.multi_page_html', :from => collection.offset + 1, :to => collection.offset + collection.length, :count => collection.total_entries)

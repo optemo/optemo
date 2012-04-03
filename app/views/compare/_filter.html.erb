@@ -1,11 +1,11 @@
 <div class="<%= isfr? ? :fr : :en %>"><div class="y_heading">
   <div class="narrow_text">
     <div>
-      <%= raw "<h1> #{t('products.compare.shoph1') + product_title} </h1>" unless Session.futureshop %>
-      <div class="refine_text"><%= t(Session.futureshop ? 'products.compare.futureshop_refineyoursearch1' : 'products.compare.refineyoursearch1') %></div>
+      <%= raw "<h1> #{t('products.compare.shoph1') + product_title} </h1>" unless Session.futureshop? %>
+      <div class="refine_text"><%= t(Session.futureshop? ? 'products.compare.futureshop_refineyoursearch1' : 'products.compare.refineyoursearch1') %></div>
       <div class="french_refine_text"> <%= t('products.compare.refineyoursearch2') %></div>
     </div>
-    <%= link_to t(Session.futureshop ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
+    <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
   </div>
 </div>
 <form id="filter_form" method="get" action="/compare">
@@ -101,7 +101,8 @@
               data-max= '<%= datamax %>'
               data-distmin=<%= distribution_data.first[0] %>
               data-distmax=<%= distribution_data.first[1] %>
-              data-unit = "<%= t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>" 
+              <%# Take out data-unit for now. Needs logic for $ before/after, etc. %>
+              data-unit = " " <%# t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>
               disabled="disabled"/>
           </span>
         </div>
@@ -121,7 +122,7 @@
 <% end %>
 </form>
 <div class="y_bottom">
-  <%= link_to t(Session.futureshop ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
+  <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
 </div>
 </div>
 

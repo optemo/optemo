@@ -12,7 +12,7 @@
       <%= image_tag(product.image_url(:medium), :class => "productimg", alt: "", :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
     </div>
     <div class="productinfo" data-sku=<%= product.sku %>>
-      <% if Session.futureshop -%>
+      <% if Session.futureshop? -%>
         <div class="price" <%=raw only_if_not_onsale(product) %>>
           <div class="futureshop_price">
             <% p = cont_specs["price"] -%>
@@ -33,7 +33,7 @@
       <% end %>
       <%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :class => "easylink", :title => t('products.compare.clickforspecs') %>
       <div class="productspecs"><!--&--></div>
-      <% unless Session.futureshop -%>
+      <% unless Session.futureshop? -%>
         <div class="price" <%=raw only_if_not_onsale(product) %>>
           <%= t('products.show.ourprice')+(fr?.empty? ? "" : " ")+": "%>     
           <span><%= number_to_currency(cont_specs["price"]) %></span>
@@ -54,30 +54,13 @@
  
       <% siblings = product.product_siblings -%>
       <!-- Colour swatches -->
-      <% unless siblings.empty? %>
-        <div class="navboxcolours">
-      	<% t=0 %>
-          <% siblings.each do |sibling| -%>
-            <% sibling_id = sibling.sibling_id -%>
-            <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
-            <% color = sibling_cat_specs["color"] %>
-            <% if color %>
-      				<% if t==0 %>
-       					<div class="colorslabel"> <%= t('products.show.othercolors') %></div>
-      					<% t=1 %>
-      				<% end %>	
-            	<%= link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
-                <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"><!-- --></div>
-              <% end %>
-            <% end %>
-          <% end %>
-          &nbsp;
-        </div>
-      <% end %>
+      <%# Colour swatches go after customer rating in Future Shop design %>
+      <%= render partial: 'color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>
      
       <% if cont_specs["customerRating"] && cont_specs["customerRating"] > 0 %>
         <div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
       <% end %>
+      <%= render partial: 'color_swatches', :locals => {:siblings => siblings} if Session.futureshop? %>
     </div>
   </div>
 <% else # Render a navbox shell so that the rendering is consistent -%>
