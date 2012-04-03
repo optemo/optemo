@@ -8,9 +8,7 @@
         <span><%=t('products.compare.compare')%></span>
       </a>
     </div>
-    <div class="imageholder">
-      <%= image_tag(product.image_url(:medium), :class => "productimg", alt: "", :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
-    </div>
+    <%= product_image(product, :medium) %>
     <div class="productinfo" data-sku=<%= product.sku %>>
       <% if Session.futureshop? -%>
         <div class="price" <%=raw only_if_not_onsale(product) %>>
