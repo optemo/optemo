@@ -66,7 +66,7 @@
     height: 49px;
   }
   #IE.ie7 #navigator_bar_top, #IE.ie6 #navigator_bar_top {
-    height: 51px;
+    height: 50px;
   }
   #navigator_bar_top #navtitle {
     margin: 15px 17px;
@@ -81,8 +81,10 @@
     padding: 8px 0 8px;
     text-align: center;
     font-weight: bold;
-    font-family: Verdana, sans-serif;
-     
+    font-family: Verdana, sans-serif;     
+  }
+  #IE #navigator_bar a#nav_compare_btn {
+    top: 21px;
   }
   #navigator_bar a.nav-compare-btn:hover, #navigator_bar a.nav-compare-btn:visited {
     color: #fff;
@@ -131,10 +133,6 @@
   }
   #IE .seeall div {
     display: inline;
-    zoom: 1;
-  }
-  .ie67 .seeall div {
-    background: url(<%= asset_path 'gt_blue.gif' %>);
     zoom: 1;
   }
   #navigator_bar_bottom a#nav_compare_btn_bottom {
