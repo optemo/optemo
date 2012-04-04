@@ -31,6 +31,16 @@ function opt_insert(d,name) {
   } else
     setTimeout(function(){opt_insert(d,name);d=null;name=null;},10);
 }
+
+function opt_insert_all_data(data) {
+  // This avoids code duplication in the JSONP call below
+  parts = data.split("[BRK]");
+  opt_insert(parts[0],"optemo_topbar"); // navigator_bar
+  opt_insert(parts[2],"optemo_content"); // content
+  opt_insert(parts[3],"optemo_content"); // static (spinner bar, crazyegg tracking)
+  opt_insert(parts[1],"optemo_filter"); // filter -- this MUST be last since it triggers DOMReady()
+}
+
 //Load the correct history on reload
 var opt_history = location.hash.replace(/^#/, '');
 // To get the category id that gets passed in, check the URL:
@@ -67,7 +77,7 @@ else
   var opt_options = {embedding:'true', category_id: opt_category_id, landing: true};
 
 JSONP.get(OPT_REMOTE, opt_options, function (data) {
-  if ( !/MSIE/i.test(navigator.userAgent) || scriptSource.match(/localhost/) || scriptSource.match(/192.168/)) { // We need to do some additional work
+  if (!/MSIE/i.test(navigator.userAgent) && (scriptSource.match(/localhost/) || scriptSource.match(/192.168/))) { // We need to do some additional work
     var regexp_pattern, data_to_add, data_to_append, scripts, headID = document.getElementsByTagName("head")[0], script_nodes_to_append, i, images;
     // Take out all the scripts, load them on the client (consumer) page in the HEAD tag, and put the data back together
     regexp_pattern = (/<script[^>]+>/g);
@@ -117,11 +127,7 @@ JSONP.get(OPT_REMOTE, opt_options, function (data) {
     else {
       data_to_append = data;
     }
-    parts = data_to_append.split("[BRK]");
-    opt_insert(parts[0],"optemo_topbar");
-    opt_insert(parts[2],"optemo_content");
-    opt_insert(parts[3],"optemo_content");
-    opt_insert(parts[1],"optemo_filter");
+    opt_insert_all_data(data_to_append);
 
     // We have to load all scripts in order, but using labJS is too heavy. So, we do a recursive serial loader function.
     // Although serial should == slow, the javascript we're loading should only be one file in production.
@@ -161,15 +167,12 @@ JSONP.get(OPT_REMOTE, opt_options, function (data) {
       })(0);   
     } 
   }
-  else {
-    parts = data_to_append.split("[BRK]");
-    opt_insert(parts[0],"optemo_topbar");
-    opt_insert(parts[2],"optemo_content");
-    opt_insert(parts[3],"optemo_content");
-    opt_insert(parts[1],"optemo_filter");
+  else { // We are in Internet Explorer and not local
+    opt_insert_all_data(data)
   }
 });
-// Private function for the register_remote socket. Takes data, splits according to rules, does replace() according to rules.
+
+// Private function that takes data, does split() and replace() according to rules.
 function opt_parse_data_by_pattern(mydata, split_pattern_string, replacement_function) {
   var data_to_add, data_to_append, split_regexp = new RegExp(split_pattern_string, "gi");
   images = mydata.match(split_regexp);
