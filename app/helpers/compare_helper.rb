@@ -10,7 +10,6 @@ module CompareHelper
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
           if !box1.product_bundles.empty? || (box2 && !box2.product_bundles.empty?) || (box3 && !box3.product_bundles.empty?)
-            debugger
             navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
@@ -146,7 +145,8 @@ module CompareHelper
   end
   
   def cat_order(f, chosen_cats, tree_level= 1)
-   optionlist={}
+    optionlist={}
+    longlist = {}
     if (request.host =="keyword")
        if f.name == "product_type"
        #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
@@ -172,8 +172,13 @@ module CompareHelper
           optionlist[fp] = l.map{|e| leaves[e]}.compact.inject(0){|res,ele| res+ele}
         end
       elsif f.name == "brand" # To ensure alphabetical sorting (regardless of capitalization)
-        optionlist = CatSpec.count_feat(f.name)
-        optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+        longlist = CatSpec.count_feat(f.name)
+        if longlist.length > 10
+          optionlist = Hash[*longlist.to_a[0..9].sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+        else
+          optionlist = {}
+        end
+        longlist = Hash[*longlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
       else
         optionlist = CatSpec.count_feat(f.name)
         #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
@@ -183,7 +188,7 @@ module CompareHelper
         end
       end
     end
-    optionlist
+    [optionlist, longlist]
   end
  
   def sub_level(product_type, tree_level= 2)

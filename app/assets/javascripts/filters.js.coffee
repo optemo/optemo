@@ -45,5 +45,9 @@
         return false
       optemo_module.ajaxcall('/',{landing:'true'})
       return false
+      
+    $('.moreless').live 'click', ->
+      $(this).parent().toggle().siblings('.categorical').toggle()
+      return false
 
     # End of LiveInit Functions
