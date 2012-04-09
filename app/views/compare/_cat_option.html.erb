@@ -11,7 +11,7 @@
       <% checked1 = chosen_cats.include?(k1) %>
 	    <div class="list_item hanging_indent" <%=raw "style='font-weight:normal;'" unless checked1 %> >
         <%= check_box_tag "categorical[#{f.name}]", (k + "+" + k1), checked1, :class => 'cat_filter' %>
-	      <%= (available_count1 == 0) ?  t("#{Session.product_type}.filter.#{k1}.name",:default=>k1) : link_to(t("#{Session.product_type}.filter.#{k1}.name", :default=>k1), "#", :class => "checkbox_text") %>
+	      <%= (available_count1 == 0) ?  t("#{Session.product_type}.filter.#{k1}.name",:default=>["#{k1}.name".to_sym,k1]) : link_to(t("#{Session.product_type}.filter.#{k1}.name", :default=>["#{k1}.name".to_sym,k1]), "#", :class => "checkbox_text") %>
         <span class="av_count"><%= "(#{available_count1})" unless checked1 %></span>
       </div>
     <% end %> <%# optionlist1.each %>

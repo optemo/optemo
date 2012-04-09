@@ -159,7 +159,10 @@ module CompareHelper
        #    optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
        #  end
        #***************
-        optionlist = CatSpec.count_feat(f.name, tree_level)
+        templist = CatSpec.count_feat(f.name, tree_level)
+         puts "optionlist_test #{templist}"
+        optionlist = process_product_type_hash(templist)
+        
        else
         optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
        end
@@ -204,14 +207,35 @@ module CompareHelper
    # end
    #puts "sub_level #{ancestors} #{subcategories}"
    #****************
-    second_ancestors = CatSpec.count_feat("product_type",tree_level)
+    temp_ancestors = CatSpec.count_feat("product_type",tree_level)
+    second_ancestors = process_product_type_hash(temp_ancestors)
+    
     subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
       if second_ancestors.has_key?(sub) && second_ancestors[sub]>0
         optionlist[sub] = second_ancestors[sub]
       end
     end
+    puts"sub_levels #{optionlist}"
     optionlist
   end
+  
+  def process_product_type_hash(list)
+    ret_list={}
+    list.each do |e,k|
+      if (e[0] =='B')
+        e= 'B'+ (e.split("B"))[1]
+      elsif 
+        e = 'F'+(e.split('F'))[1]
+      end
+       if ret_list[e] 
+         ret_list[e]+= k 
+       else
+         ret_list[e] = k 
+       end
+    end
+    ret_list
+  end
+  
   def only_if_onsale(product)
     'style="display:none;"' unless BinSpec.cache_all(product.id)["onsale"]
   end
