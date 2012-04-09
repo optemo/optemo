@@ -14,9 +14,12 @@
           <%= raw "Package Deals:<br>" if i == 0 %>
           <%= link_to number_to_currency(bundle_cont_specs["saleprice"], precision: 2), bundle_link, :class => "easylink" %>
         </div>
-        <% bundledesc = JSON.parse(TextSpec.cacheone(bundle_id, 'bundle').gsub("=>",":")) %>
-        <% bundledesc[1..-1].each do |item| %>
-          <div class="bundle_bullet_point">• <%= link_to item["name"], bundle_link, :class => 'easylink' %></div>
+        <% bundleText = TextSpec.cacheone(bundle_id, 'bundle') %>
+        <% unless bundleText.nil? %>
+          <% bundledesc = JSON.parse(bundleText.gsub("=>",":")) %>
+          <% bundledesc[1..-1].each do |item| %>
+            <div class="bundle_bullet_point">• <%= link_to item["name"], bundle_link, :class => 'easylink' %></div>
+          <% end %>
         <% end %>
         <a href="<%= bundle_link %>" class="easylink"><div class="bundle_image"><!-- --></div></a>
       </div>
