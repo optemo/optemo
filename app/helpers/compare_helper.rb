@@ -176,10 +176,12 @@ module CompareHelper
         longlist = CatSpec.count_feat(f.name)
         if longlist.length > 10
           optionlist = Hash[*longlist.to_a[0..9].sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+          longlist = Hash[*longlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
         else
-          optionlist = {}
+          optionlist = Hash[*longlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+          longlist = {}
         end
-        longlist = Hash[*longlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+        
       else
         optionlist = CatSpec.count_feat(f.name)
         #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}

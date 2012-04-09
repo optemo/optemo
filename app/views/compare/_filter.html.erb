@@ -37,7 +37,7 @@
       <% optionlist, longlist = cat_order(f, chosen_cats) %>
       <div class="categorical"> <%# <%= " brand" if f.name == "brand" % >" %>
         <%= render partial: "cat_option", collection: optionlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
-        <%= link_to "More", "#", class: "moreless" %>
+        <%= link_to "More", "#", class: "moreless" unless longlist.empty? %>
       </div>
       <div class="categorical" style="display:none;"> <%# <%= " brand" if f.name == "brand" % >" %>
         <%= render partial: "cat_option", collection: longlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
