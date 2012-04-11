@@ -49,10 +49,14 @@ class Search < ActiveRecord::Base
         sorting = sortby.split("_")
       else
         #Default
-        sorting = ["utility", "desc"]
+        if Session.product_type == "B20218"
+          sorting = ["lr_utility", "desc"]
+        else
+          sorting = ["utility", "desc"]
+        end
       end
-      order_by(sorting[0].to_sym, sorting[1].to_sym)
-
+        order_by(sorting[0].to_sym, sorting[1].to_sym)
+    
       cat_filters = {} #Used for faceting exclude so that the counts are right
       mycats.group_by(&:name).each_pair do |name, group|
         cat_filters[name] = any_of do  #disjunction inside the category part
@@ -108,7 +112,7 @@ class Search < ActiveRecord::Base
               facet :first_ancestors, exclude: cat_filters[f.name]
               facet :second_ancestors, exclude: cat_filters[f.name]
             else
-              facet f.name.to_sym, sort: :index, exclude: cat_filters[f.name]
+              facet f.name.to_sym, exclude: cat_filters[f.name]
             end
           end
       end

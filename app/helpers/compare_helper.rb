@@ -10,7 +10,6 @@ module CompareHelper
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
           if !box1.product_bundles.empty? || (box2 && !box2.product_bundles.empty?) || (box3 && !box3.product_bundles.empty?)
-            debugger
             navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
@@ -55,8 +54,8 @@ module CompareHelper
     num_buckets = 24
     discretized = Session.search.solr_cached.facet(feat.to_sym).rows
     if (!discretized.empty?)
-      min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
-      max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
+      min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.first.value}
+      max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.last.value}
     
       min = discretized.first.value
       max = discretized.last.value
@@ -119,10 +118,11 @@ module CompareHelper
   
   def sortby
     current_sorting_option = Session.search.sortby || "utility_desc"
-    Session.features["sortby"].map do |f| 
-      suffix = f.style.length > 0 ? '_' + f.style : ''
-      content_tag :li, (current_sorting_option == (f.name+suffix)) ? t(Session.product_type+".sortby."+f.name+suffix+".name") : link_to(t(Session.product_type+".sortby."+f.name+suffix+".name"), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
-    end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))
+    sortby_f = Session.features["sortby"].reject{|f| f.name== "lr_utility"}
+    sortby_f.map do |f| 
+        suffix = f.style.length > 0 ? '_' + f.style : ''
+        content_tag :li, (current_sorting_option == (f.name+suffix)) ? t(Session.product_type+".sortby."+f.name+suffix+".name") : link_to(t(Session.product_type+".sortby."+f.name+suffix+".name"), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
+    end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))    
   end
   
   def stars(numstars)
@@ -144,7 +144,8 @@ module CompareHelper
   end
   
   def cat_order(f, chosen_cats, tree_level= 1)
-   optionlist={}
+    optionlist={}
+    longlist = {}
     if (request.host =="keyword")
        if f.name == "product_type"
        #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
@@ -156,7 +157,10 @@ module CompareHelper
        #    optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
        #  end
        #***************
-        optionlist = CatSpec.count_feat(f.name, tree_level)
+        templist = CatSpec.count_feat(f.name, tree_level)
+         puts "optionlist_test #{templist}"
+        optionlist = process_product_type_hash(templist)
+        
        else
         optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
        end
@@ -170,8 +174,15 @@ module CompareHelper
           optionlist[fp] = l.map{|e| leaves[e]}.compact.inject(0){|res,ele| res+ele}
         end
       elsif f.name == "brand" # To ensure alphabetical sorting (regardless of capitalization)
-        optionlist = CatSpec.count_feat(f.name)
-        optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+        longlist = CatSpec.count_feat(f.name)
+        if longlist.length > 10
+          optionlist = Hash[*longlist.to_a[0..9].sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+          longlist = Hash[*longlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+        else
+          optionlist = Hash[*longlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+          longlist = {}
+        end
+        
       else
         optionlist = CatSpec.count_feat(f.name)
         #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
@@ -181,7 +192,7 @@ module CompareHelper
         end
       end
     end
-    optionlist
+    [optionlist, longlist]
   end
  
   def sub_level(product_type, tree_level= 2)
@@ -196,14 +207,35 @@ module CompareHelper
    # end
    #puts "sub_level #{ancestors} #{subcategories}"
    #****************
-    second_ancestors = CatSpec.count_feat("product_type",tree_level)
+    temp_ancestors = CatSpec.count_feat("product_type",tree_level)
+    second_ancestors = process_product_type_hash(temp_ancestors)
+    
     subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
       if second_ancestors.has_key?(sub) && second_ancestors[sub]>0
         optionlist[sub] = second_ancestors[sub]
       end
     end
+    puts"sub_levels #{optionlist}"
     optionlist
   end
+  
+  def process_product_type_hash(list)
+    ret_list={}
+    list.each do |e,k|
+      if (e[0] =='B')
+        e= 'B'+ (e.split("B"))[1]
+      elsif 
+        e = 'F'+(e.split('F'))[1]
+      end
+       if ret_list[e] 
+         ret_list[e]+= k 
+       else
+         ret_list[e] = k 
+       end
+    end
+    ret_list
+  end
+  
   def only_if_onsale(product)
     'style="display:none;"' unless BinSpec.cache_all(product.id)["onsale"]
   end

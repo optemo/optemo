@@ -34,27 +34,14 @@
       </div>
     <% else %>
       <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-      <% optionlist = cat_order(f, chosen_cats) %>
+      <% optionlist, longlist = cat_order(f, chosen_cats) %>
       <div class="categorical"> <%# <%= " brand" if f.name == "brand" % >" %>
-	    <% optionlist.each do |k,available_count| %>
-        <% checked = chosen_cats.include?(k) %>
-        <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %>>
-          <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
-          <%= (available_count == 0) ?  t("#{Session.product_type}.filter.#{k}.name",:default=>["#{k}.name".to_sym,k]) : link_to(t("#{Session.product_type}.filter.#{k}.name", :default=>["#{k}.name".to_sym,k]), "#", :class => "checkbox_text") %>
-          <span class="av_count"><%= "(#{available_count})" unless checked %></span>
-			    <% if checked && f.name == "product_type" %>
-			      <% optionlist1 = sub_level(k) %>
-			      <% optionlist1.each do |k1,available_count1| %>
-			        <% checked1 = chosen_cats.include?(k1) %>
-			  	    <div class="list_item hanging_indent" <%=raw "style='font-weight:normal;'" unless checked1 %> >
-                <%= check_box_tag "categorical[#{f.name}]", (k + "+" + k1), checked1, :class => 'cat_filter' %>
-					      <%= (available_count1 == 0) ?  t("#{Session.product_type}.filter.#{k1}.name",:default=>k1) : link_to(t("#{Session.product_type}.filter.#{k1}.name", :default=>k1), "#", :class => "checkbox_text") %>
-		            <span class="av_count"><%= "(#{available_count1})" unless checked1 %></span>
-				      </div>
-			      <% end %> <%# optionlist1.each %>
-			    <% end %> <%# if checked %>
-        </div>	
-      <% end %> <%# optionlist.each %>
+        <%= render partial: "cat_option", collection: optionlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
+        <%= link_to "More", "#", class: "moreless" unless longlist.empty? %>
+      </div>
+      <div class="categorical" style="display:none;"> <%# <%= " brand" if f.name == "brand" % >" %>
+        <%= render partial: "cat_option", collection: longlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
+        <%= link_to "Less", "#", class: "moreless" %>
       </div>
     <% end %> <%# else %>
   <% when "Continuous" %>

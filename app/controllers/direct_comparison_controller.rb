@@ -1,4 +1,6 @@
 class DirectComparisonController < ApplicationController
+  LOW_IS_BETTER = ["saleprice","minFocalLength"]
+  
 # Compares products selected for comparison ('saved' products)
   include CachingMemcached
   layout false
@@ -43,14 +45,27 @@ private
         # Find the min value and assign @bestvalue[feature]=product-id
         bestval = -1000000000
         bestproducts = []
-        @products.each do |p|
-          next if @sp["Continuous"][p.id][feature.name].nil?
-          featval = @sp["Continuous"][p.id][feature.name]*(feature.value < 0 ? -1 : 1)
-          if featval > bestval
-            bestproducts = [p.id]
-            bestval = featval
-          elsif featval == bestval
-            bestproducts << p.id
+        if LOW_IS_BETTER.include?(feature.name)
+          @products.each do |p|
+            next if @sp["Continuous"][p.id][feature.name].nil?
+            featval = @sp["Continuous"][p.id][feature.name]*(feature.value < 0 ? -1 : 1)
+            if featval < bestval*-1
+              bestproducts = [p.id]
+              bestval = featval
+            elsif featval == bestval
+              bestproducts << p.id
+            end
+          end
+        else
+          @products.each do |p|
+            next if @sp["Continuous"][p.id][feature.name].nil?
+            featval = @sp["Continuous"][p.id][feature.name]*(feature.value < 0 ? -1 : 1)
+            if featval > bestval
+              bestproducts = [p.id]
+              bestval = featval
+            elsif featval == bestval
+              bestproducts << p.id
+            end
           end
         end
         bestvalue[feature.name] = bestproducts
