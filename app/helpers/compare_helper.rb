@@ -80,13 +80,13 @@ module CompareHelper
       dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
       if dr.last[:count] >0 
         if r[:min] == r[:max] 
-         if feat == "saleprice" && I18n.locale = :en
+         if feat == "saleprice" && I18n.locale == :en
            dis = "$#{r[:min]}"
          else
            dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
          end   
         else
-          if feat == "saleprice" && I18n.locale = :en
+          if feat == "saleprice" && I18n.locale == :en
             dis = "$#{r[:min]} - $#{r[:max]}"
           else
             dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
@@ -96,7 +96,7 @@ module CompareHelper
       end  
     end   
     dr = dr.map{|d| d if d[:count]>0}.compact
-    if feat == "saleprice" && I18n.locale = :en
+    if feat == "saleprice" && I18n.locale == :en
        dr.first[:display] = "Below $#{dr.first[:max]}"
        dr.last[:display] = "$#{dr.last[:min]} and above"
     else    
