@@ -107,7 +107,7 @@ class Product < ActiveRecord::Base
     end
   end
   
-  def image_url(imgSize) #creates the url to a product's image given and sku and image size (small, medium, large, 150 -> predetermined sizes)
+  def image_url(imgSize) #creates the url to a product's image given and sku and image size (thumbnail, small, medium, large -> predetermined sizes)
     if Session.retailer == "B"
       baseUrl = "http://www.bestbuy.ca/multimedia/Products/"
     elsif Session.retailer == "F"
