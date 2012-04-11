@@ -34,8 +34,8 @@ module Ranges
     end
   end
 
-  def self.cacherange(feat, num) 
-    Rails.cache.fetch("Ranges#{Session.product_type}#{feat}#{num}") do
+  def self.cacherange(feat, num, cats) 
+    Rails.cache.fetch("Ranges#{Session.product_type}#{feat}#{num}#{cats}") do
       self.getRange(feat, num)
     end
   end
@@ -43,14 +43,14 @@ module Ranges
   def self.price_ranges(discretized)
     min = discretized.map{|d| d.value}.min
     max = discretized.map{|d| d.value}.max
-    s = self.count(saleprice, min, max) # total count of prods with this feature
+    rs = []
+    s = self.count("saleprice", min, max) # total count of prods with this feature
     prs = [0, 50, 100, 150, 200, 300, 500, 1000, 2000, 3000, 5000, 1000000]
     gprs = [0, 10, 25, 50]
     prs.each_with_index do |pr, ind|
       if max<prs.last
         if rs.empty? && pr>min
-          if self.count(saleprice, prs[ind-1], pr) > s/4
-            
+          if self.count("saleprice", prs[ind-1], pr) > s/4
           else
             rs << {:min => prs[ind-1], :max => pr}
           end      
