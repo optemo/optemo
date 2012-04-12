@@ -277,7 +277,7 @@ module CompareHelper
       #Load missing image placeholder
       content_tag("div","",class: "imageholder")
     else
-      image_tag(product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku)
+      image_tag product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.onerror='';this.src='#{product.image_url(:large)}';return true;", width: "150px", height: "150px"
     end
   end
 end

@@ -122,7 +122,7 @@ class Product < ActiveRecord::Base
     when :medium
       sizeUrl = "150x150/"
     when :large
-      sizeUrl = "300x300/"
+      sizeUrl = "250x250/"
     
     end
     return baseUrl+sizeUrl+skuUrl

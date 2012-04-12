@@ -126,7 +126,7 @@
       errorstr = '<div class="bb_poptitle"><label class="comp-title">Error</label><div class="bb_quickview_close"></div></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>'
     dsoctop= if document.all then iebody.scrollTop else window.pageYOffset
         
-    optemo_module.applySilkScreen(null,errorstr,dsoctop + 10,107)
+    optemo_module.applySilkScreen(null,errorstr) #,dsoctop + 10,107)
     unless optemo_module.lastpage?
       optemo_module.lastpage = true #Loads the first page after the dialog is closed to try and mitigate the problem. and only do it once
 
