@@ -13,7 +13,7 @@
           $(data["products"]).each( (i) ->
             c = $('.productinfo[data-sku="'+this.sku+'"]')
             #Check whether onsale
-            if (this.salePrice != this.regularPrice)
+            if (this.salePrice != this.regularPrice && Math.abs(this.regularPrice - this.salePrice) > 0.1) # No floating point error please
               #We have a sale!
               c.find('.saleprice').show()
               c.find('.price').hide()
@@ -27,16 +27,16 @@
               c.find('.saleends').hide()
                         
             #Update the saleprice
-            if c.find('.saleprice > span.price_dollars') # We are doing the Futureshop layout
-              c.find('.saleprice > span.price_dollars').html(parseInt(this.salePrice))
-              c.find('.saleprice > span.price_cents').html(parseInt(100 * (this.salePrice - parseInt(this.salePrice))))
+            if c.find('.saleprice').find('span.price_dollars').length > 0 # We are doing the Futureshop layout
+              c.find('.saleprice').find('span.price_dollars').html(parseInt(this.salePrice))
+              c.find('.saleprice').find('span.price_cents').html(parseInt(100 * (this.salePrice - parseInt(this.salePrice))))
             else # Do the regular layout
               c.find('.saleprice > span').html((if optemo_french? then "" else "$") + this.salePrice + (if optemo_french? then " $" else ""))
 
             #Update the regularprice
-            if c.find('.saleprice > span.price_dollars') # We are doing the Futureshop layout
-              c.find('.saleprice > span.price_dollars').html(parseInt(this.regularPrice))
-              c.find('.saleprice > span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
+            if c.find('.price > span.price_dollars') # We are doing the Futureshop layout
+              c.find('.price > span.price_dollars').html(parseInt(this.regularPrice))
+              c.find('.price > span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
             else # Do the regular layout
               c.find('.price > span').html((if optemo_french? then "" else "$") + this.regularPrice + (if optemo_french? then " $" else ""))
             #Update the savings
@@ -50,7 +50,7 @@
                 c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
                 #Remove saleEnd data because we don't have accurate ones
               c.find('.saleends').hide()
-              
+            
             #Set checked flag to true
             c.attr("data-checked", true)
           )
