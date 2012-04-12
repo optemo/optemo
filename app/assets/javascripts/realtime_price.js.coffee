@@ -13,13 +13,12 @@
         success: (data) ->
           $(data["products"]).each( (i) ->
             c = $('.productinfo[data-sku="'+this.sku+'"]')
-            futureshop_layout = c.find('.saleprice').find('span.price_dollars').length > 0
             #Check whether onsale
             if (this.salePrice != this.regularPrice && Math.abs(this.regularPrice - this.salePrice) > 0.1) # No floating point error please
               #We have a sale!
               c.find('.saleprice').show()
               c.find('.price').hide()
-              if !futureshop_layout
+              if !(optemo_module.layout == "fs")
                 c.find('.save').show()
                 c.find('.saleends').show()
             else
@@ -30,14 +29,14 @@
               c.find('.saleends').hide()
                         
             #Update the saleprice
-            if futureshop_layout
+            if optemo_module.layout == "fs"
               c.find('.saleprice').find('span.price_dollars').html(parseInt(this.salePrice))
               c.find('.saleprice').find('span.price_cents').html(parseInt(100 * (this.salePrice - parseInt(this.salePrice))))
             else # Do the regular (Best Buy) layout
               c.find('.saleprice > span').html((if optemo_french? then "" else "$") + this.salePrice + (if optemo_french? then " $" else ""))
 
             #Update the regular price
-            if futureshop_layout
+            if optemo_module.layout == "fs"
               c.find('.price').find('span.price_dollars').html(parseInt(this.regularPrice))
               c.find('.price').find('span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
             else
@@ -47,7 +46,7 @@
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
             current_savings = c.find('.save > span').html()
             if current_savings? && !(savings is current_savings or savings is current_savings[1..-1])
-              if futureshop_layout
+              if optemo_module.layout == "fs"
                 c.find('.futureshop_sale_background > span').show().html((if optemo_french? then "" else "$") + parseInt(savings) + (if optemo_french? then " $" else ""))
               else # Best buy layout
                 c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
