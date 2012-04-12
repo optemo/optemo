@@ -23,8 +23,10 @@ fr:
         notapplicable:          "Non disponible"
     will_paginate:
       page_entries_info:
-        multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"
-        futureshop_multi_page_html: "Page <b>%{current_page}</b> sur %{total_pages}"
+        multi_page_html:            "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"
+        futureshop_multi_page_html: "Page <b>%{current_page}</b> de %{total_pages}"
+        futureshop_previous:        "« Précédent"
+        futureshop_next:            "Suivant »"
     products:
         shopnow:            "Magasinez"
         featuredproducts:   "Produits vedettes"
@@ -57,6 +59,7 @@ fr:
             futureshop_lessspecs: "» Moins de fonctions"
             shoph1:           "Magasinez "
             refineyoursearch1: "Peaufinez votre"
+            futureshop_refineyoursearch1: "Peaufinez votre"
             refineyoursearch2: "RECHERCHE"
             
         show:
@@ -86,6 +89,8 @@ fr:
         screensize:         "ACL %{num}po"
         opticalzoom:        "Zoom %{num}X"
         capacity:           "%{num} Go"
+        rangebelow:         " et moins"
+        rangeabove:         " et plus"
     compare:
         index:
             title:              "Résultats de la comparaison"

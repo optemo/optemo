@@ -1,11 +1,12 @@
 #/* Fetching the new prices */
 @module "optemo_module", ->
-  API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query="
+  API_URL = (optemo_module.layout == "fs" ? "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query=" : "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query=")
   @getRealtimePrices = ->
     skus = $('.productimg').map( -> 
       return $(this).attr('data-sku')
     ).toArray().join(" ")
-    $.ajax(
+    if (skus != "")
+      $.ajax(
         url: API_URL+skus,
         type: "GET",
         dataType: "jsonp",
@@ -17,8 +18,9 @@
               #We have a sale!
               c.find('.saleprice').show()
               c.find('.price').hide()
-              c.find('.save').show()
-              c.find('.saleends').show()
+              if !(optemo_module.layout == "fs")
+                c.find('.save').show()
+                c.find('.saleends').show()
             else
               #No sale
               c.find('.saleprice').hide()
@@ -27,25 +29,25 @@
               c.find('.saleends').hide()
                         
             #Update the saleprice
-            if c.find('.saleprice').find('span.price_dollars').length > 0 # We are doing the Futureshop layout
+            if optemo_module.layout == "fs"
               c.find('.saleprice').find('span.price_dollars').html(parseInt(this.salePrice))
               c.find('.saleprice').find('span.price_cents').html(parseInt(100 * (this.salePrice - parseInt(this.salePrice))))
-            else # Do the regular layout
+            else # Do the regular (Best Buy) layout
               c.find('.saleprice > span').html((if optemo_french? then "" else "$") + this.salePrice + (if optemo_french? then " $" else ""))
 
-            #Update the regularprice
-            if c.find('.price > span.price_dollars') # We are doing the Futureshop layout
-              c.find('.price > span.price_dollars').html(parseInt(this.regularPrice))
-              c.find('.price > span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
-            else # Do the regular layout
+            #Update the regular price
+            if optemo_module.layout == "fs"
+              c.find('.price').find('span.price_dollars').html(parseInt(this.regularPrice))
+              c.find('.price').find('span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
+            else
               c.find('.price > span').html((if optemo_french? then "" else "$") + this.regularPrice + (if optemo_french? then " $" else ""))
+            
             #Update the savings
-            # Check this and fix the code as necessary
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
             current_savings = c.find('.save > span').html()
             if current_savings? && !(savings is current_savings or savings is current_savings[1..-1])
-              if c.find('.saleprice > span.price_dollars') # We are doing the Futureshop layout
-                c.find('.futureshop_sale_background > span').html("Save " + (if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
+              if optemo_module.layout == "fs"
+                c.find('.futureshop_sale_background > span.savings').show().html(parseInt(savings))
               else # Best buy layout
                 c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
                 #Remove saleEnd data because we don't have accurate ones
@@ -67,11 +69,11 @@
 
             # addlink.after($('<div style="text-align: center;">').html(if optemo_french? then "(En rupture de stock)" else "(Out of stock)")).hide()
             #And also remove the link from the image
-            t.siblings("img.productimg").removeClass("productimg").removeAttr('title') #navbox
-            t.parent().siblings("img.productimg").removeClass("productimg").removeAttr('title') #Hero
+            t.siblings("img.productimg").removeAttr('title').css({'cursor' : 'default'}).unbind('click') #navbox
+            t.parent().siblings("img.productimg").removeAttr('title').css({'cursor' : 'default'}).unbind('click') #Hero
           )
-        
-    )
+      ) # $.ajax()
+    # endif skus != blank
   
   #****Public Functions****
   

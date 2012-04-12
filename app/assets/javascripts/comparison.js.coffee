@@ -314,7 +314,7 @@
     t.find(".moretext").toggle()
     $('#hideable_matrix').toggle()
     cHeight = optemo_module.current_height()
-    $('#silkscreen').css({'height' : cHeight+'px', 'display' : 'inline'})
+    $('#opt_silkscreen').css({'height' : cHeight+'px', 'display' : 'inline'})
     return false
   
   #Add to comparison from navbox

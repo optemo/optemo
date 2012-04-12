@@ -79,11 +79,11 @@ module CompareHelper
         dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
         if dr.last[:count] >0 
           if r[:min] == r[:max] 
-           if feat == "saleprice" && I18n.locale == :en
-             dis = "$#{r[:min]}"
-           else
-             dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
-           end   
+            if feat == "saleprice" && I18n.locale == :en
+              dis = "$#{r[:min]}"
+            else
+              dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
+            end   
           else
             if feat == "saleprice" && I18n.locale == :en
               dis = "$#{r[:min]} - $#{r[:max]}"
@@ -91,18 +91,18 @@ module CompareHelper
               dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
             end    
           end 
-          dr.last[:display] << dis  
-        end  
-      end 
-    end    
+          dr.last[:display] << dis
+        end
+      end   
+    end  
     dr = dr.select{|d| d[:count]>0}
     unless dr.empty?
       if feat == "saleprice" && I18n.locale == :en
          dr.first[:display] = "Below $#{dr.first[:max]}"
          dr.last[:display] = "$#{dr.last[:min]} and above"
       else    
-         dr.first[:display] = "#{dr.first[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit") + " and below"
-         dr.last[:display] = "#{dr.last[:min]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+ " and above"
+         dr.first[:display] = "#{dr.first[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit") + t("features.rangebelow")
+         dr.last[:display] = "#{dr.last[:min]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
       end
     end
     dr
@@ -277,7 +277,7 @@ module CompareHelper
       #Load missing image placeholder
       content_tag("div","",class: "imageholder")
     else
-      image_tag product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.src='#{product.image_url(:large)}';this.onerror='';return true;", width: "150px", height: "150px"
+      image_tag product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.onerror='';this.src='#{product.image_url(:large)}';return true;"
     end
   end
 end

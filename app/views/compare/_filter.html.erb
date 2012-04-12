@@ -1,116 +1,121 @@
-<div class="<%= isfr? ? :fr : :en %>"><div class="y_heading">
-  <div class="narrow_text">
-    <div>
-      <%= raw "<h1> #{t('products.compare.shoph1') + product_title} </h1>" unless Session.futureshop? %>
-      <div class="refine_text"><%= t(Session.futureshop? ? 'products.compare.futureshop_refineyoursearch1' : 'products.compare.refineyoursearch1') %></div>
-      <div class="french_refine_text"> <%= t('products.compare.refineyoursearch2') %></div>
+<div class="<%= isfr? ? :fr : :en %>">
+  <div class="y_heading">
+    <div class="narrow_text">
+      <div>
+        <%= raw "<h1> #{t('products.compare.shoph1') + product_title} </h1>" unless Session.futureshop? %>
+        <div class="refine_text">
+          <%= t(Session.futureshop? ? 'products.compare.futureshop_refineyoursearch1' : 'products.compare.refineyoursearch1') %>
+          </div>
+        <div class="french_refine_text">
+          <%= t('products.compare.refineyoursearch2') %>
+        </div>
+      </div>
+      <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
     </div>
-    <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
   </div>
-</div>
-<form id="filter_form" method="get" action="/compare">
-<% Session.features["filter"].each do |f| %>
-  <div class="feature">
-  <% case f.feature_type -%>
-  <% when "Heading" -%>
-    <%= render partial: 'filter_label', locals: {f: f} %>
-    <div style="height: 7px"><!-- --></div>
-  <% when "Spacer" -%>
-    <div style="height: 17px"><!-- --></div>
-  <% when "Categorical" -%>
-    <%= render partial: 'filter_label', locals: {f: f} %>
-    <% chosen_cats = chosencats(f.name) %>
-    <% if f.name == "color" # TODO: should not be hard code here%>
-      <div style="margin-right: -4px;margin-top: 4px;">
-        <% color_counts = CatSpec.count_feat("color") %>
-        <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).zip(
-           %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
-          <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
-          <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
+  <form id="filter_form" method="get" action="/compare">
+    <% Session.features["filter"].each do |f| %>
+      <div class="feature">
+        <% case f.feature_type -%>
+        <% when "Heading" -%>
+          <%= render partial: 'filter_label', locals: {f: f} %>
+          <div style="height: 7px"><!-- --></div>
+        <% when "Spacer" -%>
+          <div style="height: 17px"><!-- --></div>
+        <% when "Categorical" -%>
+          <%= render partial: 'filter_label', locals: {f: f} %>
+          <% chosen_cats = chosencats(f.name) %>
+          <% if f.name == "color" # TODO: should not be hard code here%>
+            <div style="margin-right: -4px;margin-top: 4px;">
+              <% color_counts = CatSpec.count_feat("color") %>
+              <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).zip(
+                 %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
+                <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
+                <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
+              <% end %>
+              <div style="clear: left;">
+                <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
+              </div>
+            </div>
+          <% else %>
+            <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
+            <% optionlist, longlist = cat_order(f, chosen_cats) %>
+            <div class="categorical"> <%# <%= " brand" if f.name == "brand" % >" %>
+              <%= render partial: "cat_option", collection: optionlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
+              <%= link_to "More", "#", class: "moreless" unless longlist.empty? %>
+            </div>
+            <div class="categorical" style="display:none;"> <%# <%= " brand" if f.name == "brand" % >" %>
+              <%= render partial: "cat_option", collection: longlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
+              <%= link_to "Less", "#", class: "moreless" %>
+            </div>
+          <% end %> <%# else %>
+        <% when "Continuous" %>
+          <%= render partial: 'filter_label', locals: {f: f} %>
+          <% if f.ui == "ranges" %>
+            <% chosen_conts = chosenconts(f.name) %>
+            <%ranges = getRanges(f.name)%>
+            <%displayed_ranges = displayRanges(f.name, ranges)%>
+            <% displayed_ranges.each do |dr| %>
+              <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) %>
+              <% available_count = dr[:count]%>
+              <%if available_count >0 %>
+                <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' if checked %>>
+                  <%= check_box_tag "continuous[#{f.name}]", "#{dr[:min]};#{dr[:max]}", checked ,:disabled => available_count == 0 ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :"data-min" => dr[:min], :"data-max" => dr[:max] %>
+                  <%= (available_count == 0) ?  dr[:display] : link_to(dr[:display], "#", :class => "checkbox_text") %>
+                  <span class="av_count"><%= "(#{available_count})" unless checked %></span>
+                </div>
+              <% end %>	
+            <% end %> <%# getRanges.each %>
+        
+          <% else %> <%# Use sliders still, not ranges %>
+            <%# Check continuous features for data, instead of greying them, we just don't show them %>
+            <% distribution_data = getDist(f.name) -%>
+            <% if distribution_data.blank? -%>
+              <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
+            <% elsif distribution_data.first[2] == distribution_data.first[3] %>
+              <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
+            <% else %>
+              <div style="position:relative">
+                <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
+                <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
+                <% step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil) -%>
+                <% datamin = roundedInterval(distribution_data.first[2],step,true) -%>
+                <% datamax = roundedInterval(distribution_data.first[3],step,false) -%>
+                <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
+                <span class="sliderspan">
+                  <input 
+                    class="slider" 
+                    type="slider" 
+                    name="superfluous[<%= f.name %>]"
+                    value="<%= [(current.min.nil? ? datamin : current.min),(current.max.nil? ? datamax : current.max)].join(";") %>"
+                    data-step='<%= step %>'
+                    data-min= '<%= datamin %>'
+                    data-max= '<%= datamax %>'
+                    data-distmin=<%= distribution_data.first[0] %>
+                    data-distmax=<%= distribution_data.first[1] %>
+                    <%# Take out data-unit for now. Needs logic for $ before/after, etc. %>
+                    data-unit = " " <%# t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>
+                    disabled="disabled"/>
+                </span>
+              </div>
+            <% end %>
+          <% end %>
+        <% when "Binary" %>
+          <% dobj = Session.search.userdatabins.select{|udb| udb.name == f.name}.first %>
+          <% unchecked = dobj.nil? || dobj.value == false %>
+          <% available_count = BinSpec.count_feat(f.name) %>
+          <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+            <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter' %>
+            <%= (available_count == 0) ? t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize) : link_to( t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize), "#", :class => "checkbox_text") %>
+            <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
+          </div>
         <% end %>
-        <div style="clear: left;">
-          <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
-        </div>
       </div>
-    <% else %>
-      <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-      <% optionlist, longlist = cat_order(f, chosen_cats) %>
-      <div class="categorical"> <%# <%= " brand" if f.name == "brand" % >" %>
-        <%= render partial: "cat_option", collection: optionlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
-        <%= link_to "More", "#", class: "moreless" unless longlist.empty? %>
-      </div>
-      <div class="categorical" style="display:none;"> <%# <%= " brand" if f.name == "brand" % >" %>
-        <%= render partial: "cat_option", collection: longlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
-        <%= link_to "Less", "#", class: "moreless" %>
-      </div>
-    <% end %> <%# else %>
-  <% when "Continuous" %>
-    <%= render partial: 'filter_label', locals: {f: f} %>
-    <% if f.ui == "ranges" %>
-      <% chosen_conts = chosenconts(f.name) %>
-      <%ranges = getRanges(f.name)%>
-  	  <%displayed_ranges = displayRanges(f.name, ranges)%>
-      <% displayed_ranges.each do |dr| %>
-        <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) %>
-        <% available_count = dr[:count]%>
-		    <%if available_count >0 %>
-        	<div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' if checked %>>
-          	<%= check_box_tag "continuous[#{f.name}]", "#{dr[:min]};#{dr[:max]}", checked ,:disabled => available_count == 0 ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :"data-min" => dr[:min], :"data-max" => dr[:max] %>
-          	<%= (available_count == 0) ?  dr[:display] : link_to(dr[:display], "#", :class => "checkbox_text") %>
-          	<span class="av_count"><%= "(#{available_count})" unless checked %></span>
-        	</div>
-		    <% end %>	
-      <% end %> <%# getRanges.each %>
-	
-    <% else %> <%# Use sliders still, not ranges %>
-      <%# Check continuous features for data, instead of greying them, we just don't show them %>
-      <% distribution_data = getDist(f.name) -%>
-      <% if distribution_data.blank? -%>
-        	<div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
-      <% elsif distribution_data.first[2] == distribution_data.first[3] %>
-        <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
-      <% else %>
-        <div style="position:relative">
-          <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
-          <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
-          <% step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil) -%>
-          <% datamin = roundedInterval(distribution_data.first[2],step,true) -%>
-          <% datamax = roundedInterval(distribution_data.first[3],step,false) -%>
-          <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
-          <span class="sliderspan">
-            <input 
-              class="slider" 
-              type="slider" 
-              name="superfluous[<%= f.name %>]"
-              value="<%= [(current.min.nil? ? datamin : current.min),(current.max.nil? ? datamax : current.max)].join(";") %>"
-              data-step='<%= step %>'
-              data-min= '<%= datamin %>'
-              data-max= '<%= datamax %>'
-              data-distmin=<%= distribution_data.first[0] %>
-              data-distmax=<%= distribution_data.first[1] %>
-              <%# Take out data-unit for now. Needs logic for $ before/after, etc. %>
-              data-unit = " " <%# t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>
-              disabled="disabled"/>
-          </span>
-        </div>
-      <% end %>
     <% end %>
-  <% when "Binary" %>
-    <% dobj = Session.search.userdatabins.select{|udb| udb.name == f.name}.first %>
-    <% unchecked = dobj.nil? || dobj.value == false %>
-    <% available_count = BinSpec.count_feat(f.name) %>
-    <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-      <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter' %>
-      <%= (available_count == 0) ? t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize) : link_to( t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize), "#", :class => "checkbox_text") %>
-      <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
-    </div>
-  <% end %>
+  </form>
+  <div class="y_bottom">
+    <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
   </div>
-<% end %>
-</form>
-<div class="y_bottom">
-  <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
-</div>
 </div>
 
 <div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
