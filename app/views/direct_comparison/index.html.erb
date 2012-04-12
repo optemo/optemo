@@ -16,7 +16,7 @@
     <div class="columntitle leftmostcolumn leftmostcolumntitle"></div>
     <% @products.each_with_index do |product, i| %>
       <div class="columntitle spec_column_<%= i %>">
-    		<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-sku" => product.sku, :class => 'remove spec_column_' + i.to_s %>
+    		<%= link_to image_tag('remove'+(Session.futureshop? ? "_fs" : "")+'.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-sku" => product.sku, :class => 'remove spec_column_' + i.to_s %>
     	</div>
 		<% end %>
   </div>
@@ -57,17 +57,17 @@
 </div>
 <div style="clear:both"><!-- --></div>
 
-<div class="spacer togglespecs yellowbtn">
+<div class="spacer togglespecs morespecs">
   <div class="left">
     <div class="right" style="width: 150px">
       <a href="#" class="toggle_specs">
         <span class="moretext">
-          <%=t "products.compare.morespecs" %>
+          <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"morespecs" %>
         </span>
         <span class="lesstext" style="display:none;">
-          <%=t "products.compare.lessspecs" %>
+          <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"lessspecs" %>
         </span>
-        <div class="gt_sym"><!-- --></div>
+        <div class=<%= Session.futureshop? ? "" : "gt_sym" %>><!-- --></div>
       </a>
     </div>
   </div>

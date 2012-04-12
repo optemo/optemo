@@ -6,7 +6,7 @@
 *= require shared
 *= require bestbuy/awesome_buttons
 *= require bestbuy/colour_and_buttons
-*= require direct_comparison
+*= require bestbuy/direct_comparison
 *= require bestbuy/filter_boxes
 *= require bestbuy/main_nav_controls
 *= require bestbuy/main_right_side
@@ -15,7 +15,7 @@
 *= require jquery.autocomplete
 *= require jslider
 *= require bestbuy/slider
-*= require buttons
+*= require bestbuy/buttons
 */
 
 /* Global Declarations are in colour_and_buttons.scss.erb */

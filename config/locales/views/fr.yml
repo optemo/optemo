@@ -24,6 +24,7 @@ fr:
     will_paginate:
       page_entries_info:
         multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"
+        futureshop_multi_page_html: "Page <b>%{current_page}</b> sur %{total_pages}"
     products:
         shopnow:            "Magasinez"
         featuredproducts:   "Produits vedettes"
@@ -44,12 +45,16 @@ fr:
             clickforcompare:  "Cliquer pour comparer les produits"
             clickforspecs:    "Cliquez pour voir les spécifications du produit"
             reset:            "Réinitialiser tout"
+            futureshop_reset: "» Réinitialiser tout"
             resetdesc:        "Supprimer tous les filtres" 
             compare:          "Comparer"
+            futureshop_compare: "» Comparer"
             closewindow:      "Fermer fenêtre"
             save:             "Épargnez"
             morespecs:        "Plus de fonctions"
+            futureshop_morespecs: "» Plus de fonctions"
             lessspecs:        "Moins de fonctions"
+            futureshop_lessspecs: "» Moins de fonctions"
             shoph1:           "Magasinez "
             refineyoursearch1: "Peaufinez votre"
             refineyoursearch2: "RECHERCHE"

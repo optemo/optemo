@@ -61,13 +61,13 @@
     dsoctop= if document.all then iebody.scrollTop else window.pageYOffset
     outsidecontainer = $('#outsidecontainer')
     if (outsidecontainer.css('display') isnt 'block') 
-      $('#info').html("").css({'height' : "560px", 'width' : (width-46)+'px'})
+      $('#info').html("").css({'height' : "560px", 'width' : (width-34)+'px'})
     wWidth = $(window).width()
     # Position with equal L/R margins
     lPosition = parseInt((wWidth - width) / 2.0)
     outsidecontainer.css(
       'left' : lPosition,
-      'top' : (dsoctop+5)+'px',
+      'top' : (dsoctop+10)+'px',
       'width' : (width||560)+'px',
       'display' : 'inline' )
     $('#silkscreen').css({'height' : optemo_module.current_height()+'px', 'display' : 'inline', 'width' : wWidth + 'px'})
@@ -124,7 +124,9 @@
       errorstr = '<div class="bb_poptitle"><label class="comp-title">Erreur</label><div class="bb_quickview_close"></div></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>'
     else
       errorstr = '<div class="bb_poptitle"><label class="comp-title">Error</label><div class="bb_quickview_close"></div></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>'
-    optemo_module.applySilkScreen(null,errorstr,600,107)
+    dsoctop= if document.all then iebody.scrollTop else window.pageYOffset
+        
+    optemo_module.applySilkScreen(null,errorstr) #,dsoctop + 10,107)
     unless optemo_module.lastpage?
       optemo_module.lastpage = true #Loads the first page after the dialog is closed to try and mitigate the problem. and only do it once
 
@@ -191,8 +193,9 @@
       if parts.length == 4
         #Initial landing page
         #Create dynamic/static divs in content
-        $('#optemo_content').empty().append("<div></div><div>"+parts.pop()+"</div>")
-        
+        $('#optemo_content').empty().append("<div></div><div>"+IEwrapper_pre+parts.pop()+IEwrapper_post+"</div>")
+      
+      # Because of the pop() call above, if the length was 4, it's 3 now (so this code gets executed too)
       if parts.length == 3
         $('#optemo_topbar').addClass("optemo").empty().append(IEwrapper_pre + parts[0] + IEwrapper_post)
         $('#optemo_filter').addClass("optemo").empty().append(IEwrapper_pre + parts[1] + IEwrapper_post)

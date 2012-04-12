@@ -91,13 +91,15 @@ module CompareHelper
         dr.last[:display] << dis  
       end  
     end   
-    dr = dr.map{|d| d if d[:count]>0}.compact
-    if feat == "saleprice" && I18n.locale == :en
-       dr.first[:display] = "Below $#{dr.first[:max]}"
-       dr.last[:display] = "$#{dr.last[:min]} and above"
-    else    
-       dr.first[:display] = "#{dr.first[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit") + " and below"
-       dr.last[:display] = "#{dr.last[:min]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+ " and above"
+    dr = dr.select{|d| d[:count]>0}
+    unless dr.empty?
+      if feat == "saleprice" && I18n.locale == :en
+         dr.first[:display] = "Below $#{dr.first[:max]}"
+         dr.last[:display] = "$#{dr.last[:min]} and above"
+      else    
+         dr.first[:display] = "#{dr.first[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit") + " and below"
+         dr.last[:display] = "#{dr.last[:min]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+ " and above"
+      end
     end
     dr
   end
@@ -271,7 +273,7 @@ module CompareHelper
       #Load missing image placeholder
       content_tag("div","",class: "imageholder")
     else
-      image_tag(product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku)
+      image_tag product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.src='#{product.image_url(:large)}';this.onerror='';return true;", width: "150px", height: "150px"
     end
   end
 end
