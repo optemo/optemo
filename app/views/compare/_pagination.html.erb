@@ -8,7 +8,9 @@
   </div>
 
 <% else %>
-  <div class='pagination-container<%= " bottom" if local_assigns[:bottom] %>'>
-      <%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" if (local_assigns[:bottom] && !Session.futureshop?) %>
-  </div>
+  <% if (local_assigns[:bottom] && !Session.futureshop?) %>
+    <div class='pagination-container<%= " bottom" if local_assigns[:bottom] %>'>
+        <%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" %>
+    </div>
+  <% end %>
 <% end %>

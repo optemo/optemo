@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   #   127.0.0.1 gr.application.local
   # in your /etc/hosts file to try this out locally
   def set_locale
-    I18n.locale = request.subdomains.first == 'fr' ? 'fr' : 'fr'
+    I18n.locale = request.subdomains.first == 'fr' ? 'fr' : 'en'
   end
 
   def update_user

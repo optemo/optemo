@@ -1,6 +1,6 @@
 #/* Fetching the new prices */
 @module "optemo_module", ->
-  API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query="
+  API_URL = (optemo_module.layout == "fs" ? "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query=" : "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query=")
   @getRealtimePrices = ->
     skus = $('.productimg').map( -> 
       return $(this).attr('data-sku')
@@ -69,8 +69,8 @@
 
             # addlink.after($('<div style="text-align: center;">').html(if optemo_french? then "(En rupture de stock)" else "(Out of stock)")).hide()
             #And also remove the link from the image
-            t.siblings("img.productimg").removeClass("productimg").removeAttr('title') #navbox
-            t.parent().siblings("img.productimg").removeClass("productimg").removeAttr('title') #Hero
+            t.siblings("img.productimg").removeAttr('title').css({'cursor' : 'default'}).unbind('click') #navbox
+            t.parent().siblings("img.productimg").removeAttr('title').css({'cursor' : 'default'}).unbind('click') #Hero
           )
       ) # $.ajax()
     # endif skus != blank
