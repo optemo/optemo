@@ -14,8 +14,9 @@
   # Submit a categorical filter, e.g. brand.
   @whenDOMready = ->
     optemo_module.BestBuyLandingElements()
+    optemo_module.SetLayout()
     optemo_module.SliderInit()
-    optemo_module.getRealtimePrices() if (optemo_module? && typeof(optemo_module.getRealtimePrices) == "function")
+    optemo_module.getRealtimePrices() if typeof(optemo_module.getRealtimePrices) == "function"
     optemo_module.load_comparisons()
 
   @submitAJAX = ->
@@ -42,9 +43,12 @@
       # show them again for landing page
       if (bb_divs.length != 0) # Make sure they exist
         bb_divs.show()
+        
+  @SetLayout = ->
+    optemo_module.layout = $('#opt_outsidecontainer').attr('data-layout') # This will be either fs or bb to indicate which layout
 
   @removeSilkScreen = ->
-    $('#silkscreen, #outsidecontainer').hide()
+    $('#opt_silkscreen, #opt_outsidecontainer').hide()
     
   @current_height = -> 
     D = document
@@ -59,7 +63,7 @@
     #IE Compatibility
     iebody= if(document.compatMode and document.compatMode isnt "BackCompat") then document.documentElement else document.body
     dsoctop= if document.all then iebody.scrollTop else window.pageYOffset
-    outsidecontainer = $('#outsidecontainer')
+    outsidecontainer = $('#opt_outsidecontainer')
     if (outsidecontainer.css('display') isnt 'block') 
       $('#info').html("").css({'height' : "560px", 'width' : (width-34)+'px'})
     wWidth = $(window).width()
@@ -70,12 +74,12 @@
       'top' : (dsoctop+10)+'px',
       'width' : (width||560)+'px',
       'display' : 'inline' )
-    $('#silkscreen').css({'height' : optemo_module.current_height()+'px', 'display' : 'inline', 'width' : wWidth + 'px'})
+    $('#opt_silkscreen').css({'height' : optemo_module.current_height()+'px', 'display' : 'inline', 'width' : wWidth + 'px'})
     if (data)
       $('#info').html(data).css('height','')
     else
       quickajaxcall('#info', url, ->
-        $('#outsidecontainer').css('width','')
+        $('#opt_outsidecontainer').css('width','')
         $('#info').css("height",'')
         if (f)
             f()
@@ -152,10 +156,10 @@
     else # IE6 and others
       viewportwidth = document.getElementsByTagName('body')[0].clientWidth
       viewportheight = document.getElementsByTagName('body')[0].clientHeight
-    $('#loading').css({left: viewportwidth/2 + 'px', top : viewportheight/2 + 'px'}).show()
+    $('#opt_loading').css({left: viewportwidth/2 + 'px', top : viewportheight/2 + 'px'}).show()
 
   @stop_spinner = ->
-    $('#loading').hide()
+    $('#opt_loading').hide()
 
   #****Private Functions****
   quickajaxcall = (element_name, myurl, fn) -> # The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
@@ -226,7 +230,7 @@
     return o
 
   #/* LiveInit functions */
-  $(".bb_quickview_close, #silkscreen").live 'click', ->
+  $(".bb_quickview_close, #opt_silkscreen").live 'click', ->
     optemo_module.removeSilkScreen()
     if (optemo_module.lastpage? and optemo_module.lasthash)
       #There was an error in the last request
