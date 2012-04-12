@@ -40,24 +40,22 @@ module CompareHelper
     c
   end  
 
-  def getRanges(feat)
+  def getRanges(feat, cats)
     num_ranges = 6
-    Ranges.cacherange(feat, num_ranges)
+    Ranges.cacherange(feat, num_ranges, cats)
   end  
 
-  #def displayRanges(feat)
-  #  ranges = getRanges(feat)
-  #  ranges.each do |r| 
-  #    
-  #  end  
-  #end 
-   
+  def getLeafs
+    leafs = Session.search.userdatacats.map{|d| d.value if d.name=="product_type"}.compact
+    leafs.empty? ?  "" : leafs.join
+  end  
+  
 	def getDist(feat)
     num_buckets = 24
     discretized = Session.search.solr_cached.facet(feat.to_sym).rows
     if (!discretized.empty?)
-      min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{feat}") {discretized.first.value}
-      max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{feat}") {discretized.last.value}
+      min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.first.value}
+      max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.last.value}
     
       min = discretized.first.value
       max = discretized.last.value
@@ -78,33 +76,33 @@ module CompareHelper
 
   def displayRanges(feat, ranges)
     dr = []
-    ranges.each_with_index do |r, ind|  
-      if r[:min] == r[:max] 
-       if feat == "saleprice" && I18n.locale = :en
-         dr << "$#{r[:min]}"
-       else
-         dr <<  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
-       end   
-      elsif ind==0
-        if feat == "saleprice" && I18n.locale = :en
-          dr << "Below $#{r[:max]}"
+    ranges.each_with_index do |r, ind|
+      dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
+      if dr.last[:count] >0 
+        if r[:min] == r[:max] 
+         if feat == "saleprice" && I18n.locale == :en
+           dis = "$#{r[:min]}"
+         else
+           dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
+         end   
         else
-          dr << "#{r[:max]} "+ t("#{Session.product_type}.filter.#{feat}.unit")+" and below"
-        end      
-      elsif ind==(ranges.size-1)
-        if feat == "saleprice" && I18n.locale = :en
-          dr << "$#{r[:min]} and above"
-        else
-          dr << "#{r[:min]} "+ t("#{Session.product_type}.filter.#{feat}.unit")+" and above"
+          if feat == "saleprice" && I18n.locale == :en
+            dis = "$#{r[:min]} - $#{r[:max]}"
+          else
+            dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
+          end    
         end 
-      else
-        if feat == "saleprice" && I18n.locale = :en
-          dr << "$#{r[:min]} - $#{r[:max]}"
-        else
-          dr << "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
-        end    
-      end   
+        dr.last[:display] << dis  
+      end  
     end   
+    dr = dr.map{|d| d if d[:count]>0}.compact
+    if feat == "saleprice" && I18n.locale == :en
+       dr.first[:display] = "Below $#{dr.first[:max]}"
+       dr.last[:display] = "$#{dr.last[:min]} and above"
+    else    
+       dr.first[:display] = "#{dr.first[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit") + " and below"
+       dr.last[:display] = "#{dr.last[:min]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+ " and above"
+    end
     dr
   end
 
