@@ -71,6 +71,8 @@
             #And also remove the link from the image
             t.siblings("img.productimg").removeAttr('title').css({'cursor' : 'default'}).unbind('click') #navbox
             t.parent().siblings("img.productimg").removeAttr('title').css({'cursor' : 'default'}).unbind('click') #Hero
+            t.find(".futureshop_price").css({'cursor' : 'default' }).unbind('click') # Futureshop price image
+            t.find(".futureshop_sale_background").css({'cursor' : 'default' }).unbind('click') # Futureshop sale price image
           )
       ) # $.ajax()
     # endif skus != blank
