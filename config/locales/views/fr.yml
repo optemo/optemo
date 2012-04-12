@@ -87,6 +87,8 @@ fr:
         screensize:         "ACL %{num}po"
         opticalzoom:        "Zoom %{num}X"
         capacity:           "%{num} Go"
+        rangebelow:         " et moins"
+        rangeabove:         " et plus"
     compare:
         index:
             title:              "Résultats de la comparaison"

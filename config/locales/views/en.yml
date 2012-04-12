@@ -86,6 +86,8 @@ en:
         screensize:         "%{num}in. LCD"
         opticalzoom:        "%{num}X zoom"
         capacity:           "%{num} GB" 
+        rangebelow:         " and below"
+        rangeabove:         " and above"
     compare:
         index:
             title:          "Compare Results"
