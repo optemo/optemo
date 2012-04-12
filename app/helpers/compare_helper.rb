@@ -43,7 +43,9 @@ module CompareHelper
   def getRanges(feat)
     num_ranges = 6
     cats = Session.search.userdatacats.map{|d| d if d.name=="product_type"}.compact
-    Ranges.cacherange(num_ranges, cats)[feat.to_sym]
+    #debugger if Ranges.cacherange(Session.product_type, num_ranges, cats)[feat.to_sym].nil?
+    feats = Session.features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact
+    Ranges.cacherange(feats, num_ranges, cats)[feat.to_sym]
   end  
   
 	def getDist(feat)
@@ -72,25 +74,27 @@ module CompareHelper
 
   def displayRanges(feat, ranges)
     dr = []
-    ranges.each_with_index do |r, ind|
-      dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
-      if dr.last[:count] >0 
-        if r[:min] == r[:max] 
-         if feat == "saleprice" && I18n.locale == :en
-           dis = "$#{r[:min]}"
-         else
-           dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
-         end   
-        else
-          if feat == "saleprice" && I18n.locale == :en
-            dis = "$#{r[:min]} - $#{r[:max]}"
+    unless ranges.nil?
+      ranges.each_with_index do |r, ind|
+        dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
+        if dr.last[:count] >0 
+          if r[:min] == r[:max] 
+           if feat == "saleprice" && I18n.locale == :en
+             dis = "$#{r[:min]}"
+           else
+             dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
+           end   
           else
-            dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
-          end    
-        end 
-        dr.last[:display] << dis  
-      end  
-    end   
+            if feat == "saleprice" && I18n.locale == :en
+              dis = "$#{r[:min]} - $#{r[:max]}"
+            else
+              dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
+            end    
+          end 
+          dr.last[:display] << dis  
+        end  
+      end 
+    end    
     dr = dr.select{|d| d[:count]>0}
     unless dr.empty?
       if feat == "saleprice" && I18n.locale == :en
