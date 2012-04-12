@@ -1,29 +1,32 @@
 module Ranges
   
-	def self.getRange(feat, num)
-	  discretized = self.getRows(feat) 
-	  rs = []
-	  if (!discretized.empty?)
-	    if feat=="saleprice"
-	      rs  = self.price_ranges(discretized)
-      else    
-	      grouped_data = Kmeans.compute(num, discretized.map{|r| [r.value]*r.count}.flatten)
-	      #debugger
-	      debugger if grouped_data.nil?
-        #grouped_data.each do  |g|
-        #  puts "#{g.min}-#{g.max} (#{g.count.to_s})"
-        #end    
-  	    grouped_data.each do |g| 
-  	      rs << {:min => g.min, :max => g.max} 
-  	    end
-	    end 
+	def self.getRange(num, cats)
+	  discretized = self.getRows(cats)
+	  ranges = {}
+	  feats = Session.features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact
+    
+    feats.each do |feat| 
+      dis = discretized.facet(feat.to_sym).rows 
+	    rs = []
+	    if (!dis.empty?)
+	      if feat=="saleprice"
+	        rs  = self.price_ranges(dis)
+        else    
+	        grouped_data = Kmeans.compute(num, dis.map{|r| [r.value]*r.count}.flatten)
+	        debugger if grouped_data.nil?  
+  	      grouped_data.each do |g| 
+  	        rs << {:min => g.min, :max => g.max} 
+  	      end
+	      end 
+      end
+      ranges[feat.to_sym] = rs
     end
-    rs
+    ranges
   end
   
-  def self.getRows(feat)
-     @rows ||= Session.search.solr_search({mybins: [], mycats: [], myconts: []})
-     @rows.facet(feat.to_sym).rows
+  def self.getRows(cats)
+    @rows ||= Session.search.solr_search({mybins: [], mycats: cats, myconts: []})
+    @rows
   end
     
   def self.count(feat, min, max)
@@ -34,9 +37,10 @@ module Ranges
     end
   end
 
-  def self.cacherange(feat, num, cats) 
-    Rails.cache.fetch("Ranges#{Session.product_type}#{feat}#{num}#{cats}") do
-      self.getRange(feat, num)
+  def self.cacherange(num, cats) 
+    cats.empty? ? leafs ="" :  leafs = cats.map(&:value).join 
+    Rails.cache.fetch("Ranges#{Session.product_type}#{num}#{leafs}") do
+      self.getRange(num, cats)
     end
   end
 
@@ -50,10 +54,7 @@ module Ranges
     prs.each_with_index do |pr, ind|
       if max<prs.last
         if rs.empty? && pr>min
-          if self.count("saleprice", prs[ind-1], pr) > s/4
-          else
-            rs << {:min => prs[ind-1], :max => pr}
-          end      
+          rs << {:min => prs[ind-1], :max => pr}      
         elsif !rs.empty? && max>pr 
           rs << {:min => prs[ind-1], :max => pr} 
           if max>=pr && max<prs[ind+1]

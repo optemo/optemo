@@ -40,14 +40,10 @@ module CompareHelper
     c
   end  
 
-  def getRanges(feat, cats)
+  def getRanges(feat)
     num_ranges = 6
-    Ranges.cacherange(feat, num_ranges, cats)
-  end  
-
-  def getLeafs
-    leafs = Session.search.userdatacats.map{|d| d.value if d.name=="product_type"}.compact
-    leafs.empty? ?  "" : leafs.join
+    cats = Session.search.userdatacats.map{|d| d if d.name=="product_type"}.compact
+    Ranges.cacherange(num_ranges, cats)[feat.to_sym]
   end  
   
 	def getDist(feat)

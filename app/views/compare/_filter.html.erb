@@ -48,7 +48,7 @@
     <%= render partial: 'filter_label', locals: {f: f} %>
     <% if f.ui == "ranges" %>
       <% chosen_conts = chosenconts(f.name) %>
-      <%ranges = getRanges(f.name, getLeafs)%>
+      <%ranges = getRanges(f.name)%>
   	  <%displayed_ranges = displayRanges(f.name, ranges)%>
       <% displayed_ranges.each do |dr| %>
         <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) %>
