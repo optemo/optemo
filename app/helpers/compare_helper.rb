@@ -101,8 +101,8 @@ module CompareHelper
          dr.first[:display] = "Below $#{dr.first[:max]}"
          dr.last[:display] = "$#{dr.last[:min]} and above"
       else    
-         dr.first[:display] = "#{dr.first[:max]}" + t("#{Session.product_type}.filter.#{feat}.unit") + t("features.rangebelow")
-         dr.last[:display] = "#{dr.last[:min]}"+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
+         dr.first[:display] = "#{dr.first[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit") + t("features.rangebelow")
+         dr.last[:display] = "#{dr.last[:min]} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
       end
     end
     dr
