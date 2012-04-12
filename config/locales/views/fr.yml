@@ -24,7 +24,7 @@ fr:
     will_paginate:
       page_entries_info:
         multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"
-        futureshop_multi_page_html: "Page <b>%{current_page}</b> sur %{total_pages}"
+        futureshop_multi_page_html: "Page <b>%{current_page}</b> de %{total_pages}"
     products:
         shopnow:            "Magasinez"
         featuredproducts:   "Produits vedettes"
@@ -57,6 +57,7 @@ fr:
             futureshop_lessspecs: "» Moins de fonctions"
             shoph1:           "Magasinez "
             refineyoursearch1: "Peaufinez votre"
+            futureshop_refineyoursearch1: "Peaufinez votre"
             refineyoursearch2: "RECHERCHE"
             
         show:
