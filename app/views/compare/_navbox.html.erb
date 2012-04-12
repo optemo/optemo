@@ -14,18 +14,18 @@
         <div class="price" <%=raw only_if_not_onsale(product) %>>
           <div class="futureshop_price">
             <% p = cont_specs["price"] -%>
-            <span class="price_dollars"><%= p.to_i %></span>
-            <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2).to_f * 100).to_i %></span>
+            <span class="price_dollars"><%= number_to_currency(p.to_i, :precision => 0) %></span>
+            <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2, :locale => :en).to_f * 100).to_i %></span>
           </div>
         </div>
         <div class="saleprice" <%=raw only_if_onsale(product) %>>
           <div class="futureshop_sale_background">
-            <span <%= raw only_if_onsale(product) %>><%= t('products.compare.save')+" "+ number_to_currency(cont_specs["price"]-cont_specs["saleprice"], :precision => 0) %></span>
+            <%= t('products.compare.save')+(fr?.empty? ? "" : " ") %><span <%= raw only_if_onsale(product) %>><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"], :precision => 0) %></span>
           </div>
           <div class="futureshop_price">
             <% p = cont_specs["saleprice"] -%>
             <span class="price_dollars"><%= number_with_precision(p.to_i, :precision => 0) %></span>
-            <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2).to_f * 100).to_i %></span>
+            <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2, :locale => :en).to_f * 100).to_i %></span>
           </div>
         </div>	
       <% end %>

@@ -42,12 +42,13 @@
               c.find('.price').find('span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
             else
               c.find('.price > span').html((if optemo_french? then "" else "$") + this.regularPrice + (if optemo_french? then " $" else ""))
+            
             #Update the savings
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
             current_savings = c.find('.save > span').html()
             if current_savings? && !(savings is current_savings or savings is current_savings[1..-1])
               if futureshop_layout
-                c.find('.futureshop_sale_background > span').show().html("Save " + (if optemo_french? then "" else "$") + parseInt(savings) + (if optemo_french? then " $" else ""))
+                c.find('.futureshop_sale_background > span').show().html((if optemo_french? then "" else "$") + parseInt(savings) + (if optemo_french? then " $" else ""))
               else # Best buy layout
                 c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
                 #Remove saleEnd data because we don't have accurate ones
