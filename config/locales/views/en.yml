@@ -24,6 +24,8 @@ en:
       page_entries_info:
         multi_page_html:            "<b>%{from}&nbsp;-&nbsp;%{to}</b> of <b>%{count}</b>"
         futureshop_multi_page_html: "Page <b>%{current_page}</b> of %{total_pages}"
+        futureshop_previous:        "« Previous"
+        futureshop_next:            "Next »"
     products:
         featuredproducts:       "Featured Products"
         sortby:                 "Sort By"

@@ -47,7 +47,7 @@
             current_savings = c.find('.save > span').html()
             if current_savings? && !(savings is current_savings or savings is current_savings[1..-1])
               if optemo_module.layout == "fs"
-                c.find('.futureshop_sale_background > span').show().html((if optemo_french? then "" else "$") + parseInt(savings) + (if optemo_french? then " $" else ""))
+                c.find('.futureshop_sale_background > span.savings').show().html(parseInt(savings))
               else # Best buy layout
                 c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
                 #Remove saleEnd data because we don't have accurate ones
