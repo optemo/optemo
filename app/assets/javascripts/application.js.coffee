@@ -19,8 +19,6 @@
 #= require solr-autocomplete/ajax-solr/core/ParameterStore
 #= require solr-autocomplete/jquery-autocomplete/jquery.autocomplete
 
-# Switched 'def' position from before 'cookies' to before 'realtime_price' so that module method would be defined in realtime_price
-
 # These global variables must be declared explicitly for proper scope (the spinner is because setTimeout has its own scope and needs to set the spinner)
 @module "optemo_module", ->
   #/* LiveInit functions */
@@ -47,13 +45,6 @@
     $(this).siblings('.bundle_item').slideToggle()
     $(this).siblings('.bundle_spacer').slideToggle()
     return false
-
-  ### Bundles are disabled for now
-  //Bundle link
-  $('.bundlediv').live('click', function() {
-      window.location = $(this).attr("data-url");
-  });
-  ###
 
   #/* End of LiveInit functions */
 
