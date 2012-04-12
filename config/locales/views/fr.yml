@@ -23,8 +23,10 @@ fr:
         notapplicable:          "Non disponible"
     will_paginate:
       page_entries_info:
-        multi_page_html: "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"
+        multi_page_html:            "<b>%{from}&nbsp;à&nbsp;%{to}</b> sur <b>%{count}</b>"
         futureshop_multi_page_html: "Page <b>%{current_page}</b> de %{total_pages}"
+        futureshop_previous:        "« Précédent"
+        futureshop_next:            "Suivant »"
     products:
         shopnow:            "Magasinez"
         featuredproducts:   "Produits vedettes"
