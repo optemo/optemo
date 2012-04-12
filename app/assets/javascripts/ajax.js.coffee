@@ -61,7 +61,7 @@
     dsoctop= if document.all then iebody.scrollTop else window.pageYOffset
     outsidecontainer = $('#outsidecontainer')
     if (outsidecontainer.css('display') isnt 'block') 
-      $('#info').html("").css({'height' : "560px", 'width' : (width-44)+'px'})
+      $('#info').html("").css({'height' : "560px", 'width' : (width-34)+'px'})
     wWidth = $(window).width()
     # Position with equal L/R margins
     lPosition = parseInt((wWidth - width) / 2.0)
@@ -193,8 +193,9 @@
       if parts.length == 4
         #Initial landing page
         #Create dynamic/static divs in content
-        $('#optemo_content').empty().append("<div></div><div>"+parts.pop()+"</div>")
-        
+        $('#optemo_content').empty().append("<div></div><div>"+IEwrapper_pre+parts.pop()+IEwrapper_post+"</div>")
+      
+      # Because of the pop() call above, if the length was 4, it's 3 now (so this code gets executed too)
       if parts.length == 3
         $('#optemo_topbar').addClass("optemo").empty().append(IEwrapper_pre + parts[0] + IEwrapper_post)
         $('#optemo_filter').addClass("optemo").empty().append(IEwrapper_pre + parts[1] + IEwrapper_post)
