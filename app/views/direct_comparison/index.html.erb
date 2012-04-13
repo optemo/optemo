@@ -44,7 +44,7 @@
 		<% if feature.feature_type != "Binary" && !@products.map{|product| @sp[feature.feature_type][product.id][feature.name]}.compact.empty? %> 
 			<div class="<%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name).length < 20 ? "compare_row" : "double_height_compare_row" %>">
 		    <div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
-		      <%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name) %>:
+		      <%= t("#{Session.product_type}.show.#{feature.name}.name", :default=>feature.name) %>:
 		    </div>
         <% @products.each_with_index do |product, i| %>
 					<%# Some features have a french version and others don't %>
