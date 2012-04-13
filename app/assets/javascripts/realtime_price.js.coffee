@@ -1,7 +1,10 @@
 #/* Fetching the new prices */
 @module "optemo_module", ->
-  API_URL = (optemo_module.layout == "fs" ? "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query=" : "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query=")
   @getRealtimePrices = ->
+    if optemo_module.layout == "fs"
+      API_URL = "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query="
+    else
+      API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query="
     skus = $('.productimg').map( -> 
       return $(this).attr('data-sku')
     ).toArray().join(" ")

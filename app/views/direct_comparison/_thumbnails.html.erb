@@ -7,7 +7,7 @@
 	<div style="height: 64px;">
     <%= link_to @sp["Categorical"][thumbnails.id]["title#{fr?}"] || @sp["Categorical"][thumbnails.id]["title"], TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
   </div>
-  <div style="height: 100px;"
+  <div style="height: 100px;">
     <% if Session.futureshop? %>
       <div class="thumbnail_productinfo">
         <div class="price" <%=raw only_if_not_onsale(thumbnails) %>>
@@ -42,7 +42,7 @@
         </div>
       <% end %>
     <% end %>
-	</div>
+	</div> <%# height: 100px %>
 	<div style="padding-left:26px">
 	  <div class="spacer buttons">
       <div class="left">
@@ -54,6 +54,6 @@
         </div>
       </div>
     </div>
-  </div>
 	</div>
+  </div> <%# thumbnaillabel %>
 </div>

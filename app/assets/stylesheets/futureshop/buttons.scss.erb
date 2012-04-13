@@ -35,14 +35,14 @@
       padding: 4px 12px 5px;
     }
   }
-  .ie6,.ie7 {
+  .ie67 {
     .buttons {
-      background-image: url(<%= asset_path('mccpredbg.gif') %>);
+      background: url(<%= asset_path('mccpredbg.gif') %>);
       .left {
-        background-image: url(<%= asset_path('mccpredleft.gif') %>);
+        background: url(<%= asset_path('mccpredleft.gif') %>) no-repeat left;
       }
       .right {
-        background-image: url(<%= asset_path('mccpredright.gif') %>);
+        background: url(<%= asset_path('mccpredright.gif') %>) no-repeat right;
       }
       a:hover {
         text-decoration: none;
@@ -78,16 +78,16 @@
       }
     }
   }
-  .ie6,.ie7 {
+  .ie67 {
     .morespecs {
-      background-image: url(<%= asset_path('gray_n.gif') %>);
+      background: url(<%= asset_path('gray_m.gif') %>);
       @include button-prop;
       .left {
-        background-image: url(<%= asset_path('gray_l.gif') %>);
+        background: url(<%= asset_path('gray_l.gif') %>) no-repeat left;
         @include button-prop;
       }
       .right {
-        background-image: url(<%= asset_path('gray_r.gif') %>);
+        background: url(<%= asset_path('gray_r.gif') %>) no-repeat right;
         @include button-prop;
       }
       a:hover {

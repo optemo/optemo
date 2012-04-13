@@ -128,6 +128,7 @@
       errorstr = '<div class="bb_poptitle"><label class="comp-title">Erreur</label><div class="bb_quickview_close"></div></div><p class="error">Désolé! Une erreur est survenue sur le serveur.</p><p>Vous pouvez réinitialiser l\'outil et voir si le problème est résolu.</p>'
     else
       errorstr = '<div class="bb_poptitle"><label class="comp-title">Error</label><div class="bb_quickview_close"></div></div><p class="error">Sorry! An error has occurred on the server.</p><p>You can reload the page and see if the problem is resolved.</p>'
+    iebody= if(document.compatMode and document.compatMode isnt "BackCompat") then document.documentElement else document.body
     dsoctop= if document.all then iebody.scrollTop else window.pageYOffset
         
     optemo_module.applySilkScreen(null,errorstr) #,dsoctop + 10,107)
@@ -197,13 +198,16 @@
       if parts.length == 4
         #Initial landing page
         #Create dynamic/static divs in content
-        $('#optemo_content').empty().append("<div></div><div>"+IEwrapper_pre+parts.pop()+IEwrapper_post+"</div>")
+        $('#optemo_content').empty().append("<div></div><div>"+parts.pop()+"</div>")
       
       # Because of the pop() call above, if the length was 4, it's 3 now (so this code gets executed too)
       if parts.length == 3
         $('#optemo_topbar').addClass("optemo").empty().append(IEwrapper_pre + parts[0] + IEwrapper_post)
         $('#optemo_filter').addClass("optemo").empty().append(IEwrapper_pre + parts[1] + IEwrapper_post)
         $('#optemo_content').addClass("optemo").find('div:first').empty().append(IEwrapper_pre + parts[2] + IEwrapper_post)
+        # These lines are for the static content that is now in a separate div (opt_outsidecontainer, opt_silkscreen)
+        temp_node = $('#optemo_content').children().eq(1)
+        temp_node.html(IEwrapper_pre + temp_node.html() + IEwrapper_post)
         optemo_module.whenDOMready()
         return 0
 
