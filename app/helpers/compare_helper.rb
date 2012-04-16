@@ -54,18 +54,30 @@ module CompareHelper
     if (!discretized.empty?)
       min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.first.value}
       max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.last.value}
-    
-      min = discretized.first.value
-      max = discretized.last.value
-      step = (max - min + 0.00000001) / num_buckets
+      saved_cont = Session.search.userdataconts.select{|m|m.name == feat}.first      
+      if saved_cont.nil?
+        min = discretized.first.value
+        max = discretized.last.value
+      else
+        min = saved_cont.min
+        max = saved_cont.max
+      end
+      step = (max_all - min_all + 0.00000001) / num_buckets
       dist = Array.new(num_buckets,0)
       #Bucket the data
-      discretized.each do |r|
-        dist[((r.value-min) / step).floor] += r.count
+      dist.each_with_index do |bucket,i|
+        low = min_all + step * i
+        high = low + step
+        sum = 0
+        if (min..max) === low or (min..max) === high
+          sum = discretized.select{|p| (low..high)===p.value and (min..max)===p.value }.inject(0){|res,ele| res+ele.count}
+        end
+        dist[i] = sum
       end
       #Normalize to a max of 1
       maxval = dist.max
       dist.map!{|i| i.to_f / maxval}
+      puts [[min,max]+[min_all,max_all],dist]
       [[min,max]+[min_all,max_all],dist]
     else
       []
