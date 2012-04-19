@@ -98,14 +98,7 @@ class Product < ActiveRecord::Base
   
   scope :instock, :conditions => {:instock => true}
   scope :current_type, lambda{ joins(:cat_specs).where(cat_specs: {name: "product_type", value: Session.product_type_leaves})}
-    
-  def brand
-    if I18n.locale == :fr
-      cat_specs.cache_all(id)["brand_fr"]
-    else
-      @brand ||= cat_specs.cache_all(id)["brand"]
-    end
-  end
+  
   
   def image_url(imgSize) #creates the url to a product's image given and sku and image size (thumbnail, small, medium, large -> predetermined sizes)
     if Session.retailer == "B"

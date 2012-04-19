@@ -198,9 +198,18 @@ module CompareHelper
         end
         
       else
-        optionlist = CatSpec.count_feat(f.name)
-        #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
-        order = CatSpec.order(f.name)
+        # Check if the feature has translations
+        if I18n.t("cat_option.#{f.name}", :default => '').empty?
+          optionlist = CatSpec.count_feat(f.name)
+          #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
+          order = CatSpec.order(f.name)
+        else #Need to downcase the keys so that they match
+          order = {}
+          CatSpec.order(f.name).each {|a,b| order[a.downcase] = b}
+          # Take this out when the specs/translations difference has been sorted out for all products
+            optionlist = {}
+            CatSpec.count_feat(f.name).each {|a,b| optionlist[a.downcase] = b}
+        end   
         unless order.empty?
           optionlist = optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] } 
         end

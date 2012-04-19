@@ -11,7 +11,8 @@ module DirectComparisonHelper
     	  	number_with_delimiter(spec).to_s + " " + t("#{Session.product_type}.specs.#{feature.name}.unit", :default => "")
     	  end
       elsif feature.feature_type == "Categorical"
-        t("#{Session.product_type}.specs.#{spec}.name", :default => spec.nil? ? "-" : spec.to_s)
+        trans_key = (feature.name == "product_type") ? "#{spec}.name" : "cat_option.#{feature.name}.#{spec.downcase.strip.gsub('.',',')}" unless spec.nil?
+        t(trans_key, :default => spec.nil? ? "-" : spec.to_s)
       else #Binary -- might need to add another elsif clause for text specs later
       	spec ? t('compare.index.yesoption') : t('compare.index.nooption')
       end
