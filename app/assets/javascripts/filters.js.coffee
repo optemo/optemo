@@ -38,6 +38,18 @@
       t.toggleClass('selected_swatch')
       optemo_module.submitAJAX()
     
+    $('.remove_filter').live 'click', ->
+      selected_node = $(this).parent()
+      name = selected_node.attr('data-name')
+      value = selected_node.attr('data-value')
+      if value == undefined
+        filter_node = $('#'+name)
+      else
+        filter_node = $('#'+name+'[value='+value+']')
+      if (filter_node.attr("checked"))
+        filter_node.removeAttr('checked')
+      optemo_module.submitAJAX()
+      return false
   
     #Reset filters
     $('.reset').live 'click', ->

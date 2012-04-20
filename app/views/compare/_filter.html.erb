@@ -13,6 +13,42 @@
       <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
     </div>
   </div>
+  <% grouped_filters = getSearchFilters() %>
+  <% unless grouped_filters.empty? %>
+    <div class='selections'>
+      <div>Your selections</div>
+      <div class = "selections_text">
+        <% grouped_filters.each do |f| -%>
+          <% values = f[1] %>
+          <% unless values.nil? %>
+            <% if values.count > 0 %>
+              <% unless spec_type(values.first) == 'facet' or spec_type(values.first) == 'binary' %>
+                <div class='current_facet'><%= t("#{Session.product_type}.filter.#{f[0]}.name") -%></div>
+              <% end %>
+              <% values.each do |spec| -%>
+                <% if spec_type(spec) == 'facet' -%>
+                  <div class='current_facet'>
+                    <%= t("#{Session.product_type}.filter.#{spec.name}.name") -%>
+                  </div>
+                <% else -%>
+                  <div data-name='<%= spec_type(spec) %>_<%= spec.name %>' class='current_filter' 
+                    <% if spec_type(spec) == 'continuous' %>
+                      data-value='<%= sprintf("%.0f",spec.min) %>;<%= sprintf("%.0f",spec.max) %>'
+                    <% elsif spec_type(spec) == 'categorical' %>
+                      data-value='<%= spec.value %>'
+                    <% end %>
+                      >
+                    <a class='remove_filter' href='#'>X</a>
+                    <%= displaySelectedString(spec) %>
+                  </div>
+                <% end -%>
+              <% end -%>
+            <% end -%>
+          <% end -%>
+        <% end -%>
+      </div>
+    </div>
+  <% end %>
   <form id="filter_form" method="get" action="/compare">
     <% Session.features["filter"].each do |f| %>
       <div class="feature">
