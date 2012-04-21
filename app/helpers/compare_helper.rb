@@ -56,8 +56,7 @@ module CompareHelper
   end
 
   def getSearchFilters()
-    # add the grouping in here!!
-    # getting the currently applied filters -- put them all into one list
+    # getting the currently applied filters
     filters = Session.search.userdataconts + Session.search.userdatacats + Session.search.userdatabins
     if filters.empty?
       return []
@@ -66,16 +65,13 @@ module CompareHelper
     grouped = {}
     filters.each do |fs|
       name = fs.name
-      # check if grouped has as a key name, append fs to the dictionary under name
       if grouped.has_key?(name)
         grouped[name] << fs 
       else
         grouped[name] = [fs]
       end
     end
-        
     sorted = grouped.sort_by {|name, v| Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').value }
-    
     page_order = Session.features['filter'].map{ |f| {:name => f.name, :feature_type => f.feature_type, :value => f.value, :printed => false} }
     
     # add ordering
@@ -84,15 +80,12 @@ module CompareHelper
     sorted.each do |name, values|
       new_group = {name => []}
       values.each do |v|
-        #spec = Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter')
-        #Session.features['filter'].where
         item = page_order.select{|f| f[:name] == name}[0]
         if item[:feature_type] == 'Binary'
           past_headings = page_order.select{|f| f[:value] < item[:value] and f[:feature_type] == 'Heading'}
           if !past_headings.empty? and past_headings.last[:printed] == false
             past_headings.last[:printed] = true
             new_group[name] << Session.features['filter'].select{ |f|f.name==past_headings.last[:name] }.first
-            page_order
           end
         end
         new_group[name] << v
@@ -155,7 +148,6 @@ module CompareHelper
       #Normalize to a max of 1
       maxval = dist.max
       dist.map!{|i| i.to_f / maxval}
-      puts [[min,max]+[min_all,max_all],dist]
       [[min,max]+[min_all,max_all],dist]
     else
       []

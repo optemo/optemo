@@ -44,10 +44,20 @@
       value = selected_node.attr('data-value')
       if value == undefined
         filter_node = $('#'+name)
+      else if name.match(/continuous/)
+        the_min = value.split(';')[0]
+        filter_node = $('#' + name + '[data-min="' + the_min + '"]')
+        filter_node = $('#' + name + '[class="range"]') if filter_node.length==0
+      else if name.match(/categorical_color/)
+        $('#categorical_color').val("")
+        filter_node = $('.swatch_button[title="' + value + '"]')
+        filter_node.removeClass('selected_swatch')
       else
-        filter_node = $('#'+name+'[value='+value+']')
+        filter_node = $('#'+name+'[value="'+value+'"]')
       if (filter_node.attr("checked"))
         filter_node.removeAttr('checked')
+      if (filter_node.hasClass('range'))
+        filter_node.attr('value',';')
       optemo_module.submitAJAX()
       return false
   

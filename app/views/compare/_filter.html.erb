@@ -15,31 +15,34 @@
   </div>
   <% grouped_filters = getSearchFilters() %>
   <% unless grouped_filters.empty? %>
-    <div class='selections'>
-      <div>Your selections</div>
-      <div class = "selections_text">
+    <div id='your_selections' class='feature'>
+      <div class="boldlabel"><%= t('products.compare.selections') %></div>
+      <div id="selections_text" class='categorical'>
         <% grouped_filters.each do |f| -%>
           <% values = f[1] %>
           <% unless values.nil? %>
             <% if values.count > 0 %>
               <% unless spec_type(values.first) == 'facet' or spec_type(values.first) == 'binary' %>
-                <div class='current_facet'><%= t("#{Session.product_type}.filter.#{f[0]}.name") -%></div>
+                <div class='label list_item hanging_margin'>
+                  <%= t("#{Session.product_type}.filter.#{f[0]}.name", :default => f[0].capitalize) -%>
+                </div>
               <% end %>
               <% values.each do |spec| -%>
                 <% if spec_type(spec) == 'facet' -%>
-                  <div class='current_facet'>
-                    <%= t("#{Session.product_type}.filter.#{spec.name}.name") -%>
+                  <div class='label list_item hanging_margin'>
+                    <%= t("#{Session.product_type}.filter.#{spec.name}.name", :default => spec.name.capitalize) -%>
                   </div>
                 <% else -%>
-                  <div data-name='<%= spec_type(spec) %>_<%= spec.name %>' class='current_filter' 
+                  <div class='list_item hanging_margin' data-name='<%= spec_type(spec) %>_<%= spec.name %>' class='current_filter' 
                     <% if spec_type(spec) == 'continuous' %>
-                      data-value='<%= sprintf("%.0f",spec.min) %>;<%= sprintf("%.0f",spec.max) %>'
+                      data-value='<%=spec.min%>;<%=spec.max%>'
                     <% elsif spec_type(spec) == 'categorical' %>
                       data-value='<%= spec.value %>'
                     <% end %>
                       >
+                    <% str = displaySelectedString(spec) %>
+                    <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str.capitalize) ) -%>
                     <a class='remove_filter' href='#'>X</a>
-                    <%= displaySelectedString(spec) %>
                   </div>
                 <% end -%>
               <% end -%>
