@@ -1,7 +1,6 @@
 <% k = cat_option.first %>
 <% available_count = cat_option.second %>
 <% checked = chosen_cats.include?(k) %>
-<%# debugger if f.name == "brand" %>
 <% intoplist = toplist.empty? || toplist.include?(k) %>
 <% display = expanded || intoplist %>
 <div class="list_item hanging_indent<%= ' disabled' if available_count == 0 %><%= ' minor' unless intoplist %>" style="<%= "font-weight:bold;" if checked %><%= "display:none;" unless display %>">
