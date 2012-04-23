@@ -229,7 +229,7 @@ module CompareHelper
   
   def cat_order(f, chosen_cats, tree_level= 1)
     optionlist={}
-    longlist = {}
+    toplist = []
     if (request.host =="keyword")
        if f.name == "product_type"
        #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
@@ -258,15 +258,11 @@ module CompareHelper
           optionlist[fp] = l.map{|e| leaves[e]}.compact.inject(0){|res,ele| res+ele}
         end
       elsif f.name == "brand" # To ensure alphabetical sorting (regardless of capitalization)
-        longlist = CatSpec.count_feat(f.name)
-        if longlist.length > 10
-          optionlist = Hash[*longlist.to_a[0..9].sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
-          longlist = Hash[*longlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
-        else
-          optionlist = Hash[*longlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
-          longlist = {}
+        optionlist = CatSpec.count_feat(f.name)
+        if optionlist.length > 10
+          toplist = optionlist.keys[0..9]
         end
-        
+        optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
       else
         # Check if the feature has translations
         if I18n.t("cat_option.#{f.name}", :default => '').empty?
@@ -285,7 +281,7 @@ module CompareHelper
         end
       end
     end
-    [optionlist, longlist]
+    [optionlist, toplist]
   end
  
   def sub_level(product_type, tree_level= 2)

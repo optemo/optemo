@@ -78,15 +78,12 @@
             </div>
           <% else %>
             <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-            <% optionlist, longlist = cat_order(f, chosen_cats) %>
+            <% optionlist, toplist = cat_order(f, chosen_cats) %>
             <% expanded = Session.search.expanded.try{|b| b.include?(f.name)} %>
-            <div class="categorical" <%= "style='display:none;'" if expanded %>> <%# <%= " brand" if f.name == "brand" % >" %>
-              <%= render partial: "cat_option", collection: optionlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
-              <%= link_to "More", "#", class: "moreless" unless longlist.empty? %>
-            </div>
-            <div class="categorical" <%= "style='display:none;'" unless expanded %>> <%# <%= " brand" if f.name == "brand" % >" %>
-              <%= render partial: "cat_option", collection: longlist.to_a, locals: {chosen_cats: chosen_cats, f: f} %>
-              <%= link_to "Less", "#", class: "moreless" %>
+            <div class="categorical">
+              <%= render partial: "cat_option", collection: optionlist.to_a, locals: {chosen_cats: chosen_cats, f: f, expanded: expanded, toplist: toplist} %>
+              <%= link_to "More", "#", {class: "moreless", style: expanded ? 'display:none;' : ''} unless toplist.empty? %>
+              <%= link_to "Less", "#", {class: "moreless", style: expanded ? '' : 'display:none;'} unless toplist.empty? %>
             </div>
             <%= hidden_field_tag "expanded[#{f.name}]", expanded %>
           <% end %> <%# else %>

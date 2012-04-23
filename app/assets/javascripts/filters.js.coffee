@@ -69,9 +69,11 @@
       return false
       
     $('.moreless').live 'click', ->
-      v = $(this).parent().siblings("input")
-      v.val(v.val() == "" ? "1" : "")
-      v.siblings('.categorical').toggle()
+      t = $(this).toggle()
+      t.siblings(".minor,.moreless").toggle() #Toggle cat options
+      #Save setting in hidden field
+      v = t.parent().siblings("input")
+      v.val(v.val() == "" || v.val() == "false")
       return false
 
     # End of LiveInit Functions
