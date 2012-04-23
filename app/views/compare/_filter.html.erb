@@ -67,7 +67,7 @@
           <% if f.name == "color" # TODO: should not be hard code here%>
             <div style="margin-right: -4px;margin-top: 4px;">
               <% color_counts = CatSpec.count_feat("color") %>
-              <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).zip(
+              <% %w(red orange yellow green blue purple pink white silver brown black).zip(
                  %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
                 <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
                 <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
