@@ -82,8 +82,8 @@
             <% expanded = Session.search.expanded.try{|b| b.include?(f.name)} %>
             <div class="categorical">
               <%= render partial: "cat_option", collection: optionlist.to_a, locals: {chosen_cats: chosen_cats, f: f, expanded: expanded, toplist: toplist} %>
-              <%= link_to "More", "#", {class: "moreless", style: expanded ? 'display:none;' : ''} unless toplist.empty? %>
-              <%= link_to "Less", "#", {class: "moreless", style: expanded ? '' : 'display:none;'} unless toplist.empty? %>
+              <%= link_to t('products.compare.more'), "#", {class: "moreless", style: expanded ? 'display:none;' : ''} unless toplist.empty? %>
+              <%= link_to t('products.compare.less'), "#", {class: "moreless", style: expanded ? '' : 'display:none;'} unless toplist.empty? %>
             </div>
             <%= hidden_field_tag "expanded[#{f.name}]", expanded %>
           <% end %> <%# else %>

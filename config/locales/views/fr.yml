@@ -1,24 +1,5 @@
 fr:
     specs:
-        utility:                "Meilleure association"
-        status:                 "État"
-        brand:                  "Marques"
-        color:                  "Couleurs"
-        saleprice:              "Prix"
-        advanced_search:        "Recherche avancée"
-        category:               "Catégories"
-        status:                 "État"
-        onsale:                 "En solde"
-        isOnlineOnly:           "En ligne seulement"
-        isClearance:            "Liquidation"
-        featured:               "Produits vedettes"
-        isBundle:               "Forfaits"
-        isPreorderable:         "Précommandes"
-        toprated:               "Les mieux cotés"
-        saleprice_factor:       "Prix croissants"
-        saleprice_factor_asc:   "Prix décroissants"
-        displayDate:            "Dernier modèle"  
-        orders:                 "Qui se vend le mieux"
         all:                    "tous"
         notapplicable:          "Non disponible"
     will_paginate:
@@ -36,7 +17,9 @@ fr:
         addtocart:          "Ajouter au panier"
         preorder:           "Précommande"
         seeall:             "Visionner tout"
-        compare:    
+        compare:
+            more:             "Plus"
+            less:             "Moins"
             powered:          "Offert par "
             available:        "disponibles"
             outof:            "Parmi"

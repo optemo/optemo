@@ -1,23 +1,5 @@
 en:
     specs:
-        status:                 "Status"
-        brand:                  "Brands"
-        color:                  "Colours"
-        utility:                "Best Match"
-        saleprice:              "Price"
-        advanced_search:        "Advanced Search"
-        category:               "Product Category"
-        onsale:                 "On Sale"
-        isClearance:            "Clearance"
-        isOnlineOnly:           "Online Only"
-        toprated:               "Top-Rated"
-        featured:               "Featured Products"
-        isBundle:               "Package Deals"
-        isPreorderable:         "Pre-orders"
-        saleprice_factor:       "Price: Low to High"
-        saleprice_factor_asc:   "Price: High to Low"
-        displayDate:            "Newest Model"
-        orders:                 "Best Selling"
         all:                    "all"
         notapplicable:          "Not Applicable"
     will_paginate:
@@ -36,6 +18,8 @@ en:
         shopnow:                "SHOP NOW"
         seeall:                 "SEE ALL"
         compare:
+            more:             "More"
+            less:             "Less"
             powered:          "Powered by "
             available:        "Available"
             outof:            "Out of"
