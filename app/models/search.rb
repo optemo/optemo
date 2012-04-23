@@ -3,6 +3,7 @@ require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
+  attr_reader :expanded
   attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size, :filters_cats, :filters_conts, :filters_bins
   attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :old_keyword
   
@@ -273,10 +274,7 @@ class Search < ActiveRecord::Base
       self.sortby = p[:sortby]
       duplicateFeatures(old_search)
       self.initial = false
-    when "filter"
-      #product filtering has been done through keyword search of attribute filters
-      #p[:categorical]={} unless(@old_keyword==p[:filters][:keyword]) 
-      puts "filter_params: #{p[:filters]}"  
+    when "filter" 
       createFeatures(p[:filters])
       self.initial = false
     else
@@ -364,6 +362,8 @@ class Search < ActiveRecord::Base
         end
       end
     end
+    
+    @expanded = p[:expanded].try(:keys)
     
     unless(@old_keyword==keyword_search) 
       @filters_cats = @userdatacats

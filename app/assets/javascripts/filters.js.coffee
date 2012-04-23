@@ -69,7 +69,9 @@
       return false
       
     $('.moreless').live 'click', ->
-      $(this).parent().toggle().siblings('.categorical').toggle()
+      v = $(this).parent().siblings("input")
+      v.val(v.val() == "" ? "1" : "")
+      v.siblings('.categorical').toggle()
       return false
 
     # End of LiveInit Functions

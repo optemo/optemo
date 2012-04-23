@@ -22,7 +22,7 @@
   @submitAJAX = ->
     selections = $("#filter_form").serializeObject()
     $.each(selections, (k,v) ->
-      if(v is "" or v is "-" or v is ";") 
+      if(v is "" or v is "-" or v is ";" or v is "false") 
         delete selections[k]
       #/* Slider values shouldn't get sent unless specifically set */
       if(k.match(/superfluous/)) 
