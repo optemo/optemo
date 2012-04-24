@@ -77,6 +77,7 @@ fr:
         capacity:           "%{num} Go"
         rangebelow:         " et moins"
         rangeabove:         " et plus"
+        belowbefore:        "Moins de "
     compare:
         index:
             title:              "Résultats de la comparaison"

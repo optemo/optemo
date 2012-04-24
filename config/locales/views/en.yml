@@ -77,6 +77,7 @@ en:
         capacity:           "%{num} GB" 
         rangebelow:         " and below"
         rangeabove:         " and above"
+        belowbefore:        "Below "
     compare:
         index:
             title:          "Compare Results"
