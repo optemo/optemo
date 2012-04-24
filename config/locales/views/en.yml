@@ -61,6 +61,8 @@ en:
             colors:         "Colours"
             and:            " and "
             bundles:        "Bundles"
+            packagedeals:   "Package Deals"
+            morepackagedeals: "More Package Deals"
             othercolors:    "More Colours"
             bundledwith:    "Bundled with"
             loading:        "Loading"

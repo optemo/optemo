@@ -5,7 +5,7 @@
 
 	<div class="thumbnaillabel">
 	<div style="height: 64px;">
-    <%= link_to @sp["Categorical"][thumbnails.id]["title#{fr?}"] || @sp["Categorical"][thumbnails.id]["title"], TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
+    <%= link_to TextSpec.cacheone(thumbnails.id, "title#{fr?}") || TextSpec.cacheone(thumbnails.id, "title"), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
   </div>
   <div style="height: 100px;">
     <% if Session.futureshop? %>

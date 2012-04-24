@@ -62,6 +62,8 @@ fr:
             colors:         "couleurs"
             and:            " et "
             bundles:        "ensembles"
+            packagedeals:   "Ensembles"
+            morepackagedeals: "Voir Plus d'Ensembles"
             othercolors:    "Autres couleurs: "
             bundledwith:    "Groupé avec"
             loading:        "Chargement"
