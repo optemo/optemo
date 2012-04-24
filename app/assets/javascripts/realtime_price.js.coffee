@@ -5,7 +5,7 @@
       API_URL = "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query="
     else
       API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query="
-    skus = $('.productimg').map( -> 
+    skus = $('.productimg, .imageholder').map( -> 
       return $(this).attr('data-sku')
     ).toArray().join(" ")
     if (skus != "")

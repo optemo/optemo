@@ -71,34 +71,30 @@ module CompareHelper
         grouped[name] = [fs]
       end
     end
+    # make the filter facets grouped by name into a list sorted by the order of each facet
     sorted = grouped.sort_by {|name, v| Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').value }
-    page_order = Session.features['filter'].map{ |f| {:name => f.name, :feature_type => f.feature_type, :value => f.value, :printed => false} }
     
     # add ordering
-    ordering = getOrder()
+    # FIXME: make page_order into a hash by name
+    page_order = Session.features['filter'].map{ |f| {:name => f.name, :feature_type => f.feature_type, :value => f.value, :printed => false} }
     new_sorted = []
     sorted.each do |name, values|
       new_group = {name => []}
       values.each do |v|
-        item = page_order.select{|f| f[:name] == name}[0]
+        item = page_order.select{|f| f[:name] == name}[0] # this possibly can be optimized
         if item[:feature_type] == 'Binary'
           past_headings = page_order.select{|f| f[:value] < item[:value] and f[:feature_type] == 'Heading'}
           if !past_headings.empty? and past_headings.last[:printed] == false
             past_headings.last[:printed] = true
-            new_group[name] << Session.features['filter'].select{ |f|f.name==past_headings.last[:name] }.first
+            new_group[name] << Session.features['filter'].select{ |f|f.name == past_headings.last[:name] }.first
           end
         end
         new_group[name] << v
       end
       new_sorted << [name, new_group[name]]
     end
-    # TODO: also order the values within each array of facets for one name?
-    # N.B.: these are not actually grouped!
+    # Possible extension: also order the values within each 'name', i.e. the different categorical values of each facet
     new_sorted
-  end
-  
-  def getOrder()
-    Session.features['filter'].map{ |f| [f.name, f.feature_type, f.value, 0]}
   end
   
   def displaySelectedString(spec)
@@ -362,7 +358,7 @@ module CompareHelper
   def product_image(product,size)
     if BinSpec.find_by_product_id_and_name(product.id, "missingImage")
       #Load missing image placeholder
-      content_tag("div","",class: "imageholder")
+      content_tag(:div, "", :class => "imageholder", :'data-sku' => product.sku, :'data-id' => product.id)      
     else
       image_tag product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.onerror='';this.src='#{product.image_url(:large)}';return true;"
     end
