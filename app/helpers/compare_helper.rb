@@ -156,15 +156,15 @@ module CompareHelper
       ranges.each_with_index do |r, ind|
         dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
         if dr.last[:count] >0 
-          if r[:min] == r[:max] 
-            if feat == "saleprice" && I18n.locale == :en
-              dis = "$#{r[:min]}"
+          if r[:min] == r[:max]
+            if feat == "saleprice"
+              dis = number_to_currency(r[:min])
             else
               dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
-            end   
+            end
           else
-            if feat == "saleprice" && I18n.locale == :en
-              dis = "$#{r[:min]} - $#{r[:max]}"
+            if feat == "saleprice"
+              dis = number_to_currency(r[:min]) + " - " + number_to_currency(r[:max])              
             else
               dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
             end    
@@ -175,10 +175,10 @@ module CompareHelper
     end  
     dr = dr.select{|d| d[:count]>0}
     unless dr.empty?
-      if feat == "saleprice" && I18n.locale == :en
-         dr.first[:display] = (dr.first[:max] > 0 ? "Below " : "") + "$#{dr.first[:max]}"
-         dr.last[:display] = "$#{dr.last[:min]} and above"
-      else    
+      if feat == "saleprice"
+         dr.first[:display] = (dr.first[:max] > 0 ? t("features.belowbefore") : '') + number_to_currency(dr.first[:max])
+         dr.last[:display] = number_to_currency(dr.last[:min]) + t("features.rangeabove")
+      else
          dr.first[:display] = "#{dr.first[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit") + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
          dr.last[:display] = "#{dr.last[:min]} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
       end
