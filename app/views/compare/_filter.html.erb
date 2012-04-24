@@ -42,7 +42,7 @@
                       >
                     <% str = displaySelectedString(spec) %>
                     <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str.capitalize) ) -%>
-                    <a class='remove_filter' href='#'>X</a>
+                    <a class='remove_filter' href='#'><div><!-- --></div> Undo</a>
                   </div>
                 <% end -%>
               <% end -%>
@@ -62,12 +62,14 @@
         <% when "Spacer" -%>
           <div style="height: 17px"><!-- --></div>
         <% when "Categorical" -%>
-          <%= render partial: 'filter_label', locals: {f: f} %>
           <% chosen_cats = chosencats(f.name) %>
           <% if f.name == "color" # TODO: should not be hard code here%>
             <div style="margin-right: -4px;margin-top: 4px;">
               <% color_counts = CatSpec.count_feat("color") %>
-              <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).zip(
+			  <%unless color_counts.map{|k, v| v if v>0}.compact.empty?%>
+				<%= render partial: 'filter_label', locals: {f: f} %>
+			  <%end%> 	
+              <% %w(red orange yellow green blue purple pink white silver brown black).zip(
                  %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
                 <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
                 <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
@@ -77,6 +79,7 @@
               </div>
             </div>
           <% else %>
+			<%= render partial: 'filter_label', locals: {f: f} %>
             <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
             <% optionlist, toplist = cat_order(f, chosen_cats) %>
             <% expanded = Session.search.expanded.try{|b| b.include?(f.name)} %>
@@ -87,12 +90,14 @@
             </div>
             <%= hidden_field_tag "expanded[#{f.name}]", expanded %>
           <% end %> <%# else %>
-        <% when "Continuous" %>
-          <%= render partial: 'filter_label', locals: {f: f} %>
+        <% when "Continuous" %>	
           <% if f.ui == "ranges" %>
             <% chosen_conts = chosenconts(f.name) %>
             <%ranges = getRanges(f.name)%>
             <%displayed_ranges = displayRanges(f.name, ranges)%>
+			<%unless displayed_ranges.map{|dr| 1 if dr[:count]>0}.compact.empty?%>
+				<%= render partial: 'filter_label', locals: {f: f} %>
+			<%end%>	
             <% displayed_ranges.each do |dr| %>
               <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) %>
               <% available_count = dr[:count]%>
@@ -107,6 +112,7 @@
         
           <% else %> <%# Use sliders still, not ranges %>
             <%# Check continuous features for data, instead of greying them, we just don't show them %>
+			<%= render partial: 'filter_label', locals: {f: f} %>
             <% distribution_data = getDist(f.name) -%>
             <% if distribution_data.blank? -%>
               <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>

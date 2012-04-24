@@ -30,8 +30,6 @@ class CatSpec < ActiveRecord::Base
       feat= "first_ancestors"
     elsif feat=="product_type" && level == 2
       feat= "second_ancestors"
-    elsif feat=="product_type"
-      feat= "product_type"
     end
     Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
       q[r.value] = r.count

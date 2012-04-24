@@ -1,20 +1,21 @@
-testing check list:
+Testing check list:
+  Test in : Chrome, Firefox, Safari, IE 9/8/7/6 (Virtual Box)
 
 Landing page:
 
   - There is a hero product at the top
-  - Click both SHOP NOW button and product title 
+  - Click both 'SHOP NOW' button and product title 
     - should link directly to the Best Buy product detail page (PDP)
-  - Click these, then click back - check if you go back to the landing page
+  - Click these, then click back -> check if you go back to the landing page
   - If other variations of the hero product are shown (siblings or bundles):
     - Hover over to check the displayed alternative text
-    - Click on one variation to test linking to the proper variation
+    - Click on one variation to test linking to the proper variation's PDP
   - There are featured products listed below the hero
-    - Click on the first featured product: check if it successfully loads the PDP
+    - Click on a featured product: check if it successfully loads the PDP
     - Click on the back button and check if you get the initial page
   - Click the "See All" button above the hero
   - Click the Pre-Order banner. Check that it loads the right page.
-  - If a product with package deals pops up, check one.
+  - If a product with package deals pops up, check one out.
 
 
 Filter Page:
@@ -27,30 +28,33 @@ Filter Page:
     - Click Newest Model link: check sorting 
   - Page Changes:
     - Click on the next page link (arrow); Go back by clicking the previous page link
-    - Click on the number 2; make sure this is the same page as before
-  - Click the 'Back to Top' button at the bottom. Check that it works.
+    - Click on the number 2; make sure this is the same page you switched to before
   - Find a product with other available colours or bundles displayed underneath. 
     - Hover over a sibling / bundle picture to check the alt text
     - Click one to see if it leads to the right product page
-  - Click on sale and then undo it to see if it works
+  - Click 'on sale' and then undo it to see if it works
   - Filter brands by clicking on one, then multiple brand check boxes
     - check that both the checkboxes and link text function
     - check that the right products are displayed
     - check that the numbers associated with checkboxes are adjusted
-    - click the more button to see more brands
+    - click the more/less button to see more/less brands
   - Colours:
-    - Click on red colour swatch and check if only red cameras are displayed
+    - Click on a colour swatch and check if only products of that colour are displayed
     - Repeat the previous step for a couple of other colours
   - Sliders:
-    - Check that there are distribution graphs on top of sliders
-    - Filter by price: check that number of products / slider distributions change
-    - Repeat the previous step for other sliders
+    - Check that there are distribution graphs on top of the sliders
+    - For each slider, check that the number of products / slider distributions change when
+        the sliders are set to different values
+    - Check the behaviour at the slider extremities
+        - Do all the products show up if you manually reset the slider after having used it
+            eg: move the one end of the slider, let the new page load, then move it back to 
+              its original position
   - Categories:
     - Click a couple and see if they update the products available
   - Check two brands, then click on a binary filter with a small number
     - Undo the filter. Test the cases where the filter matched:
-    - Both brands: undoing it will preserve the two brands.
-    - One brand: only the matched brand stays selected
+      - Both brands: undoing it will preserve the two brands.
+      - One brand: only the matched brand stays selected
   - Check a couple of binary filters then uncheck them (both in status and advanced search)
     - Click on both the link and the box
     - Check that the proper products are shown
@@ -60,64 +64,71 @@ Filter Page:
 
 Product Comparison:
 
-	- Check the Compare box for one product
-		- Comparison number on the Compare button should increase to 1
-	- Click the compare link on another product
-		- Should see the comparison popover with two products displayed
-		- Check if product title and price are displayed.
-		- Click the remove link: The product should be removed
-		- Click close to exit
-	- Check the boxes of 3 more products
-		- Click the Compare button at the bottom of the page
-		- Click the More specs link and see that the tables works 
-			- Check that collapsable headings work (if available)
-		- Add to cart in the compare page, then return
-	- Add products to compare up to the 6th product
-		-use both the checkboxes and product compare links
-		- An error message should come up
-	- Click on Clear Selected Products
-		- Check that checked boxes and compare button are updated for zero selection
-	- Click the compare box of another product
-		- Reload the page and see if the item remains selected 
-			-Note: IE6 sometimes doesn't remember, which is OK
+  - Check the Compare box for one product
+    - Comparison number on the Compare button should increase to 1
+  - Click the compare button at the top
+    - Exit the popup by clicking the remove link
+  - Click the compare link of a product
+    - Exit out this time by clicking outside of the popup area
+  - Scroll to the bottom, then click the compare button there
+    - Exit out by clicking the close button
+  - Check that there are buttons to change pages at the bottom, then click the 
+      back to top button
+  - Check the compare boxes for 5 more products
+    - The compare button should show the appropriate number of products
+    - You should only be able to compare 5 products
+      - Make sure a message comes up when you try to add the 6th
+      - Try adding it by the check box and the link
+  - Click the Compare button
+    - Check if product title and price are displayed.
+    - Remove a few products with the remove link
+      - The popup should shrink to fit the number of products
+    - Click the More specs link and see that the hidden table shows up
+      - Check that collapsable headings work (if available)
+    - Click the add to cart button in the compare page, then return
+      - Check that it linked to the appropriate store
+  - Click on Clear Selected Products
+    - Check that checked boxes and compare button are updated for zero selection
+  - Click the compare box of another product
+    - Reload the page and see if the item remains selected 
+      -Note: IE6 sometimes doesn't remember, which is OK
 
+Dynamic Filters (drives bestbuy):
 
-Dynamic Filters (Harddrives):
-
-	- only common filters should be displayed on first page
-		- Common filters are the following: 
-		   - Categories:   
-		       - External Hard Drives
-		       - Internal Hard Drives
-		       - Solid State Drives
-		       - USB Flash Drives
-		       - Optical Drives (this used to be DVD & CD drives)
-		       - Network-Attached Storage (NAS)
-		       - Storage Accessories
-		   - Status:
-		       - On Sale
-		       - Clearance
-		       - Online Only
-		       - Top-Rated
-		       - Featured Products
-		   - Brands
-		   - Price
-		   - Storage Capacity
-	- Check that additional facets displayed for the following categories:
-		- Additional facets:
-		   - Internal and External drives:
-		       - Rotation Speed (multi-selection checkbox)
-		       - Data Buffer (slider)
-		       - Drive Size (multi-selection checkbox)
-		   - Solid State Drive:
-			   - Internal or External (multi-selection checkbox)
-		   - Optical Drives:
-			   - Internal or External (multi-selection checkbox)
+  - only common filters should be displayed on first page
+    - Common filters are the following: 
+       - Categories:   
+           - External Hard Drives
+           - Internal Hard Drives
+           - Solid State Drives
+           - USB Flash Drives
+           - Optical Drives (this used to be DVD & CD drives)
+           - Network-Attached Storage (NAS)
+           - Storage Accessories
+       - Status:
+           - On Sale
+           - Clearance
+           - Online Only
+           - Top-Rated
+           - Featured Products
+       - Brands
+       - Price
+       - Storage Capacity
+  - Check that additional facets  are displayed for the following categories:
+    - Additional facets:
+       - Internal and External drives:
+           - Rotation Speed (multi-selection checkbox)
+           - Data Buffer (slider)
+           - Drive Size (multi-selection checkbox)
+       - Solid State Drive:
+        - Internal or External (multi-selection checkbox)
+       - Optical Drives:
+        - Internal or External (multi-selection checkbox)
 
 
 French: 
 
-	- Check french links for all departments. 
-	- Check that titles are french. 
-	- Check that links go to french PDPs
-	- Check that the copy and units are all french 
+  - Check french links for all departments. 
+  - Check that titles are french. 
+  - Check that links go to french PDPs
+  - Check that the copy and units are all french 

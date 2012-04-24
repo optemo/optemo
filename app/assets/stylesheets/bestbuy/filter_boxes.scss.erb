@@ -7,6 +7,16 @@
   #filter_form, #your_selections {
   	font-size: 0.85em;
   }
+  .remove_filter {
+    font-size: 10px;
+    div {
+      width: 12px;
+      height: 12px;
+      vertical-align: sub;
+      display: inline-block;
+      background-image: url(<%= asset_data_uri "undo.gif" %>);
+    }
+  }
   #IE .label{
     padding-top: 10px;
   }
