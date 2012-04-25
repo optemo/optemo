@@ -42,7 +42,7 @@
                       >
                     <% str = displaySelectedString(spec) %>
                     <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str.capitalize) ) -%>
-                    <a class='remove_filter' href='#'><div><!-- --></div> Undo</a>
+                    <a class='remove_filter' href='#'><div><!-- --></div> <%= t('products.compare.undo') %> </a>
                   </div>
                 <% end -%>
               <% end -%>
