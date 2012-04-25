@@ -2,8 +2,10 @@
 #= require realtime_price
 #= require raphael
 #= require jquery.dependClass
-#= require jquery.slider
 #= require jquery.history
+#= require jshashtable
+#= require jquery.numberformatter
+#= require jquery.slider
 #= require cookies
 #= require sliders
 #= require comparison

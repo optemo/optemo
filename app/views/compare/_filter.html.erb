@@ -125,6 +125,7 @@
                 <% step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil) -%>
                 <% datamin = roundedInterval(distribution_data.first[2],step,true) -%>
                 <% datamax = roundedInterval(distribution_data.first[3],step,false) -%>
+                <% unit = t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>
                 <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
                 <span class="sliderspan">
                   <input 
@@ -138,7 +139,7 @@
                     data-distmin=<%= distribution_data.first[0] %>
                     data-distmax=<%= distribution_data.first[1] %>
                     <%# Take out data-unit for now. Needs logic for $ before/after, etc. %>
-                    data-unit = " " <%# t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>
+                    data-unit=<%= unit %>
                     disabled="disabled"/>
                 </span>
               </div>

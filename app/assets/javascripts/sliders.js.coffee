@@ -7,14 +7,19 @@
       min = parseFloat(t.attr('data-min'))
       max = parseFloat(t.attr('data-max'))
       mystep = parseFloat(t.attr('data-step'))
-
+      myunit = t.attr('data-unit')
+      if (myunit == '$')
+        myformat = (if optemo_french then '## $' else '$## ')
+      else
+        myformat = "##.0 " + myunit
       t.slider
         from: min
         to: max
         step: mystep
         smooth: true
         round: if mystep >= 1 then 0 else if mystep * 10 >= 1 then 1 else 2
-        dimension: " "+t.attr('data-unit')
+        dimension: " "
+        format: { format: myformat }
         skin: "plastic"
         callback: (value) ->
           #Remove a feature selection that has been undone
@@ -43,7 +48,10 @@
             .replace(/,/gi, ".")
             .replace(/\ /gi, "")
           if( Number.prototype.jSliderNice )
-            (new Number(value)).jSliderNice(this.settings.round).replace(/-/gi, "&minus;")
+            if( $.formatNumber )
+              return $.formatNumber( new Number(value), this.settings.format || {} ).replace( /-/gi, "&minus;" );
+            else
+              (new Number(value)).jSliderNice(this.settings.round).replace(/-/gi, "&minus;")
           else
             new Number(value)
 
