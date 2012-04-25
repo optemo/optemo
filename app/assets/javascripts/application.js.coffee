@@ -3,8 +3,6 @@
 #= require raphael
 #= require jquery.dependClass
 #= require jquery.history
-#= require jshashtable
-#= require jquery.numberformatter
 #= require jquery.slider
 #= require cookies
 #= require sliders
