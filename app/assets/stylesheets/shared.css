@@ -33,14 +33,19 @@
   display: inline-block;
   margin-left: 17px;
   margin-top: 9px;
+  margin-right: 5px;
   font-weight: bold;
-  
+  width: 388px;
 }
 .optemo #navtitle .nav-number{
-  font-size: 39pt; float:left; margin-right: 7px; font-weight: bold;color: #333;
+  font-size: 39pt;
+  float: left;
+  margin-right: 7px;
+  font-weight: bold;
+  color: #333;
+  height: 75px;
 }
 .optemo #navtitle .sub-title{
-  float: left;
   margin-top: 7px;
 }
 .optemo #navtitle .sub-title .outof{
