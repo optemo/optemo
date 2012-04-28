@@ -112,7 +112,7 @@
         
           <% else %> <%# Use sliders still, not ranges %>
             <%# Check continuous features for data, instead of greying them, we just don't show them %>
-			<%= render partial: 'filter_label', locals: {f: f} %>
+            <%= render partial: 'filter_label', locals: {f: f} %>
             <% distribution_data = getDist(f.name) -%>
             <% if distribution_data.blank? -%>
               <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
@@ -149,7 +149,7 @@
           <% dobj = Session.search.userdatabins.select{|udb| udb.name == f.name}.first %>
           <% unchecked = dobj.nil? || dobj.value == false %>
           <% available_count = BinSpec.count_feat(f.name) %>
-          <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+          <div class="hanging_indent<%= ' invisible' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
             <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter' %>
             <%= (available_count == 0) ? t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize) : link_to( t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize), "#", :class => "checkbox_text") %>
             <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
