@@ -7,14 +7,20 @@
       min = parseFloat(t.attr('data-min'))
       max = parseFloat(t.attr('data-max'))
       mystep = parseFloat(t.attr('data-step'))
-
+      myunit = t.attr('data-unit')
+      myformat = ''
+      if (myunit == '$')
+        myformat = (if optemo_french then '# $' else '$#')
+      else if not myunit.nil? and myunit.length > 0
+        myformat = "# " + myunit
       t.slider
         from: min
         to: max
         step: mystep
         smooth: true
         round: if mystep >= 1 then 0 else if mystep * 10 >= 1 then 1 else 2
-        dimension: " "+t.attr('data-unit')
+        dimension: ''
+        format: myformat
         skin: "plastic"
         callback: (value) ->
           #Remove a feature selection that has been undone
@@ -43,13 +49,23 @@
             .replace(/,/gi, ".")
             .replace(/\ /gi, "")
           if( Number.prototype.jSliderNice )
-            (new Number(value)).jSliderNice(this.settings.round).replace(/-/gi, "&minus;")
+            return formatN((new Number(value)).jSliderNice(this.settings.round), this.settings.format).replace( /-/gi, "&minus;" );
           else
-            new Number(value)
+            return formatN(new Number(value), this.settings.format)
 
       histogram(t.parent().siblings('.hist')[0])
 
   #Private functions
+  formatN = (num, format) ->
+    return num if format == ''
+    prefix = suffix = ''
+    parts = format.split('#')
+    if parts.length == 2
+      if parts[0].length == 0
+        suffix = parts[1]
+      else
+        prefix = parts[0]
+    return prefix + num + suffix
     
   #Draw slider histogram, called for each slider above
   histogram = (element, norange) ->

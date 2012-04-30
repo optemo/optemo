@@ -243,8 +243,12 @@
 
   # For the bundle products, get the first product from bundle spec and show its specs
   loadspecs = (sku, bundle_sku) ->
+    if opt_category_id[0] == 'B'
+      retailer = "bestbuy"
+    else if opt_category_id[0] == 'F'
+      retailer = "futureshop"
     # The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
-    baseurl = "http://www.bestbuy.ca/api/v2/json/product/" + sku
+    baseurl = "http://www."+retailer+".ca/api/v2/json/product/" + sku
     if (!(typeof(optemo_french) == "undefined") && optemo_french) 
       baseurl = baseurl+"?lang=fr"
     # Do the AJAX request only once

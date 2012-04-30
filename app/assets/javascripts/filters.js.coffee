@@ -31,10 +31,7 @@
       else 
       #Added selected color
         whichThingSelected = t.attr("style").replace(/background-color: (\w+);?/i,'$1')
-        # Fix up the case issues for Internet Explorer (always pass in color value as "Red")
-        whichThingSelected = whichThingSelected.toLowerCase()
-        whichThingSelected = whichThingSelected.charAt(0).toUpperCase() + whichThingSelected.slice(1)
-        $('#categorical_color').val(whichThingSelected)
+        $('#categorical_color').val(whichThingSelected.toLowerCase())
       t.toggleClass('selected_swatch')
       optemo_module.submitAJAX()
     

@@ -44,8 +44,8 @@ module Ranges
     max = discretized.map{|d| d.value}.max
     rs = []
     s = self.count("saleprice", min, max) # total count of prods with this feature
-    prs = [0, 50, 100, 150, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000]
-    gprs = [0, 10, 25, 50, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 2000, 3000, 4000, 5000, 7500, 10000, 20000]
+    prs = [0, 50, 100, 150, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000].map(&:to_f)
+    gprs = [0, 10, 25, 50, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 2000, 3000, 4000, 5000, 7500, 10000, 20000].map(&:to_f)
     prs.each_with_index do |pr, ind|
       if max<prs.last
         if rs.empty? && pr>min

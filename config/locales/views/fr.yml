@@ -43,6 +43,7 @@ fr:
             shoph1:           "Magasinez "
             refineyoursearch1: "Peaufinez votre"
             selections:       "Votre sélection"
+            undo:             "Annuler"
             futureshop_refineyoursearch1: "Peaufinez votre"
             refineyoursearch2: "RECHERCHE"
             
@@ -62,6 +63,8 @@ fr:
             colors:         "couleurs"
             and:            " et "
             bundles:        "ensembles"
+            packagedeals:   "Ensembles"
+            morepackagedeals: "Voir Plus d'Ensembles"
             othercolors:    "Autres couleurs: "
             bundledwith:    "Groupé avec"
             loading:        "Chargement"
@@ -75,6 +78,7 @@ fr:
         capacity:           "%{num} Go"
         rangebelow:         " et moins"
         rangeabove:         " et plus"
+        belowbefore:        "Moins de "
     compare:
         index:
             title:              "Résultats de la comparaison"

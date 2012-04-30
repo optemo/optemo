@@ -42,7 +42,7 @@
                       >
                     <% str = displaySelectedString(spec) %>
                     <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str.capitalize) ) -%>
-                    <a class='remove_filter' href='#'><div><!-- --></div> Undo</a>
+                    <a class='remove_filter' href='#'><div><!-- --></div> <%= t('products.compare.undo') %> </a>
                   </div>
                 <% end -%>
               <% end -%>
@@ -112,7 +112,7 @@
         
           <% else %> <%# Use sliders still, not ranges %>
             <%# Check continuous features for data, instead of greying them, we just don't show them %>
-			<%= render partial: 'filter_label', locals: {f: f} %>
+            <%= render partial: 'filter_label', locals: {f: f} %>
             <% distribution_data = getDist(f.name) -%>
             <% if distribution_data.blank? -%>
               <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
@@ -125,6 +125,7 @@
                 <% step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil) -%>
                 <% datamin = roundedInterval(distribution_data.first[2],step,true) -%>
                 <% datamax = roundedInterval(distribution_data.first[3],step,false) -%>
+                <% unit = t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>
                 <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
                 <span class="sliderspan">
                   <input 
@@ -138,7 +139,7 @@
                     data-distmin=<%= distribution_data.first[0] %>
                     data-distmax=<%= distribution_data.first[1] %>
                     <%# Take out data-unit for now. Needs logic for $ before/after, etc. %>
-                    data-unit = " " <%# t("#{Session.product_type}.filter.#{f.name}.unit", :default => '') %>
+                    data-unit=<%= unit %>
                     disabled="disabled"/>
                 </span>
               </div>
@@ -148,7 +149,7 @@
           <% dobj = Session.search.userdatabins.select{|udb| udb.name == f.name}.first %>
           <% unchecked = dobj.nil? || dobj.value == false %>
           <% available_count = BinSpec.count_feat(f.name) %>
-          <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+          <div class="hanging_indent<%= ' invisible' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
             <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter' %>
             <%= (available_count == 0) ? t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize) : link_to( t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize), "#", :class => "checkbox_text") %>
             <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
