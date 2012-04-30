@@ -66,9 +66,9 @@
           <% if f.name == "color" # TODO: should not be hard code here%>
             <div style="margin-right: -4px;margin-top: 4px;">
               <% color_counts = CatSpec.count_feat("color") %>
-			  <%unless color_counts.map{|k, v| v if v>0}.compact.empty?%>
-				<%= render partial: 'filter_label', locals: {f: f} %>
-			  <%end%> 	
+              <%unless color_counts.map{|k, v| v if v>0}.compact.empty?%>
+                <%= render partial: 'filter_label', locals: {f: f} %>
+              <%end%> 
               <% %w(red orange yellow green blue purple pink white silver brown black).zip(
                  %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
                 <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
