@@ -44,19 +44,19 @@ html {
     border: 1px solid #ccc;
   }
 
-  .dark.selected_swatch {
+  .selected_swatch_dark {
   	background-image: url(data:image/gif;base64,R0lGODlhDQANAIABAP///////yH5BAEAAAEALAAAAAANAA0AAAIVjI+py43gAphtwnds0lpZynRVRDoFADs=);
   }
 
-  .light.selected_swatch {
+  .selected_swatch_light {
   	background-image: url(data:image/gif;base64,R0lGODlhDQANAIABAAAAAP///yH5BAEAAAEALAAAAAANAA0AAAIVjI+py43gAphtwnds0lpZynRVRDoFADs=);
   }
 
-  #IE .dark.selected_swatch {
-  	background-image: url(<%= asset_path 'IE/checkmark-white.gif' %>) repeat-x;
+  #IE .selected_swatch_dark {
+  	background: url(<%= asset_path 'IE/checkmark-white.gif' %>) repeat-x;
   }
-  #IE .light.selected_swatch {
-  	background-image: url(<%= asset_path 'IE/checkmark.gif' %>) repeat-x;
+  #IE .selected_swatch_light {
+  	background: url(<%= asset_path 'IE/checkmark.gif' %>) repeat-x;
   }
   
   .invisible {
@@ -158,6 +158,6 @@ html {
   }
 
   .ie67 #back-to-top-bottom, .ie67 #back-to-top-bottom:visited {
-    background: url(<%= asset_path 'back-to-top-small.gif' %>);
+    background: url(<%= asset_path 'back-to-top-small.gif' %>) no-repeat right center;
   }
 }
