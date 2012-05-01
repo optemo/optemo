@@ -2,58 +2,5 @@
 	<div class="first">
 		<%= link_to product_image(thumbnails, :small), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), {:class => 'easylink'} %>
   </div>
-
-	<div class="thumbnaillabel">
-	<div style="height: 64px;">
-    <%= link_to TextSpec.cacheone(thumbnails.id, "title#{fr?}") || TextSpec.cacheone(thumbnails.id, "title"), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
-  </div>
-  <div style="height: 100px;">
-    <% if Session.futureshop? %>
-      <div class="thumbnail_productinfo">
-        <div class="price" <%=raw only_if_not_onsale(thumbnails) %>>
-          <div style="color: #333333; font-size: 0.8em; height: 10px; margin-left: 33px; padding: 3px; width: 75px;">
-            <span>&nbsp;</span>
-          </div>
-          <div class="futureshop_price">
-            <% p = @sp["Continuous"][thumbnails.id]["price"] -%>
-            <span class="price_dollars"><%= p.to_i %></span>
-            <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2).to_f * 100).to_i %></span>
-          </div>
-        </div>
-        <div class="saleprice" <%=raw only_if_onsale(thumbnails) %>>
-          <div class="futureshop_sale_background">
-            <span <%= raw only_if_onsale(thumbnails) %>><%= t('products.compare.save')+(fr?.empty? ? "" : " ")+ number_to_currency((@sp["Continuous"][thumbnails.id]["price"]-@sp["Continuous"][thumbnails.id]["saleprice"]).to_i, :precision => 0) %></span>
-          </div>
-          <div class="futureshop_price">
-            <% p = @sp["Continuous"][thumbnails.id]["saleprice"] -%>
-            <span class="price_dollars"><%= number_with_precision(p.to_i, :precision => 0) %></span>
-            <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2).to_f * 100).to_i %></span>
-          </div>
-        </div>  
-      </div>
-    <% else %>
-      <% if @sp["Binary"][thumbnails.id]["onsale"] %>
-        <div class="thumbnaildetailssale">
-          <%= t('compare.index.onsale') + (fr?.empty? ? "" : " ")+": " +  number_to_currency(@sp["Continuous"][thumbnails.id]["saleprice"]) %>
-        </div>
-      <% else %>
-        <div class="thumbnaildetails">
-          <%= number_to_currency(@sp["Continuous"][thumbnails.id]["price"]) %>
-        </div>
-      <% end %>
-    <% end %>
-	</div> <%# height: 100px %>
-	<div style="padding-left:26px">
-	  <div class="spacer buttons">
-      <div class="left">
-        <div class="right">
-          <% addToCartURL = Session.futureshop? ? "http://www.futureshop.ca/Order/AddToCart.ashx?SKU=" + thumbnails.sku.to_s + "&AddParentSku=true" : "http://www.bestbuy.ca/order/addtocart.ashx?accessories=" + thumbnails.sku.to_s %>
-          <a href=<%= addToCartURL %> class="addtocart" data-sku="<%= thumbnails.sku %>">
-            <%=t @sp["Binary"][thumbnails.id]["isPreorderable"] ? 'products.preorder' : 'products.addtocart' %>
-          </a>
-        </div>
-      </div>
-    </div>
-	</div>
-  </div> <%# thumbnaillabel %>
+  <%= render partial: "compare/product_info", locals: {product: thumbnails} %>
 </div>

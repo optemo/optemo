@@ -1,0 +1,12 @@
+<div class="cell whitebg" style="padding: 0 0 10px 22px; text-indent:0; width: 176px;">
+    <div class="spacer buttons">
+      <div class="left">
+        <div class="right">
+          <% addToCartURL = Session.futureshop? ? "http://www.futureshop.ca/Order/AddToCart.ashx?SKU=" + add_to_cart.sku.to_s + "&AddParentSku=true" : "http://www.bestbuy.ca/order/addtocart.ashx?accessories=" + add_to_cart.sku.to_s %>
+          <a href=<%= addToCartURL %> class="addtocart" data-sku="<%= add_to_cart.sku %>">
+            <%=t @sp["Binary"][add_to_cart.id]["isPreorderable"] ? 'products.preorder' : 'products.addtocart' %>
+          </a>
+        </div>
+      </div>
+    </div>
+</div>
