@@ -41,8 +41,8 @@ Filter Page:
   - Check a couple of binary filters then uncheck them (both in status and advanced search)
     - Click on both the link and the box
     - Check that the proper products are shown
-  - Click Clear Selections, then See all
-    - Clear Selections should not appear if no filters are selected
+  - Click Reset All, then See all
+    - Reset All should not appear if no filters are selected
   - Click on the Add to Cart link and see if it works
   - Check layout:
     - selected filters:
@@ -93,27 +93,28 @@ Dynamic Filters (drives - BestBuy):
            - Network-Attached Storage (NAS)
            - Blank Media
            - Storage Accessories
-           - Floppy Drives
        - Status:
            - On Sale
            - Clearance
            - Online Only
            - Top-Rated
-           - What's New
+           - Featured Products
        - Storage Capacity
        - Brands
        - Price
   - Check that additional facets  are displayed for the following categories:
     - Additional facets:
        - Internal and External drives:
+           - Storage Capacity (slider)
            - Interface (multi-selection checkbox)
+           - Data Buffer (slider)
            - Rotation Speed (multi-selection checkbox)
-           - Data Buffer (multi-selection checkbox)
            - Drive Size (multi-selection checkbox)
        - Solid State Drive:
-        - Interface (multi-selection checkbox)
+        - Storage Capacity (slider)
+        - Internal/External (multi-selection checkbox)
        - Optical Drives:
-        - Interface (multi-selection checkbox)
+        - Storage Capacity (multi-selection checkbox)
         - Internal or External (multi-selection checkbox)
 
 French: 
