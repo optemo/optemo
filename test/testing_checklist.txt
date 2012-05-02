@@ -93,27 +93,27 @@ Dynamic Filters (drives - BestBuy):
            - Network-Attached Storage (NAS)
            - Blank Media
            - Storage Accessories
-           - Floppy Drives
        - Status:
            - On Sale
            - Clearance
            - Online Only
            - Top-Rated
-           - What's New
+           - Featured Products
        - Storage Capacity
        - Brands
        - Price
   - Check that additional facets  are displayed for the following categories:
     - Additional facets:
        - Internal and External drives:
-           - Interface (multi-selection checkbox)
+           - Storage Capacity (slider)
+           - Data Buffer (slider)
            - Rotation Speed (multi-selection checkbox)
-           - Data Buffer (multi-selection checkbox)
            - Drive Size (multi-selection checkbox)
        - Solid State Drive:
-        - Interface (multi-selection checkbox)
+        - Storage Capacity (slider)
+        - Internal/External (multi-selection checkbox)
        - Optical Drives:
-        - Interface (multi-selection checkbox)
+        - Storage Capacity (multi-selection checkbox)
         - Internal or External (multi-selection checkbox)
 
 French: 
