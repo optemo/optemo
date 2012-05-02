@@ -1,22 +1,5 @@
 Testing check list:
-  Test in : Chrome, Firefox, Safari, IE 9/8/7/6 (Virtual Box)
-
-Landing page:
-
-  - There is a hero product at the top
-  - Click both 'SHOP NOW' button and product title 
-    - should link directly to the Best Buy product detail page (PDP)
-  - Click these, then click back -> check if you go back to the landing page
-  - If other variations of the hero product are shown (siblings or bundles):
-    - Hover over to check the displayed alternative text
-    - Click on one variation to test linking to the proper variation's PDP
-  - There are featured products listed below the hero
-    - Click on a featured product: check if it successfully loads the PDP
-    - Click on the back button and check if you get the initial page
-  - Click the "See All" button above the hero
-  - Click the Pre-Order banner. Check that it loads the right page.
-  - If a product with package deals pops up, check one out.
-
+  Test in : Chrome, Firefox, Safari, IE 9/8/7/6 (Virtual Box), Opera
 
 Filter Page:
 
@@ -43,14 +26,14 @@ Filter Page:
     - Repeat the previous step for a couple of other colours
   - Sliders:
     - Check that there are distribution graphs on top of the sliders
-    - For each slider, check that the number of products / slider distributions change when
-        the sliders are set to different values
+    - Check that the default setting is the entire range
+    - For each slider, check that the number of products / slider distributions change when the sliders are set to different values
     - Check the behaviour at the slider extremities
-        - Do all the products show up if you manually reset the slider after having used it
-            eg: move the one end of the slider, let the new page load, then move it back to 
-              its original position
+        - Do all the products show up if you manually reset the slider after having used it, eg: move the one end of the slider, let the new page load, then move it back to its original position
   - Categories:
     - Click a couple and see if they update the products available
+    - Ensure brand filters are sorted alphabetically
+    - Ensure no more than 10 filters appear; if there are more than 10, then the link "More" should appear instead
   - Check two brands, then click on a binary filter with a small number
     - Undo the filter. Test the cases where the filter matched:
       - Both brands: undoing it will preserve the two brands.
@@ -58,9 +41,13 @@ Filter Page:
   - Check a couple of binary filters then uncheck them (both in status and advanced search)
     - Click on both the link and the box
     - Check that the proper products are shown
-  - Click Reset All, then See all
+  - Click Clear Selections, then See all
+    - Clear Selections should not appear if no filters are selected
   - Click on the Add to Cart link and see if it works
-
+  - Check layout:
+    - selected filters:
+      - should appear in the selected filters area; if no filters are selected the area should not appear at all
+      - heading should appear only when filters are selected
 
 Product Comparison:
 
@@ -93,7 +80,7 @@ Product Comparison:
     - Reload the page and see if the item remains selected 
       -Note: IE6 sometimes doesn't remember, which is OK
 
-Dynamic Filters (drives bestbuy):
+Dynamic Filters (drives - BestBuy):
 
   - only common filters should be displayed on first page
     - Common filters are the following: 
@@ -104,27 +91,30 @@ Dynamic Filters (drives bestbuy):
            - USB Flash Drives
            - Optical Drives (this used to be DVD & CD drives)
            - Network-Attached Storage (NAS)
+           - Blank Media
            - Storage Accessories
+           - Floppy Drives
        - Status:
            - On Sale
            - Clearance
            - Online Only
            - Top-Rated
-           - Featured Products
+           - What's New
+       - Storage Capacity
        - Brands
        - Price
-       - Storage Capacity
   - Check that additional facets  are displayed for the following categories:
     - Additional facets:
        - Internal and External drives:
+           - Interface (multi-selection checkbox)
            - Rotation Speed (multi-selection checkbox)
-           - Data Buffer (slider)
+           - Data Buffer (multi-selection checkbox)
            - Drive Size (multi-selection checkbox)
        - Solid State Drive:
-        - Internal or External (multi-selection checkbox)
+        - Interface (multi-selection checkbox)
        - Optical Drives:
+        - Interface (multi-selection checkbox)
         - Internal or External (multi-selection checkbox)
-
 
 French: 
 

@@ -39,10 +39,10 @@
     .buttons {
       background: url(<%= asset_path('mccpbluebackground.gif') %>);
       .left {
-        background: url(<%= asset_path('mccpblueleft.gif') %>);
+        background: url(<%= asset_path('mccpblueleft.gif') %>) no-repeat left;
       }
       .right {
-        background: url(<%= asset_path('mccpblueright.gif') %>);
+        background: url(<%= asset_path('mccpblueright.gif') %>) no-repeat right;
       }
       a:hover {
         text-decoration: none;
@@ -92,11 +92,11 @@
       background: url(<%= asset_path('yellow_m.gif') %>);
       @include button-prop;
       .left {
-        background: url(<%= asset_path('yellow_l.gif') %>);
+        background: url(<%= asset_path('yellow_l.gif') %>) no-repeat left;
         @include button-prop;
       }
       .right {
-        background: url(<%= asset_path('yellow_r.gif') %>);
+        background: url(<%= asset_path('yellow_r.gif') %>) no-repeat right;
         @include button-prop;
       }
       a:hover {

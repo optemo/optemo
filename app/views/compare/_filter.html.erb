@@ -90,7 +90,12 @@
               <% %w(red orange yellow green blue purple pink white silver brown black).zip(
                  %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
                 <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
-                <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
+                <% swatch_class = "swatch_button swatch" %>
+                <% swatch_class += " white_swatch" if color == "White" %>
+                <% if chosen_cats.include?(color) %>
+                  <% swatch_class += (brighness == "l" ? " selected_swatch_light" : " selected_swatch_dark") %>
+                <% end %>
+                <div class=<%= swatch_class %> style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
               <% end %>
               <div style="clear: left;">
                 <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
