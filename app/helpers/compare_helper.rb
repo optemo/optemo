@@ -40,6 +40,10 @@ module CompareHelper
     c
   end  
 
+  def showSelectedRanges(values, name)
+    displayRanges(name, getRanges(name)).select{|r| !values.select{|v| v.min == r[:min]}.empty? }
+  end
+
   def spec_type(spec)
     ret = nil
     case 
