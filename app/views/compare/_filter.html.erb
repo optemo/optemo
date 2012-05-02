@@ -22,14 +22,15 @@
       <div id="selections_text" class='categorical'>
         <% grouped_filters.each do |f| -%>
           <% values = f[1] %>
+          <% fname = f[0] %>
           <% unless values.nil? %>
             <% if values.count > 0 %>
               <% unless spec_type(values.first) == 'facet' or spec_type(values.first) == 'binary' %>
                 <div class='label list_item hanging_margin'>
-                  <%= t("#{Session.product_type}.filter.#{f[0]}.name", :default => f[0].capitalize) -%>
+                  <%= t("#{Session.product_type}.filter.#{fname}.name", :default => fname.capitalize) -%>
                 </div>
               <% end %>
-              <% values.each do |spec| -%>
+              <% values.each_with_index do |spec, index| -%>
                 <% if spec_type(spec) == 'facet' -%>
                   <div class='label list_item hanging_margin'>
                     <%= t("#{Session.product_type}.filter.#{spec.name}.name", :default => spec.name.capitalize) -%>
@@ -43,6 +44,12 @@
                     <% end %>
                       >
                     <% str = displaySelectedString(spec) %>
+                    <% if spec_type(spec) == 'continuous' %> 
+                      <% rangesShow = showSelectedRanges(values, fname) %>
+                      <% unless rangesShow.empty? or rangesShow[index].nil? %>
+                        <% str = rangesShow[index][:display] %>
+                      <% end %>
+                    <% end %>
                     <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str.capitalize) ) -%>
                     <a class='remove_filter' href='#'><div><!-- --></div> <%= t('products.compare.undo') %> </a>
                   </div>
