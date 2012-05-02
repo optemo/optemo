@@ -63,7 +63,7 @@
   <% end %>
   <form id="filter_form" method="get" action="/compare">
     <% binary_heading = [] %>
-    <% Session.features["filter"].each_with_index do |f, index| %>
+    <% (Session.features["filter"] || []).each_with_index do |f, index| %>
       <div class="feature">
         <% case f.feature_type -%>
         <% when "Heading" %>
