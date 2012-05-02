@@ -22,6 +22,9 @@ div#reviews {
   	z-index: 3;
   	display: none;
   }
+  .ie6 div#opt_silkscreen {
+    position: absolute;
+  }
   #opt_outsidecontainer {
   	position: absolute;
   	top: 20px;
@@ -206,8 +209,7 @@ div#reviews {
     width: 164px;
   }
 
-  .y_heading
-  {
+  .y_heading {
     overflow:hidden;
     background-image:-moz-linear-gradient(center bottom, #cecece, #e9e9e9);
     background-image:-o-linear-gradient(bottom, rgb(206,206,206), rgb(233,233,233));
@@ -215,12 +217,13 @@ div#reviews {
     padding: 0;
     text-align: right;
     margin:0;
+    height: 56px;
   }
 
   .y_heading a.regular_reset, .y_bottom a.regular_reset{ 
     font-size: 11px;
     font-weight: bold;
-    padding: 0;
+    padding: 5px 0 0;
     margin-bottom: 5px;
     float: left;
   }
