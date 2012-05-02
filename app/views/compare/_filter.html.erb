@@ -93,7 +93,7 @@
                 <% swatch_class = "swatch_button swatch" %>
                 <% swatch_class += " white_swatch" if color == "White" %>
                 <% if chosen_cats.include?(color) %>
-                  <% swatch_class += (brighness == "l" ? " selected_swatch_light" : " selected_swatch_dark") %>
+                  <% swatch_class += (brightness == "l" ? " selected_swatch_light" : " selected_swatch_dark") %>
                 <% end %>
                 <div class="<%= swatch_class %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
               <% end %>
@@ -191,16 +191,16 @@
           <% dobj = Session.search.userdatabins.select{|udb| udb.name == f.name}.first %>
           <% unchecked = dobj.nil? || dobj.value == false %>
           <% available_count = BinSpec.count_feat(f.name) %>
-          <% if available_count > 0 %>
+          <% if available_count > 0 or !unchecked %>
             <% binary_heading.each do |bin| %>
               <%= render partial: 'filter_label', locals: {f: bin} %>
               <div style="height: 7px"><!-- --></div>
             <% end %>
             <% binary_heading = [] %>
           <% end %>
-          <div class="hanging_indent<%= ' invisible' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
+          <div class="hanging_indent<%= ' invisible' if (available_count == 0 and unchecked) %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
             <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0 && unchecked) ? true : false, :class => 'binary_filter' %>
-            <%= (available_count == 0) ? t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize) : link_to( t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize), "#", :class => "checkbox_text") %>
+            <%= (available_count == 0 and unchecked) ? t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize) : link_to( t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize), "#", :class => "checkbox_text") %>
             <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
           </div>
         <% end # End case %>
