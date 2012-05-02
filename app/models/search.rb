@@ -100,7 +100,7 @@ class Search < ActiveRecord::Base
       if (!search_term)
         with :product_type, Session.product_type_leaves
       end
-      Session.features["filter"].each do |f|
+      (Session.features["filter"] || []).each do |f|
         #puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
     
           if f.feature_type == "Continuous"
