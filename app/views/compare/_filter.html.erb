@@ -95,7 +95,7 @@
                 <% if chosen_cats.include?(color) %>
                   <% swatch_class += (brighness == "l" ? " selected_swatch_light" : " selected_swatch_dark") %>
                 <% end %>
-                <div class=<%= swatch_class %> style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
+                <div class="<%= swatch_class %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
               <% end %>
               <div style="clear: left;">
                 <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
