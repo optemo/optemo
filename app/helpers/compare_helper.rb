@@ -169,7 +169,7 @@ module CompareHelper
           if feat == "saleprice"
             dis = number_to_currency(r[:min]) + " - " + number_to_currency(r[:max])              
           else
-            dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
+            dis = "#{r[:min]} - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
           end    
         end 
         dr.last[:display] << dis
