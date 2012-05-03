@@ -7,6 +7,15 @@
   #filter_form, #your_selections {
   	font-size: 0.85em;
   }
+  #your_selections {
+    background-color: #DFDED5;
+    border-top: 3px #ccc solid;
+    border-bottom: 3px #ccc solid;
+  }
+  .selection_label {
+    margin: 7px 0 5px 8px;
+    font-weight: bold;
+  }
   .remove_filter {
     font-size: 10px;
     div {
@@ -14,14 +23,14 @@
       height: 12px;
       vertical-align: text-top;
       display: inline-block;
-      background-image: url(<%= asset_data_uri "undo.gif" %>);
+      background-image: url(<%= asset_data_uri "futureshop_remove_facet.gif" %>);
     }
   }
   #IE .label{
     padding-top: 10px;
   }
   .ie67 .remove_filter div {
-    background: url(<%= asset_path "undo.gif" %>) no-repeat top left;
+    background: url(<%= asset_path "futureshop_remove_facet.gif" %>) no-repeat top left;
   }
   .label {
   	font-weight: bold;
