@@ -27,9 +27,7 @@
   	min-height: 744px; /* Empirically determined; used for embedded LPH layout */
   }
   #navigator_bar {
-  	border-top: 1px solid #d0d0d0;
-  	border-left: 1px solid #d0d0d0;
-  	border-right: 1px solid #d0d0d0;
+  	border: 1px solid #d0d0d0;
     background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
     background-image:-o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
     background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
@@ -39,6 +37,9 @@
   }
   #IE #navigator_bar {
     background: url(<%= asset_path "IE/navigator_bar_bg.gif" %>) repeat-x;
+  }
+  .ie67 #navigator_bar {
+    height: 84px;
   }
   #navigator_bar_bottom {
   	padding: 0;
