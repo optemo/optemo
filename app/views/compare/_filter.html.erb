@@ -126,8 +126,9 @@
         <% when "Continuous" %>	
           <% if f.ui == "ranges" %>
             <% chosen_conts = chosenconts(f.name) %>
-            <%ranges = getRanges(f.name)%>
-            <%displayed_ranges = displayRanges(f.name, ranges)%>
+            <% ranges = getRanges(f.name)%>
+            <% chosen_conts.each{|c| ranges << c unless ranges.include?(c)} # add any selected conts that are not in the ranges to display %>
+            <% displayed_ranges = displayRanges(f.name, ranges) %>
             <%unless displayed_ranges.map{|dr| 1 if dr[:count]>0}.compact.empty?%>
               <% binary_heading.each do |bin| %>
                 <%= render partial: 'filter_label', locals: {f: bin} %>
@@ -135,13 +136,13 @@
               <% end %>
               <% binary_heading = [] %>
               <%= render partial: 'filter_label', locals: {f: f} %>
-            <% end %>	
+            <% end %>
             <% displayed_ranges.each do |dr| %>
               <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) %>
               <% available_count = dr[:count]%>
-              <%if available_count >0 %>
-                <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' if checked %>>
-                  <%= check_box_tag "continuous[#{f.name}]", "#{dr[:min]};#{dr[:max]}", checked ,:disabled => available_count == 0 ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false', :"data-min" => dr[:min], :"data-max" => dr[:max] %>
+              <%if available_count > 0 or checked %>
+                <div class="hanging_indent<%= ' disabled' if (available_count == 0 and !checked) %>" <%=raw 'style="font-weight:bold;"' if checked %>>
+                  <%= check_box_tag "continuous[#{f.name}]", "#{dr[:min]};#{dr[:max]}", checked ,:disabled => (available_count == 0 and !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0 and !checked) ? 'true' : 'false', :"data-min" => dr[:min], :"data-max" => dr[:max] %>
                   <%= (available_count == 0) ?  dr[:display] : link_to(dr[:display], "#", :class => "checkbox_text") %>
                   <span class="av_count"><%= "(#{available_count})" unless checked %></span>
                 </div>

@@ -159,25 +159,22 @@ module CompareHelper
     unless ranges.nil?
       ranges.each_with_index do |r, ind|
         dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
-        if dr.last[:count] >0 
-          if r[:min] == r[:max]
-            if feat == "saleprice"
-              dis = number_to_currency(r[:min])
-            else
-              dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
-            end
+        if r[:min] == r[:max]
+          if feat == "saleprice"
+            dis = number_to_currency(r[:min])
           else
-            if feat == "saleprice"
-              dis = number_to_currency(r[:min]) + " - " + number_to_currency(r[:max])              
-            else
-              dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
-            end    
-          end 
-          dr.last[:display] << dis
-        end
+            dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
+          end
+        else
+          if feat == "saleprice"
+            dis = number_to_currency(r[:min]) + " - " + number_to_currency(r[:max])              
+          else
+            dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
+          end    
+        end 
+        dr.last[:display] << dis
       end   
     end  
-    dr = dr.select{|d| d[:count]>0}
     unless dr.empty?
       if feat == "saleprice"
          dr.first[:display] = (dr.first[:max] > 0 ? t("features.belowbefore") : '') + number_to_currency(dr.first[:max])
