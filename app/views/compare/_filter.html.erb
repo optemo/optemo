@@ -18,7 +18,7 @@
   <% grouped_filters = getSearchFilters() %>
   <% unless grouped_filters.empty? %>
     <div id='your_selections' class='feature'>
-      <div class="boldlabel"><%= t('products.compare.selections') %></div>
+      <div class="selection_label"><%= t('products.compare.selections') %></div>
       <div id="selections_text" class='categorical'>
         <% grouped_filters.each do |f| -%>
           <% values = f[1] %>
@@ -51,7 +51,7 @@
                       <% end %>
                     <% end %>
                     <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str.capitalize) ) -%>
-                    <a class='remove_filter' href='#'><div><!-- --></div> <%= t('products.compare.undo') %> </a>
+                    <a class='remove_filter' href='#'><div><!-- --></div> <%= Session.futureshop? ? '' : t('products.compare.undo') %> </a>
                   </div>
                 <% end -%>
               <% end -%>
