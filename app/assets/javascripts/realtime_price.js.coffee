@@ -47,7 +47,12 @@
             
             #Update the savings
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
-            current_savings = c.find('.save > span').html()
+            
+            if optemo_module.layout == "fs"
+              current_savings = c.find('.futureshop_sale_background > span.savings').html()
+            else
+              current_savings = c.find('.save > span').html()
+            
             if current_savings? && !(savings is current_savings or savings is current_savings[1..-1])
               if optemo_module.layout == "fs"
                 c.find('.futureshop_sale_background > span.savings').show().html(parseInt(savings))
