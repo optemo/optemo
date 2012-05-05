@@ -94,23 +94,25 @@
 	border: none;
 }
 
-.optemo #IE #navigator_bar_bottom .global_btn {
-  background: url(<%= asset_path "IE/compare_button_blue.gif" %>) no-repeat top left;
-}
-.optemo #IE #navigator_bar_bottom .global_btn_grey {
-  background: url(<%= asset_path "IE/global-button-grey.gif" %>) no-repeat top left;
-}
-.optemo #IE #navigator_bar .global_btn_grey {
-  Background: url(<%= asset_path "IE/compare_grey_nav_top.gif" %>) no-repeat top left;
-}
-.optemo #IE #navigator_bar .global_btn {
-  Background: url(<%= asset_path "IE/compare_blue_nav_top.gif" %>) no-repeat top left;
-}
-.optemo #IE .global_btn {
-  display: block;
-  width: 121px;
-  height: 34px;
-  padding: 5px;
+.optemo #IE.ie67, .optemo #IE.ie8 {
+  #navigator_bar_bottom .global_btn {
+    background: url(<%= asset_path "IE/compare_button_blue.gif" %>) no-repeat top left;
+  }
+  #navigator_bar_bottom .global_btn_grey {
+    background: url(<%= asset_path "IE/global-button-grey.gif" %>) no-repeat top left;
+  }
+  #navigator_bar .global_btn_grey {
+    Background: url(<%= asset_path "IE/compare_grey_nav_top.gif" %>) no-repeat top left;
+  }
+  #navigator_bar .global_btn {
+    Background: url(<%= asset_path "IE/compare_blue_nav_top.gif" %>) no-repeat top left;
+  }
+  .global_btn {
+    display: block;
+    width: 121px;
+    height: 34px;
+    padding: 5px;
+  }
 }
 
 .optemo #IE .global_btn_grey span{

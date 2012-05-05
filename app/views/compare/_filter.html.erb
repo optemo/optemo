@@ -12,7 +12,7 @@
           </div>
         <% end %>
       </div>
-      <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
+      <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') unless Session.futureshop? %>
     </div>
   </div>
   <% grouped_filters = getSearchFilters() %>
@@ -53,12 +53,13 @@
                     <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str.capitalize) ) -%>
                     <a class='remove_filter' href='#'><div><!-- --></div> <%= Session.futureshop? ? '' : t('products.compare.undo') %> </a>
                   </div>
-                <% end -%>
-              <% end -%>
-            <% end -%>
-          <% end -%>
-        <% end -%>
+                <% end -%> <%# if spec_type(spec) == 'facet' %>
+              <% end -%> <%# values.each_with_index %>
+            <% end -%> <%# if values.count > 0 %>
+          <% end -%> <%# unless values.nil? %>
+        <% end -%> <%# grouped.filters.each %>
       </div>
+      <%= link_to t('products.compare.futureshop_reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') if Session.futureshop? %>
     </div>
   <% end %>
   <form id="filter_form" method="get" action="/compare">
