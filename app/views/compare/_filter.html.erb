@@ -83,7 +83,6 @@
               <%unless color_counts.map{|k, v| v if v>0}.compact.empty? %>
                 <% binary_heading.each do |bin| %>
                   <%= render partial: 'filter_label', locals: {f: bin} %>
-                  <div style="height: 7px"><!-- --></div>
                 <% end %>
                 <% binary_heading = [] %>
                 <%= render partial: 'filter_label', locals: {f: f} %>
@@ -108,7 +107,6 @@
             <% unless optionlist.empty? %>
               <% binary_heading.each do |bin| %>
                 <%= render partial: 'filter_label', locals: {f: bin} %>
-                <div style="height: 7px"><!-- --></div>
               <% end %>
               <% binary_heading = [] %>
               <% chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)} %>
@@ -133,7 +131,6 @@
             <%unless displayed_ranges.map{|dr| 1 if dr[:count]>0}.compact.empty?%>
               <% binary_heading.each do |bin| %>
                 <%= render partial: 'filter_label', locals: {f: bin} %>
-                <div style="height: 7px"><!-- --></div>
               <% end %>
               <% binary_heading = [] %>
               <%= render partial: 'filter_label', locals: {f: f} %>
@@ -155,7 +152,6 @@
             <% unless distribution_data.blank? %>
               <% binary_heading.each do |bin| %>
                 <%= render partial: 'filter_label', locals: {f: bin} %>
-                <div style="height: 7px"><!-- --></div>
               <% end %>
               <% binary_heading = [] %>
               <%= render partial: 'filter_label', locals: {f: f} %>
@@ -196,7 +192,6 @@
           <% if available_count > 0 or !unchecked %>
             <% binary_heading.each do |bin| %>
               <%= render partial: 'filter_label', locals: {f: bin} %>
-              <div style="height: 7px"><!-- --></div>
             <% end %>
             <% binary_heading = [] %>
           <% end %>

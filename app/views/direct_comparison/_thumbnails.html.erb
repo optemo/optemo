@@ -1,5 +1,5 @@
 <div class="thumbnailcell spec_column_<%= column_number.to_s %>">
-	<div class="first">
+	<div class="thumbnail_container">
 		<%= link_to product_image(thumbnails, :small), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), {:class => 'easylink'} %>
   </div>
   <%= render partial: "compare/product_info", locals: {product: thumbnails} %>
