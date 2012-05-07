@@ -96,10 +96,6 @@
     height: 40px;
   }
 
-  .ie6 .bb_poptitle {
-    position: relative;
-  }
-
   .bb_poptitle .bb_quickview_close {
   	float: right;
   	margin: -18px -57px 0 0;
@@ -109,21 +105,14 @@
     width: 80px;
   }
   .ie67 .bb_poptitle .bb_quickview_close {
-    background-image: url(<%= asset_path('closepopup.gif') %>);    
+    background-image: url(<%= asset_path('closepopup.gif') %>);
+    position: relative;
   }
   .ie6 .bb_poptitle .bb_quickview_close {
-    width: 30px;
-    height: 39px;
-    margin: -13px -48px 0 0;
-    position: relative;
-/*    position: absolute;
-    top: 13px;
-    right: 10px;
-    width: 30px;
-    height: 39px; */
+    margin: -14px -56px 0 0;
+    display: inline;
   }
   .ie7 .bb_poptitle .bb_quickview_close {
-    position: relative;
     margin: -13px -56px 0 0;
   }
 
