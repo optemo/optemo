@@ -113,9 +113,20 @@ Dynamic Filters (drives - BestBuy):
        - Optical Drives:
         - Internal or External (multi-selection checkbox)
 
-French: 
+Dynamic Filters (drives - FutureShop)
+  - Additional facets for the following categories:
+    - External Desktop Hard Drives
+    - External Portable Hard Drives
+    - Network Attached Storage
+    - Internal Hard Drives
+    Facets:
+      - Rotation Speed
+      - Data Buffer
+      - Drive Size
 
+French:
   - Check french links for all departments. 
   - Check that titles are french. 
   - Check that links go to french PDPs
-  - Check that the copy and units are all french 
+  - Check that the copy and units are all french
+  - Check that the numbers are formatted in French ($ after the amount, ',' as a decimal separator)
