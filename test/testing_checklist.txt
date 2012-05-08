@@ -105,15 +105,12 @@ Dynamic Filters (drives - BestBuy):
   - Check that additional facets  are displayed for the following categories:
     - Additional facets:
        - Internal and External drives:
-           - Storage Capacity (slider)
-           - Data Buffer (slider)
+           - Data Buffer (multi-selection checkbox)
            - Rotation Speed (multi-selection checkbox)
            - Drive Size (multi-selection checkbox)
        - Solid State Drive:
-        - Storage Capacity (slider)
         - Internal/External (multi-selection checkbox)
        - Optical Drives:
-        - Storage Capacity (multi-selection checkbox)
         - Internal or External (multi-selection checkbox)
 
 French: 
