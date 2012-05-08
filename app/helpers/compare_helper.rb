@@ -163,13 +163,13 @@ module CompareHelper
           if feat == "saleprice"
             dis = number_to_currency(r[:min])
           else
-            dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
+            dis =  "#{number_with_delimiter(r[:min])} " + t("#{Session.product_type}.filter.#{feat}.unit") 
           end
         else
           if feat == "saleprice"
             dis = number_to_currency(r[:min]) + " - " + number_to_currency(r[:max])              
           else
-            dis = "#{r[:min]} - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
+            dis = "#{number_with_delimiter(r[:min])} - #{number_with_delimiter(r[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit")
           end    
         end 
         dr.last[:display] << dis
@@ -180,8 +180,8 @@ module CompareHelper
          dr.first[:display] = (dr.first[:max] > 0 ? t("features.belowbefore") : '') + number_to_currency(dr.first[:max])
          dr.last[:display] = number_to_currency(dr.last[:min]) + t("features.rangeabove")
       else
-         dr.first[:display] = "#{dr.first[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit") + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
-         dr.last[:display] = "#{dr.last[:min]} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
+         dr.first[:display] = "#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit") + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
+         dr.last[:display] = "#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
       end
     end
     dr
