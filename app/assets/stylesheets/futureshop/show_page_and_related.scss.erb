@@ -32,11 +32,9 @@ div#reviews {
   	height: auto;
   	z-index: 1005;
   	display: none;
-  	background: white;
   	-moz-box-shadow: 0 -2px 16px 3px #888;
     -webkit-box-shadow: 0 -2px 16px 3px #888;
     box-shadow: 0 -2px 16px 3px #888;
-    border: 3px #ccc solid;
   }
   #info h1 {
   	font-size: 1.2em;
@@ -46,10 +44,14 @@ div#reviews {
   	font-size: 0.8em;
   	padding: 12px 23px 22px 22px;
   	min-width: 513px;
+  	border: 3px #ccc solid;
+    background: white;
+  	
   }
   .ie6 div#info {
-    padding-right: 10px;
+    padding-right: 35px;
     padding-left: 10px;
+    overflow: hidden;
   }
   .mainprodimg {
   	text-align: center;
@@ -186,6 +188,9 @@ div#reviews {
     margin: 10px 5px 0 7px;
     padding: 0;
   }
+  .ie6 .narrow_text {
+    overflow: hidden;
+  }
   .narrow_text h1 {
     text-align:left;
   }
@@ -215,8 +220,12 @@ div#reviews {
   .y_heading {
     overflow:hidden;
     background-color: #333333;
-    padding: 0 0 7px 0;
-    margin: 0;
+    padding: 0 0 -1px 0;
+    margin: 0 0 -8px;
+    height: 38px;
+  }
+  .fr .y_heading {
+    height: 71px;
   }
 
   .y_heading a.regular_reset, .y_bottom a.regular_reset{ 

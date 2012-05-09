@@ -103,22 +103,30 @@ Dynamic Filters (drives - BestBuy):
        - Storage Capacity
        - Brands
        - Price
+       - Interface (multi-selection checkbox) for everything
   - Check that additional facets  are displayed for the following categories:
     - Additional facets:
        - Internal and External drives:
-           - Interface (multi-selection checkbox)
            - Rotation Speed (multi-selection checkbox)
            - Data Buffer (multi-selection checkbox)
            - Drive Size (multi-selection checkbox)
-       - Solid State Drive:
-        - Interface (multi-selection checkbox)
        - Optical Drives:
-        - Interface (multi-selection checkbox)
         - Internal or External (multi-selection checkbox)
 
-French: 
+Dynamic Filters (drives - FutureShop)
+  - Additional facets for the following categories:
+    - External Desktop Hard Drives
+    - External Portable Hard Drives
+    - Network Attached Storage
+    - Internal Hard Drives
+    Facets:
+      - Rotation Speed
+      - Data Buffer
+      - Drive Size
 
+French:
   - Check french links for all departments. 
   - Check that titles are french. 
   - Check that links go to french PDPs
-  - Check that the copy and units are all french 
+  - Check that the copy and units are all french
+  - Check that the numbers are formatted in French ($ after the amount, ',' as a decimal separator)

@@ -30,6 +30,7 @@
                   <%= t("#{Session.product_type}.filter.#{fname}.name", :default => fname.capitalize) -%>
                 </div>
               <% end %>
+              <% rangesShow = showSelectedRanges(values, fname) %>
               <% values.each_with_index do |spec, index| -%>
                 <% if spec_type(spec) == 'facet' -%>
                   <div class='label list_item hanging_margin'>
@@ -43,14 +44,8 @@
                       data-value='<%= spec.value %>'
                     <% end %>
                       >
-                    <% str = displaySelectedString(spec) %>
-                    <% if spec_type(spec) == 'continuous' %> 
-                      <% rangesShow = showSelectedRanges(values, fname) %>
-                      <% unless rangesShow.empty? or rangesShow[index].nil? %>
-                        <% str = rangesShow[index][:display] %>
-                      <% end %>
-                    <% end %>
-                    <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str.capitalize) ) -%>
+                    <% str = displaySelectedString(spec, rangesShow.empty? ? nil : rangesShow[index]) %>
+                    <%= t("#{Session.product_type}.filter.#{str}.name", :default => t("#{str}.name", :default => str) ) -%>
                     <a class='remove_filter' href='#'><div><!-- --></div> <%= Session.futureshop? ? '' : t('products.compare.undo') %> </a>
                   </div>
                 <% end -%> <%# if spec_type(spec) == 'facet' %>
@@ -83,7 +78,6 @@
               <%unless color_counts.map{|k, v| v if v>0}.compact.empty? %>
                 <% binary_heading.each do |bin| %>
                   <%= render partial: 'filter_label', locals: {f: bin} %>
-                  <div style="height: 7px"><!-- --></div>
                 <% end %>
                 <% binary_heading = [] %>
                 <%= render partial: 'filter_label', locals: {f: f} %>
@@ -108,7 +102,6 @@
             <% unless optionlist.empty? %>
               <% binary_heading.each do |bin| %>
                 <%= render partial: 'filter_label', locals: {f: bin} %>
-                <div style="height: 7px"><!-- --></div>
               <% end %>
               <% binary_heading = [] %>
               <% chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)} %>
@@ -133,7 +126,6 @@
             <%unless displayed_ranges.map{|dr| 1 if dr[:count]>0}.compact.empty?%>
               <% binary_heading.each do |bin| %>
                 <%= render partial: 'filter_label', locals: {f: bin} %>
-                <div style="height: 7px"><!-- --></div>
               <% end %>
               <% binary_heading = [] %>
               <%= render partial: 'filter_label', locals: {f: f} %>
@@ -155,7 +147,6 @@
             <% unless distribution_data.blank? %>
               <% binary_heading.each do |bin| %>
                 <%= render partial: 'filter_label', locals: {f: bin} %>
-                <div style="height: 7px"><!-- --></div>
               <% end %>
               <% binary_heading = [] %>
               <%= render partial: 'filter_label', locals: {f: f} %>
@@ -196,7 +187,6 @@
           <% if available_count > 0 or !unchecked %>
             <% binary_heading.each do |bin| %>
               <%= render partial: 'filter_label', locals: {f: bin} %>
-              <div style="height: 7px"><!-- --></div>
             <% end %>
             <% binary_heading = [] %>
           <% end %>

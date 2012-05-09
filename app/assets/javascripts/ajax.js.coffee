@@ -75,9 +75,10 @@
       'width' : (width||560)+'px',
       'display' : 'inline' )
     $('#opt_silkscreen').css({'height' : optemo_module.current_height()+'px', 'display' : 'inline', 'width' : wWidth + 'px'})
-    if ((window.XMLHttpRequest == undefined) && (ActiveXObject != undefined)) # Do the next lines if we are in IE6
-      $('#opt_outsidecontainer').css('overflow','hidden')
+    if ($.browser.msie && $.browser.version.substr(0,1)<7) # IE6 only
       $('#info').css('overflow', 'hidden')
+      quickview_close = $("#info .bb_quickview_close").detach()
+      quickview_close.prependTo("#opt_outsidecontainer")
     if (data)
       $('#info').html(data).css('height','')
     else

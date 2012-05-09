@@ -92,6 +92,10 @@
       # With 1.4.2 we can't do that. Keep code for later.
       # $.when.apply(this,reqs).done();
       buildComparisonMatrix()
+      if ($.browser.msie && $.browser.version.substr(0,1)<7) # IE6 comparison page "more specs" spacing issue
+        # This is a weird combination of margins, absolute positioning, and an inserted spacer div. It seems stable.
+        $('<div>&nbsp;</div>').insertBefore('#info div.togglespecs').css({"height" : "23px", "width" : "1px", "display" : "block", "clear" : "both"})
+        $('#info div.togglespecs').css({'left' : ($("#info").width() - 450) / 2.0, 'bottom' : "15px"})
     return false
   
   row_height = (length,isLabel) ->
@@ -162,7 +166,7 @@
     array = []
     $.each skus, (index,value) ->   #maybe should be $.each skus, do (index,value) -> #(lose bottom thumbnail with this)
       array.push($('body').data('bestbuy_specs_'+value))
-      
+
     grouped_specs = merge_bb_json.apply(null,array)
     #Set up Headers
     for sku,index in skus
@@ -243,9 +247,9 @@
 
   # For the bundle products, get the first product from bundle spec and show its specs
   loadspecs = (sku, bundle_sku) ->
-    if opt_category_id[0] == 'B'
+    if opt_category_id.substring(0,1) == 'B' # You can't use string[0] to get the first character. (this ain't Ruby)
       retailer = "bestbuy"
-    else if opt_category_id[0] == 'F'
+    else if opt_category_id.substring(0,1) == 'F'
       retailer = "futureshop"
     # The jQuery AJAX request will add ?callback=? as appropriate. Best Buy API v.2 supports this.
     baseurl = "http://www."+retailer+".ca/api/v2/json/product/" + sku

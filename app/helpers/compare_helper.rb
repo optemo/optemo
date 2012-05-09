@@ -101,20 +101,23 @@ module CompareHelper
     new_sorted
   end
   
-  def displaySelectedString(spec)
+  def displaySelectedString(spec, range)
     if spec.instance_of?(Userdatabin)
       spec.name
     elsif spec.instance_of?(Userdatacat)
-      spec.value
+      t(spec.value, :scope => [:cat_option, spec.name], :default => spec.value)
     elsif spec.instance_of?(Userdatacont)
-      spec.min.to_s + ' to ' + spec.max.to_s
+      unless range.nil?
+        range[:display]
+      else
+        displayRanges(spec.name, [{:min => spec.min, :max => spec.max}], true)[0][:display]
+      end
     end
   end
 
   def getRanges(feat)
     num_ranges = 6
     cats = Session.search.userdatacats.map{|d| d if d.name=="product_type"}.compact
-    #debugger if Ranges.cacherange(Session.product_type, num_ranges, cats)[feat.to_sym].nil?
     feats = Session.features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact
     Ranges.cacherange(feats, num_ranges, cats)[feat.to_sym]
   end  
@@ -153,8 +156,8 @@ module CompareHelper
       []
     end
   end
-
-  def displayRanges(feat, ranges)
+  
+  def displayRanges(feat, ranges, full=false)
     dr = []
     unless ranges.nil?
       ranges.each_with_index do |r, ind|
@@ -163,25 +166,25 @@ module CompareHelper
           if feat == "saleprice"
             dis = number_to_currency(r[:min])
           else
-            dis =  "#{r[:min]} " + t("#{Session.product_type}.filter.#{feat}.unit") 
+            dis =  "#{number_with_delimiter(r[:min])} " + t("#{Session.product_type}.filter.#{feat}.unit") 
           end
         else
           if feat == "saleprice"
             dis = number_to_currency(r[:min]) + " - " + number_to_currency(r[:max])              
           else
-            dis = "#{r[:min]} "+t("#{Session.product_type}.filter.#{feat}.unit")  +" - #{r[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit")
+            dis = "#{number_with_delimiter(r[:min])} - #{number_with_delimiter(r[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit")
           end    
         end 
         dr.last[:display] << dis
       end   
     end  
-    unless dr.empty?
+    unless dr.empty? or full == true
       if feat == "saleprice"
          dr.first[:display] = (dr.first[:max] > 0 ? t("features.belowbefore") : '') + number_to_currency(dr.first[:max])
          dr.last[:display] = number_to_currency(dr.last[:min]) + t("features.rangeabove")
       else
-         dr.first[:display] = "#{dr.first[:max]} " + t("#{Session.product_type}.filter.#{feat}.unit") + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
-         dr.last[:display] = "#{dr.last[:min]} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
+         dr.first[:display] = "#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit") + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
+         dr.last[:display] = "#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
       end
     end
     dr
