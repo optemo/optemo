@@ -202,8 +202,7 @@ module CompareHelper
   
   def sortby
     current_sorting_option = Session.search.sortby || "utility_desc"
-    sortby_f = Session.features["sortby"].reject{|f| f.name== "lr_utility"}
-    sortby_f.map do |f| 
+    (Session.features["sortby"] || []).map do |f|
         suffix = f.style.length > 0 ? '_' + f.style : ''
         content_tag :li, (current_sorting_option == (f.name+suffix)) ? t(Session.product_type+".sortby."+f.name+suffix+".name") : link_to(t(Session.product_type+".sortby."+f.name+suffix+".name"), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
     end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))    
