@@ -80,19 +80,21 @@ html {
     height: 25px;
   }
 
-  .pagination-container{
+  .pagination-container {
     position: relative;
     background: url(<%= asset_data_uri('futureshop_navbar_gradient.gif')%>) repeat-x;
     text-align: right;
     padding-top: 10px;
     font-size: 12px;
     height: 23px;
-    border: 1px #b1b1b1 solid;
+    border-color: #b1b1b1;
+    border-style: solid solid none;
+    border-width: 1px 1px 0;
     margin-top: 10px;
   }
   .pagination-container.bottom {
     margin-top: 0;
-    border-top: 0;
+    border-width: 0 1px 1px;
   }
   #IE.ie7 .pagination-container, #IE.ie6 .pagination-container{
     height: 23px;

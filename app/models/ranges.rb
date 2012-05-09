@@ -34,7 +34,7 @@ module Ranges
   end
 
   def self.cacherange(feats, num, cats) 
-    Rails.cache.fetch("Ranges#{Session.product_type}#{num}#{cats.empty? ? "" : cats.map(&:value).join}#{feats.join}") do
+    Rails.cache.fetch("Ranges#{Session.product_type}#{num}#{cats.map(&:value).join}#{feats.join}") do
       self.getRange(feats, num, cats)
     end
   end
