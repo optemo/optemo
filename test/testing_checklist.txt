@@ -32,8 +32,8 @@ Filter Page:
         - Do all the products show up if you manually reset the slider after having used it, eg: move the one end of the slider, let the new page load, then move it back to its original position
   - Categories:
     - Click a couple and see if they update the products available
-    - Ensure brand filters are sorted alphabetically
-    - Ensure no more than 10 filters appear; if there are more than 10, then the link "More" should appear instead
+    - Check that brand filters are sorted alphabetically
+    - Check that no more than 10 filters appear; if there are more than 10, then the link "More" should appear instead
   - Check two brands, then click on a binary filter with a small number
     - Undo the filter. Test the cases where the filter matched:
       - Both brands: undoing it will preserve the two brands.
@@ -45,9 +45,12 @@ Filter Page:
     - Clear Selections should not appear if no filters are selected
   - Click on the Add to Cart link and see if it works
   - Check layout:
-    - selected filters:
-      - should appear in the selected filters area; if no filters are selected the area should not appear at all
-      - heading should appear only when filters are selected
+    - "Your Selections" area:
+      - if no filters are selected the area should not appear at all
+      - check that selected filters appear in this area in the same order as the facets appear, and in the same categories
+        - check several different facets and make sure they appear properly
+        - colour should be a word, not a coloured box like in the facets
+        - each should have an "undo" button. Check that this works
 
 Product Comparison:
 
@@ -80,49 +83,173 @@ Product Comparison:
     - Reload the page and see if the item remains selected 
       -Note: IE6 sometimes doesn't remember, which is OK
 
-Dynamic Filters (drives - BestBuy):
-
-  - only common filters should be displayed on first page
-    - Common filters are the following: 
-       - Categories:   
-           - External Hard Drives
-           - Internal Hard Drives
-           - Solid State Drives
-           - USB Flash Drives
-           - Optical Drives (this used to be DVD & CD drives)
-           - Network-Attached Storage (NAS)
-           - Blank Media
-           - Storage Accessories
-           - Floppy Drives
-       - Status:
-           - On Sale
-           - On Clearance
-           - Online Only
-           - Top-Rated
-           - What's New
-       - Storage Capacity
-       - Brands
-       - Price
-       - Interface (multi-selection checkbox) for everything
-  - Check that additional facets  are displayed for the following categories:
-    - Additional facets:
-       - Internal and External drives:
-           - Rotation Speed (multi-selection checkbox)
-           - Data Buffer (multi-selection checkbox)
-           - Drive Size (multi-selection checkbox)
-       - Optical Drives:
-        - Internal or External (multi-selection checkbox)
-
-Dynamic Filters (drives - FutureShop)
-  - Additional facets for the following categories:
-    - External Desktop Hard Drives
-    - External Portable Hard Drives
-    - Network Attached Storage
-    - Internal Hard Drives
-    Facets:
-      - Rotation Speed
-      - Data Buffer
-      - Drive Size
+Filters:
+  - Digital Cameras
+    - Product Category
+      - Point and Shoot
+      - Waterproof
+      - Ultra Zoom
+      - Advanced Compact
+    - Status
+      - On Sale
+      - On Clearance
+      - Online Only
+      - Top-Rated
+      - Package Deals
+      - Preorder
+      - What's New
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Camera Features
+      - HDMI Output
+      - Touchscreen
+      - Image Stabilization
+      - Waterproof/Shockproof
+      - OLED Screen
+      - GPS
+      - Projector Camera
+      - Sweep Panorama
+      - Front and Back LCD
+    - Megapixels
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Optical Zoom
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Colour
+      - Check that colours aren't duplicated
+    - Max Video Resolution
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - LCD Screen Size
+      - Check Consistency, i.e. units, spacing, formatting, etc.
+  - Digital SLR
+    - Product Category
+      - DSLR Cameras
+      - DSLR Packages
+      - DSLR Bodies
+    - Status
+      - On Sale
+      - On Clearance
+      - Online Only
+      - Top-Rated
+      - Package Deals
+      - Preorder
+      - What's New
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Megapixels
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Lens Focal Length
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - DSLR Features
+      - Guided Shooting Mode
+      - HDMI Output
+      - Live Preview
+      - Stabilized Lens
+    - Sensor Size Format
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Max Video Resolution
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - LCD Screen Size
+      - Check consistency, i.e. units, spacing, formatting, etc.
+  - Hard Drives
+    - Product Category
+      - External Hard Drives
+      - Internal Hard Drives
+      - Solid State Drives
+      - USB Flash Drives
+      - Optical Drives
+      - Network-Attached Storage (NAS)
+      - Blank Media
+      - Storage Accessories
+      - Floppy Drives
+    - Status
+      - On Sale
+      - On Clearance
+      - Online Only
+      - Top-Rated
+      - Package Deals
+      - Preorder
+      - What's New
+    - Storage Capacity
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Interface (all but Blank Media/Storage Accessories/Floppy)
+      - USB 3.0
+      - USB 2.0
+      - USB
+      - FireWire 800
+      - FireWire 400
+      - SATA III
+      - SATA II
+      - SATA
+      - PATA
+      - eSATA
+      - Ethernet
+      - WiFi
+    - Rotation Speed (Internal/External only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Data Buffer (Internal/External only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Drive Size (Internal/External only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Internal/External (Optical only)
+      - External
+      - Internal
+  - Laptops and NetBooks
+    - Product Category
+      - Netbooks
+      - Ultrabooks
+      - various screen sizes
+      - Refurbished Laptops
+    - Status
+      - On Sale
+      - On Clearance
+      - Online Only
+      - Top-Rated
+      - Package Deals
+      - Preorder
+      - What's New
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Processor Type
+      - Check for typos
+    - Processor Cores
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Laptop Features
+      - 3D Capable Display
+      - Bluetooth
+      - Energy Star Qualified
+      - HDMI Output
+      - LED Backlit Display
+      - Touchscreen
+      - USB 3.0 Port
+      - Wireless Display (WiDi) Capable
+      - Wireless N
+    - Optical Drive (Best Buy only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - System Memory
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Screen Size (Best Buy only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Hard Drive Type (Best Buy only)
+      - Mechanical
+      - SSD
+    - Hard Drive Capacity
+      - Check consistency, i.e. spacing, formatting, etc.
+    - Colour
+      - Check that colours aren't duplicated
+    - Operating System (Best Buy only)
+      - Check consistency, i.e. spacing, formatting, etc.
+    - Video Card Configuration (Best Buy only)
+      - Check consistency, i.e. spacing, formatting, etc.
 
 French:
   - Check french links for all departments. 
