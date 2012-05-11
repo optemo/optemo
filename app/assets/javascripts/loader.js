@@ -64,7 +64,8 @@ var opt_history = location.hash.replace(/^#/, '');
 // The regular expressions for all but the first entry (digital cameras) are assumed (as of July 6, 2011)
 
 var category_id_hash = {'laptops-netbooks.aspx' : 'B20352',
-                        'ordinateurs-portatifs-et-miniportables.aspx' : 'B20352'};
+                        'ordinateurs-portatifs-et-miniportables.aspx' : 'B20352',
+                        'optemo-fs-sandbox.aspx' : 'F1002'};
 // Allow for passing the category via url
 var urlRegex = new RegExp("[\\?&]category_id=([^&#]*)");
 var url_passed_category = urlRegex.exec(window.location.href);
