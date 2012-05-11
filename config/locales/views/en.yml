@@ -28,7 +28,7 @@ en:
             clickforspecs:    "Click for product specifications"
             clickforcompare:  "Click to compare products"
             reset:            "Reset All"
-            futureshop_reset: "» Reset All"
+            futureshop_reset: "Reset All"
             resetdesc:        "Clear all filters"
             clear:            "Clear Selected Products"
             cleardesc:        "Clear the product selection"

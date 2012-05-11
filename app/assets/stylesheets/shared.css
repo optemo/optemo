@@ -16,10 +16,6 @@
   float: left;
 }
 
-.optemo {
-  font-size: 1.3em;
-}
-
 .optemo a img {	border: none; }
 .optemo a { color: #0000EE; text-decoration: none; }
 .optemo a:visited { color: #0000AB;}

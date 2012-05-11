@@ -54,32 +54,33 @@
           <% end -%> <%# unless values.nil? %>
         <% end -%> <%# grouped.filters.each %>
       </div>
-      <%= link_to t('products.compare.futureshop_reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') if Session.futureshop? %>
+      <% if Session.futureshop? %>
+        <span>
+          » <%= link_to t('products.compare.futureshop_reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
+        </span>
+      <% end %>
     </div>
   <% end %>
   <form id="filter_form" method="get" action="/compare">
     <% binary_heading = [] %>
     <% (Session.features["filter"] || []).each_with_index do |f, index| %>
+      <% if f.feature_type == "Heading" %>
+        <% if index > 0 and Session.features["filter"][index-1].feature_type == "Heading" -%>
+          <% binary_heading << f -%>
+        <% else # replace any existing binary_heading with a new one -%>
+          <% binary_heading = [f] -%>
+        <% end -%>
+      <% else %>
       <div class="feature">
         <% case f.feature_type -%>
-        <% when "Heading" %>
-          <% if index > 0 and Session.features["filter"][index-1].feature_type == "Heading" -%>
-            <% binary_heading << f -%>
-          <% else # replace any existing binary_heading with a new one -%>
-            <% binary_heading = [f] -%>
-          <% end -%>
-        <% when "Spacer" -%>
-          <div style="height: 17px"><!-- --></div>
         <% when "Categorical" -%>
           <% chosen_cats = chosencats(f.name) %>
           <% if f.name == "color" # TODO: should not be hard code here%>
             <% color_counts = CatSpec.count_feat("color") %>
             <%unless color_counts.map{|k, v| v if v>0}.compact.empty? %>
-              <% binary_heading.each do |bin| %>
-                <%= render partial: 'filter_label', locals: {f: bin} %>
-              <% end %>
+              <%= render partial: 'filter_label', collection: binary_heading %>
               <% binary_heading = [] %>
-              <%= render partial: 'filter_label', locals: {f: f} %>
+              <%= render partial: 'filter_label', object: f %>
             <%end%>
             <% %w(red orange yellow green blue purple pink white silver brown black).zip(
                %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
@@ -98,13 +99,11 @@
             <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
             <% optionlist, toplist = cat_order(f, chosen_cats) %>
             <% unless optionlist.empty? %>
-              <% binary_heading.each do |bin| %>
-                <%= render partial: 'filter_label', locals: {f: bin} %>
-              <% end %>
+              <%= render partial: 'filter_label', collection: binary_heading %>
               <% binary_heading = [] %>
               <% chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)} %>
               <% unless optionlist.map{|k,v| 1 if v>0}.compact.empty? %>
-                <%= render partial: 'filter_label', locals: {f: f} %>
+                <%= render partial: 'filter_label', object: f %>
                 <% expanded = Session.search.expanded.try{|b| b.include?(f.name)} %>
                 <div class="categorical">
                   <%= render partial: "cat_option", collection: optionlist.to_a, locals: {chosen_cats: chosen_cats, f: f, expanded: expanded, toplist: toplist} %>
@@ -115,39 +114,35 @@
               <% end %>
             <% end %>
           <% end %> <%# else %>
-        <% when "Continuous" %>	
-          <% if f.ui == "ranges" %>
-            <% chosen_conts = chosenconts(f.name) %>
-            <% ranges = getRanges(f.name)%>
-            <% chosen_conts.each{|c| ranges << c unless ranges.include?(c)} # add any selected conts that are not in the ranges to display %>
-            <% displayed_ranges = displayRanges(f.name, ranges) %>
-            <%unless displayed_ranges.map{|dr| 1 if dr[:count]>0}.compact.empty?%>
-              <% binary_heading.each do |bin| %>
-                <%= render partial: 'filter_label', locals: {f: bin} %>
-              <% end %>
+        <% when "Continuous" -%>	
+          <% if f.ui == "ranges" -%>
+            <% chosen_conts = chosenconts(f.name) -%>
+            <% ranges = getRanges(f.name) -%>
+            <% chosen_conts.each{|c| ranges << c unless ranges.include?(c)} # add any selected conts that are not in the ranges to display -%>
+            <% displayed_ranges = displayRanges(f.name, ranges) -%>
+            <% if displayed_ranges.inject(false){|res,e| res || e[:count]>0} -%>
+              <%= render partial: 'filter_label', collection: binary_heading %>
               <% binary_heading = [] %>
-              <%= render partial: 'filter_label', locals: {f: f} %>
-            <% end %>
-            <% displayed_ranges.each do |dr| %>
-              <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) %>
-              <% available_count = dr[:count]%>
-              <%if available_count > 0 or checked %>
+              <%= render partial: 'filter_label', object: f %>
+            <% end -%>
+            <% displayed_ranges.each do |dr| -%>
+              <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) -%>
+              <% available_count = dr[:count] -%>
+              <% if available_count > 0 or checked -%>
                 <div class="hanging_indent<%= ' disabled' if (available_count == 0 and !checked) %>" <%=raw 'style="font-weight:bold;"' if checked %>>
                   <%= check_box_tag "continuous[#{f.name}]", "#{dr[:min]};#{dr[:max]}", checked ,:disabled => (available_count == 0 and !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0 and !checked) ? 'true' : 'false', :"data-min" => dr[:min], :"data-max" => dr[:max] %>
                   <%= (available_count == 0) ?  dr[:display] : link_to(dr[:display], "#", :class => "checkbox_text") %>
                   <span class="av_count"><%= "(#{available_count})" unless checked %></span>
                 </div>
-              <% end %>	
-            <% end %> <%# getRanges.each %>
-          <% else %> <%# Use sliders still, not ranges %>
+              <% end -%>	
+            <% end -%> <%# getRanges.each %>
+          <% else -%> <%# Use sliders still, not ranges %>
             <%# Check continuous features for data, instead of greying them, we just don't show them %>
             <% distribution_data = getDist(f.name) -%>
             <% unless distribution_data.blank? %>
-              <% binary_heading.each do |bin| %>
-                <%= render partial: 'filter_label', locals: {f: bin} %>
-              <% end %>
+              <%= render partial: 'filter_label', collection: binary_heading %>
               <% binary_heading = [] %>
-              <%= render partial: 'filter_label', locals: {f: f} %>
+              <%= render partial: 'filter_label', object: f %>
               <% if distribution_data.first[2] == distribution_data.first[3] %>
                 <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
               <% else %>
@@ -177,15 +172,13 @@
                 </div>
               <% end %><%# end distribution of more than one %>
             <% end %><%# end checking for non-blank distribution %>
-          <% end %><%# end ranges %>
-        <% when "Binary" %>
+          <% end -%><%# end ranges %>
+        <% when "Binary" -%>
           <% dobj = Session.search.userdatabins.select{|udb| udb.name == f.name}.first %>
           <% unchecked = dobj.nil? || dobj.value == false %>
           <% available_count = BinSpec.count_feat(f.name) %>
           <% if available_count > 0 or !unchecked %>
-            <% binary_heading.each do |bin| %>
-              <%= render partial: 'filter_label', locals: {f: bin} %>
-            <% end %>
+            <%= render partial: 'filter_label', collection: binary_heading %>
             <% binary_heading = [] %>
           <% end %>
           <div class="hanging_indent<%= ' invisible' if (available_count == 0 and unchecked) %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
@@ -193,11 +186,13 @@
             <%= (available_count == 0 and unchecked) ? t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize) : link_to( t("#{Session.product_type}.filter.#{f.name}.name", :default => f.name.capitalize), "#", :class => "checkbox_text") %>
             <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
           </div>
-        <% end # End case %>
+        <% end # End case -%>
       </div>
+      <% end # Heading if %>
     <% end # End iterating over features %>
   </form>
   <div class="y_bottom">
+    <% if Session.futureshop? %>» <% end %>
     <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
   </div>
 </div>

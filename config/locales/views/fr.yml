@@ -30,7 +30,7 @@ fr:
             clickforcompare:  "Cliquer pour comparer les produits"
             clickforspecs:    "Cliquez pour voir les spécifications du produit"
             reset:            "Réinitialiser tout"
-            futureshop_reset: "» Réinitialiser tout"
+            futureshop_reset: "Réinitialiser tout"
             resetdesc:        "Supprimer tous les filtres" 
             compare:          "Comparer"
             futureshop_compare: "» Comparer"
