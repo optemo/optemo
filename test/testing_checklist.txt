@@ -111,7 +111,7 @@ Filters:
       - GPS
       - Projector Camera
       - Sweep Panorama
-      - Front and Back LCD
+      - Front and Back LCD (Best Buy)
     - Megapixels
       - Check consistency, i.e. units, spacing, formatting, etc.
     - Optical Zoom
@@ -124,17 +124,23 @@ Filters:
       - Check Consistency, i.e. units, spacing, formatting, etc.
   - Digital SLR
     - Product Category
-      - DSLR Cameras
-      - DSLR Packages
-      - DSLR Bodies
+      - DSLR Cameras (Best Buy)
+      - DSLR Packages (Best Buy)
+      - DSLR Bodies (Best Buy)
+      - Cameras (Future Shop)
+      - Body Only (Future Shop)
+      - Digital SLR Packages (Future Shop)
     - Status
       - On Sale
+      - New Release (Future Shop)
+      - Future Shop Exclusive (Future Shop)
+      - Web Only (Future Shop)
       - On Clearance
-      - Online Only
+      - Online Only (Best Buy)
       - Top-Rated
       - Package Deals
-      - Preorder
-      - What's New
+      - Pre-order
+      - What's New (Best Buy)
     - Brands
       - Check for typos
     - Price
@@ -171,7 +177,7 @@ Filters:
       - Online Only
       - Top-Rated
       - Package Deals
-      - Preorder
+      - Pre-order
       - What's New
     - Storage Capacity
       - Check consistency, i.e. units, spacing, formatting, etc.
@@ -203,28 +209,36 @@ Filters:
       - Internal
   - Laptops and NetBooks
     - Product Category
+      - Macbooks (Future Shop)
       - Netbooks
       - Ultrabooks
       - various screen sizes
-      - Refurbished Laptops
+      - Refurbished Laptops (Best Buy)
     - Status
       - On Sale
       - On Clearance
-      - Online Only
+      - Online Only (Best Buy)
+      - Web Only (Future Shop)
+      - FutureShop Exclusive (Future Shop)
+      - In-Store (Future Shop)
       - Top-Rated
       - Package Deals
       - Preorder
-      - What's New
+      - What's New (Best Buy)
+      - New Release (Future Shop)
+      - Refurbished
     - Brands
       - Check for typos
     - Price
       - Check consistency, i.e. units, spacing, formatting, etc.
-    - Processor Type
+    - Type
       - Check for typos
-    - Processor Cores
+    - Cores
       - Check consistency, i.e. units, spacing, formatting, etc.
     - Laptop Features
-      - 3D Capable Display
+      - Blu-ray Player (Future Shop)
+      - 3D Capable Display (Best Buy)
+      - Dedicated Graphics (Future Shop)
       - Bluetooth
       - Energy Star Qualified
       - HDMI Output
@@ -239,9 +253,10 @@ Filters:
       - Check consistency, i.e. units, spacing, formatting, etc.
     - Screen Size (Best Buy only)
       - Check consistency, i.e. units, spacing, formatting, etc.
-    - Hard Drive Type (Best Buy only)
+    - Hard Drive Type (Future Shop doesn't have the heading)
       - Mechanical
-      - SSD
+      - SSD (Best Buy)
+      - Solid State (Future Shop)
     - Hard Drive Capacity
       - Check consistency, i.e. spacing, formatting, etc.
     - Colour
