@@ -76,10 +76,11 @@
             <div style="margin-right: -4px;margin-top: 4px;">
               <% color_counts = CatSpec.count_feat("color") %>
               <%unless color_counts.map{|k, v| v if v>0}.compact.empty? %>
-                <% binary_heading.each do |bin| %>
-                  <%= render partial: 'filter_label', locals: {f: bin} %>
-                <% end %>
-                <% binary_heading = [] %>
+                <% unless binary_heading.empty? -%>
+                  <% heading_to_display = binary_heading[0] -%>
+                  <%= render partial: 'filter_label', locals: {f: heading_to_display} %>
+                  <% binary_heading = [] -%>
+                <% end -%>
                 <%= render partial: 'filter_label', locals: {f: f} %>
               <%end%>
               <% %w(red orange yellow green blue purple pink white silver brown black).zip(
@@ -100,10 +101,11 @@
             <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
             <% optionlist, toplist = cat_order(f, chosen_cats) %>
             <% unless optionlist.empty? %>
-              <% binary_heading.each do |bin| %>
-                <%= render partial: 'filter_label', locals: {f: bin} %>
-              <% end %>
-              <% binary_heading = [] %>
+              <% unless binary_heading.empty? -%>
+                <% heading_to_display = binary_heading[0] -%>
+                <%= render partial: 'filter_label', locals: {f: heading_to_display} %>
+                <% binary_heading = [] -%>
+              <% end -%>
               <% chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)} %>
               <% unless optionlist.map{|k,v| 1 if v>0}.compact.empty? %>
                 <%= render partial: 'filter_label', locals: {f: f} %>
@@ -124,10 +126,11 @@
             <% chosen_conts.each{|c| ranges << c unless ranges.include?(c)} # add any selected conts that are not in the ranges to display %>
             <% displayed_ranges = displayRanges(f.name, ranges) %>
             <%unless displayed_ranges.map{|dr| 1 if dr[:count]>0}.compact.empty?%>
-              <% binary_heading.each do |bin| %>
-                <%= render partial: 'filter_label', locals: {f: bin} %>
-              <% end %>
-              <% binary_heading = [] %>
+              <% unless binary_heading.empty? -%>
+                <% heading_to_display = binary_heading[0] -%>
+                <%= render partial: 'filter_label', locals: {f: heading_to_display} %>
+                <% binary_heading = [] -%>
+              <% end -%>
               <%= render partial: 'filter_label', locals: {f: f} %>
             <% end %>
             <% displayed_ranges.each do |dr| %>
@@ -145,10 +148,11 @@
             <%# Check continuous features for data, instead of greying them, we just don't show them %>
             <% distribution_data = getDist(f.name) -%>
             <% unless distribution_data.blank? %>
-              <% binary_heading.each do |bin| %>
-                <%= render partial: 'filter_label', locals: {f: bin} %>
-              <% end %>
-              <% binary_heading = [] %>
+              <% unless binary_heading.empty? -%>
+                <% heading_to_display = binary_heading[0] -%>
+                <%= render partial: 'filter_label', locals: {f: heading_to_display} %>
+                <% binary_heading = [] -%>
+              <% end -%>
               <%= render partial: 'filter_label', locals: {f: f} %>
               <% if distribution_data.first[2] == distribution_data.first[3] %>
                 <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
