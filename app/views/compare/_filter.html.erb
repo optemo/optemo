@@ -112,8 +112,10 @@
                 </div>
                 <%= hidden_field_tag "expanded[#{f.name}]", expanded %>
               <% end %>
-            <% end %>
-          <% end %> <%# else %>
+            <% else %>
+              <!-- -->
+            <% end %> <%# Unless optionlist %>
+          <% end %> <%# Color If %>
         <% when "Continuous" -%>	
           <% if f.ui == "ranges" -%>
             <% chosen_conts = chosenconts(f.name) -%>
@@ -124,6 +126,8 @@
               <%= render partial: 'filter_label', collection: binary_heading %>
               <% binary_heading = [] %>
               <%= render partial: 'filter_label', object: f %>
+            <% else -%>
+              <!-- -->
             <% end -%>
             <% displayed_ranges.each do |dr| -%>
               <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) -%>
@@ -171,6 +175,8 @@
                   </span>
                 </div>
               <% end %><%# end distribution of more than one %>
+            <% else %>
+              <!-- -->
             <% end %><%# end checking for non-blank distribution %>
           <% end -%><%# end ranges %>
         <% when "Binary" -%>
