@@ -76,7 +76,7 @@ else
 
 //Check the URL for the categories in the category_hash  
 for (var i in category_id_hash) {
-  if (window.location.pathname.match(new RegExp(i,"i"))) {
+  if (opt_category_id == 0 && window.location.pathname.match(new RegExp(i,"i"))) {
     opt_category_id = category_id_hash[i];
     break;
   }
