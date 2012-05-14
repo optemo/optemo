@@ -4,6 +4,13 @@
 //             Filter Boxes             //
 //--------------------------------------*/
 .optemo {
+  #filter_form {
+    background: url(<%= asset_data_uri "leftnav_list.gif" %>);
+    padding-bottom: 5px;
+  }
+  .ie67 #filter_form {
+    background: url(<%= asset_path "leftnav_list.gif" %>);
+  }
   #filter_form, #your_selections {
   	font-size: 0.85em;
   }
