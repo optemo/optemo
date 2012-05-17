@@ -21,7 +21,111 @@ module CompareHelper
     end
     res.join(content_tag("div", raw("<!-- -->"), class: "divider"))
   end
-
+  
+  def get_active_features()
+    # Go over all the filter features and determine how they should be displayed
+    # returns an array, one hash element per feature to display 
+    active_features = []
+    # TODO: factor getting the selected cats and conts once up here instead of doing it per feature
+    (Session.features["filter"] || []).each_with_index do |f, index|
+      res = {}
+      case f.feature_type
+      when "Heading"
+        # add f to features
+      when "Categorical"
+        chosen_cats = chosencats(f.name)
+        if f.name == "color"
+          res = getColorFeature(f, chosen_cats)
+        else
+          res = getCategoricalFeature(f, chosen_cats)
+        end
+      when "Continuous"
+        chosen_conts = chosenconts(f.name)
+        if f.ui == "ranges"
+          res = getDisplayedRanges(f, chosen_conts)
+        else
+          res = getContinuousDistribution(f)
+        end
+      when "Binary"
+        res = getBinaryFeature(f)
+      end
+      res[:f] = f
+      active_features << res unless res[:no_display]
+    end
+    
+    display_features = []
+    # get rid of the elements which are headings that have nothing logically under them
+    active_features.each_with_index do |feature, index|
+      if feature[:f][:feature_type] == 'Heading' 
+        if feature[:f].style != '' # bold style heading
+        # do not display a bold heading if the next thing is a bold heading or nothing at all
+          unless active_features[index+1].nil? or (active_features[index+1][:feature_type] == 'Heading' and active_features[index+1][:f].style != '')
+            display_features << feature
+          end
+        else 
+        # only display a non-bold heading if the next item is a binary feature value; assumption: all non-bold headings are binary group titles
+          if !active_features[index+1].nil? and active_features[index+1][:f].feature_type == 'Binary'
+            display_features << feature
+          end
+        end
+      else
+        display_features << feature
+      end
+    end
+    display_features
+  end
+  
+  def getCategoricalFeature(f, chosen_cats)
+    optionlist, toplist = cat_order(f, chosen_cats)
+    chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
+    expanded = Session.search.expanded.try{|b| b.include?(f.name)}
+    no_display = optionlist.map{|k,v| 1 if v>0}.compact.empty?
+    return {:all_options => optionlist, :top_options => toplist, :expanded => expanded, :no_display => no_display}
+  end
+  
+  def getColorFeature(f, chosen_cats)
+    color_counts = CatSpec.count_feat("color")
+    display_colours = %w(red orange yellow green blue purple pink white silver brown black).zip(
+       %w(l   l       l       d   d     d     l     l     l     d     d    ))
+    display_colours.select!{|color,b| chosen_cats.include?(color) or !color_counts[color].nil?}
+    # Logical change: made no_display look at display_colours, just in case some are selected but have counts of 0
+    # was: if color_counts[color].nil? && !chosen_cats.include?(color)
+    no_display = display_colours.empty?
+    return {:display_colours => display_colours, :no_display => no_display}
+  end
+  
+  def getBinaryFeature(f)
+    dobj = Session.search.userdatabins.select{|udb| udb.name == f.name}.first
+    unchecked = dobj.nil? || dobj.value == false
+    available_count = BinSpec.count_feat(f.name)
+    no_display = (available_count == 0 and unchecked)
+    return {:available_count => available_count, :unchecked => unchecked, :no_display => no_display}
+  end
+  
+  def getDisplayedRanges(f, chosen_conts)
+    ranges = getRanges(f.name)
+    chosen_conts.each{|c| ranges << c unless ranges.include?(c)}
+    displayed_ranges = displayRanges(f.name, ranges)
+    no_display = !displayed_ranges.inject(false){|res,e| res || e[:count]>0}
+    return {:displayed_ranges => displayed_ranges, :no_display => no_display}
+  end
+  
+  def getContinuousDistribution(f)
+    distribution_data = getDist(f.name)
+    no_display = distribution_data.blank?
+    single_value = (no_display or distribution_data.first[2] != distribution_data.first[3]) ? nil : distribution_data.first[2]
+    return {:distribution_data => distribution_data, :single_value => single_value, :no_display => no_display}
+  end
+  
+  def getSliderSettings(f, distribution_data)
+    current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first)
+    step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil)
+    datamin = roundedInterval(distribution_data.first[2],step,true)
+    datamax = roundedInterval(distribution_data.first[3],step,false)
+    unit = t("#{Session.product_type}.filter.#{f.name}.unit", :default => '')
+    return current, step, datamin, datamax, unit
+  end
+  
   def product_title
     if I18n.locale == :fr
       t("#{Session.product_type}.name")
@@ -36,7 +140,7 @@ module CompareHelper
   
   def chosenconts(feat)
     c = []
-    (Session.search.userdataconts+Session.search.parentconts).select{|d| d.name == feat}.each{|x| c << {:min => x[:min], :max => x[:max]}}  
+    (Session.search.userdataconts+Session.search.parentconts).select{|d| d.name == feat}.each{|x| c << {:min => x[:min], :max => x[:max]}}
     c
   end  
 
@@ -61,6 +165,7 @@ module CompareHelper
 
   def getSearchFilters()
     # getting the currently applied filters
+    
     filters = Session.search.userdataconts + Session.search.userdatacats + Session.search.userdatabins
     if filters.empty?
       return []
