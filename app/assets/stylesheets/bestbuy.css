@@ -14,7 +14,7 @@
 *= require jquery.autocomplete
 *= require jslider
 *= require bestbuy/slider
-*= require futureshop/buttons
+*= require bestbuy/buttons
 */
 
 /* Global Declarations are in colour_and_buttons.scss.erb */

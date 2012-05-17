@@ -37,7 +37,7 @@ class JSPadding
     # response.each{ |s| body << s.to_s.tr('\'','"').gsub("\n","\\\n") }
     # We use this odd form of gsub because we need to be able to replace single quotes for French. It's hard.
     # See here for more details if you want: http://notetoself.vrensk.com/2008/08/escaping-single-quotes-in-ruby-harder-than-expected/
-    response.each{ |s| body << s.to_s.gsub(/\\|'/) {|c| "\\#{c}" }.gsub("\n","\\\n") }
+    response.each{ |s| body << s.to_s.gsub(/\\|'/) {|c| "\\#{c}" }.tr("\r",'').gsub("\n","\\\n") }
     ["#{callback}('#{body}')"]
   end
 

@@ -68,16 +68,16 @@ html {
   }
 
   .y_bottom {
-    margin: 12px 0 0px;
-    padding-right: 6px;
-    padding-bottom: 10px;
+    padding: 12px 6px 10px 0;
   	overflow:hidden;
     height: 25px;
     font-weight: bold;
+    text-align: center;
+    border-radius: 0 0 19px 0;
+    background: url(<%= asset_data_uri "leftnav_list.gif" %>);
   }
-
-  #IE .y_bottom {
-    height: 25px;
+  .ie67 .y_bottom  {
+    background: url(<%= asset_path "leftnav_list.gif" %>);
   }
 
   .pagination-container {

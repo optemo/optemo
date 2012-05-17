@@ -46,14 +46,11 @@ class Search < ActiveRecord::Base
         end
       end  
 
-      sorting = sortby.try(:split, "_") || ["utility", "desc"] #Default is utility
-      sorting[0] = "lr_utility" if sorting[0] == "utility" #Use logistic regression first if possible
-      begin #wrapped in a block in case lr_utility does not exist
-        order_by(sorting[0].to_sym, sorting[1].to_sym)
-      rescue
-      end
-      order_by(:utility, :desc) if sorting[0] == "lr_utility" #Use heuristic utility as backup for departments where there is not enough data
-    
+      type, direction = sortby.try(:split, "_") || ["utility", "desc"] #Default is utility
+      type = "lr_utility" if type == "utility" #Use logistic regression first if possible
+      order_by(type.to_sym, direction.to_sym)
+      order_by(:utility, :desc) #Break ties with heuristic utility (used as utility if lr_utility is nil)
+          
       cat_filters = {} #Used for faceting exclude so that the counts are right
       mycats.group_by(&:name).each_pair do |name, group|
         cat_filters[name] = any_of do  #disjunction inside the category part

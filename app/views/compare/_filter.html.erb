@@ -1,17 +1,15 @@
-<div class="<%= isfr? ? :fr : :en %>">
   <div class="y_heading">
-    <div class="narrow_text">
-      <div>
-        <%= raw "<h1> #{t('products.compare.shoph1') + product_title} </h1>" unless Session.futureshop? %>
-        <% if Session.futureshop? -%>
-          <div class="refine_text">
-            <%= t(Session.futureshop? ? 'products.compare.futureshop_refineyoursearch1' : 'products.compare.refineyoursearch1') %>
-          </div>
-          <div class="french_refine_text">
-            <%= t('products.compare.refineyoursearch2') %>
-          </div>
-        <% end %>
+    <% if Session.futureshop? -%>
+      <div class="refine_text">
+        <%= t('products.compare.futureshop_refineyoursearch1') %>
       </div>
+      <div class="french_refine_text">
+        <%= t('products.compare.refineyoursearch2') %>
+      </div>
+    <% else %>
+      <h1><%= t('products.compare.shoph1') + product_title %></h1>
+    <% end %>
+    <div>
       <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') unless Session.futureshop? %>
     </div>
   </div>
@@ -144,6 +142,5 @@
     <% if Session.futureshop? %>» <% end %>
     <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
   </div>
-</div>
 
 <div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>

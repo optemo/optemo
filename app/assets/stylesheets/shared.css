@@ -17,8 +17,7 @@
 }
 
 .optemo a img {	border: none; }
-.optemo a { color: #0000EE; text-decoration: none; }
-.optemo a:visited { color: #0000AB;}
+.optemo a { text-decoration: none; }
 .optemo a:hover {	text-decoration: underline; }
 
 /*--------------------------------------//
