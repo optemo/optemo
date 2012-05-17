@@ -96,6 +96,7 @@
         # This is a weird combination of margins, absolute positioning, and an inserted spacer div. It seems stable.
         $('<div>&nbsp;</div>').insertBefore('#info div.togglespecs').css({"height" : "23px", "width" : "1px", "display" : "block", "clear" : "both"})
         $('#info div.togglespecs').css({'left' : ($("#info").width() - 450) / 2.0, 'bottom' : "15px"})
+      optemo_module.getRealtimePrices(true) # get pricing for compare page
     return false
   
   row_height = (length,isLabel) ->

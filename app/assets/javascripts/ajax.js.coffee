@@ -16,7 +16,7 @@
     optemo_module.BestBuyLandingElements()
     optemo_module.SetLayout()
     optemo_module.SliderInit()
-    optemo_module.getRealtimePrices() if typeof(optemo_module.getRealtimePrices) == "function"
+    optemo_module.getRealtimePrices(false) if typeof(optemo_module.getRealtimePrices) == "function"
     optemo_module.load_comparisons()
 
   @submitAJAX = ->

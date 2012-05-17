@@ -1,13 +1,20 @@
 #/* Fetching the new prices */
 @module "optemo_module", ->
-  @getRealtimePrices = ->
+  @getRealtimePrices = (comparison_flag) ->
     if optemo_module.layout == "fs"
       API_URL = "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query="
     else
       API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query="
-    skus = $('.productimg, .imageholder').map( -> 
-      return $(this).attr('data-sku')
-    ).toArray().join(" ")
+
+    if comparison_flag
+      skus = $("#basic_matrix .productinfo").map( ->
+        return $(this).attr('data-sku')
+      ).toArray().join(" ")
+    else # basic call, do this on page load
+      skus = $('.productimg, .imageholder').map( -> 
+        return $(this).attr('data-sku')
+      ).toArray().join(" ")
+
     if (skus != "")
       $.ajax(
         url: API_URL+skus,
