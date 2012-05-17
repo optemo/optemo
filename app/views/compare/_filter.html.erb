@@ -124,25 +124,7 @@
               <% else %>
                 <% distribution_data = display_feature[:distribution_data] -%>
                 <% current, step, datamin, datamax, unit = getSliderSettings(f, distribution_data) -%>
-                <div style="position:relative">
-                  <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
-                  <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
-                  <span class="sliderspan">
-                    <input 
-                      class="slider" 
-                      type="slider" 
-                      name="superfluous[<%= f.name %>]"
-                      value="<%= [(current.min.nil? ? datamin : current.min),(current.max.nil? ? datamax : current.max)].join(";") %>"
-                      data-step='<%= step %>'
-                      data-min= '<%= datamin %>'
-                      data-max= '<%= datamax %>'
-                      data-distmin=<%= distribution_data.first[0] %>
-                      data-distmax=<%= distribution_data.first[1] %>
-                      <%# Take out data-unit for now. Needs logic for $ before/after, etc. %>
-                      data-unit=<%= unit %>
-                      disabled="disabled"/>
-                  </span>
-                </div>
+                <%= render partial: 'slider', object: f, :locals => {:distribution_data => distribution_data, :current => current, :step => step, :datamin => datamin, :datamax => datamax, :unit => unit} %>
               <% end %><%# end distribution of more than one %>
             <% else %>
               <!-- -->
