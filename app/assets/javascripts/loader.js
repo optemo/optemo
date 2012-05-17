@@ -140,7 +140,7 @@ JSONP.get(OPT_REMOTE, opt_options, function (data) {
       // Now, we want to join all the data 
       data_to_append = data_to_append.join("\n");
     }
-    else {
+    else { // Production mode, or IE
       data_to_append = data;
     }
     opt_insert_all_data(data_to_append);
