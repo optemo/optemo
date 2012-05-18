@@ -86,32 +86,54 @@ Product Comparison:
 Filters:
   - Digital Cameras
     - Product Category
-      - Point and Shoot
-      - Waterproof
-      - Ultra Zoom
-      - Advanced Compact
+      - Point and Shoot (Best Buy)
+      - Waterproof (Best Buy)
+      - Ultra Zoom (Best Buy)
+      - Advanced Compact (Best Buy)
+      - Compact Cameras (Future Shop)
+      - Pro Compact Cameras (Future Shop)
+      - Extended Zoom Cameras (Future Shop)
+      - Mirrorless Cameras (Future Shop)
     - Status
       - On Sale
+      - Best Sellers (Future Shop)
+      - Future Shop Exclusive (Future Shop)
       - On Clearance
-      - Online Only
+      - Online Only (Best Buy)
+      - Web Only (Future Shop)
       - Top-Rated
+      - Top Viewed (Future Shop)
       - Package Deals
-      - Preorder
-      - What's New
+      - Pre-order
+      - In-stock (Future Shop)
+      - What's New (Best Buy)
+      - New Release (Future Shop)
     - Brands
       - Check for typos
     - Price
       - Check consistency, i.e. units, spacing, formatting, etc.
-    - Camera Features
+    - Camera Features (on the Future Shop site some of these features may appear in other filter categories)
+      - Full Manual Controls (Future Shop)
+      - High Dynamic Range (Future Shop)
+      - High Sensitivity Sensor (Future Shop)
+      - High Speed Burst (Future Shop)
+      - RAW Image Capture (Future Shop)
+      - Wide Angle Lens (Future Shop)
       - HDMI Output
       - Touchscreen
       - Image Stabilization
       - Waterproof/Shockproof
-      - OLED Screen
+      - OLED Screen (Best Buy)
       - GPS
       - Projector Camera
-      - Sweep Panorama
+      - Sweep Panorama (Best Buy)
+      - Panoramic Mode (Future Shop)
       - Front and Back LCD (Best Buy)
+    - Latest Features (Future Shop)
+      - Some of the 'Camera Features' above may be here instead
+      - WiFi
+      - Built-in Projector
+      - 3D
     - Megapixels
       - Check consistency, i.e. units, spacing, formatting, etc.
     - Optical Zoom
@@ -120,6 +142,10 @@ Filters:
       - Check that colours aren't duplicated
     - Max Video Resolution
       - Check consistency, i.e. units, spacing, formatting, etc.
+    - Screen Type (Future Shop)
+      - Some of the 'Camera Features' may be here instead
+      - Articulating Screen
+      - Optical Viewfinder
     - LCD Screen Size
       - Check Consistency, i.e. units, spacing, formatting, etc.
   - Digital SLR
@@ -207,6 +233,26 @@ Filters:
     - Internal/External (Optical only)
       - External
       - Internal
+  - Hard Drive Accessories (Future Shop only)
+    - Product Category
+      - Enclosures
+      - Cables
+      - Docks
+      - Carrying Cases
+      - Interface Cards
+      - Other
+    - Status
+      - Best Sellers
+      - Top Viewed
+      - In-store
+      - Web Only
+      - New Release
+    - Storage Capacity
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
   - Laptops and NetBooks
     - Product Category
       - Macbooks (Future Shop)
@@ -265,10 +311,71 @@ Filters:
       - Check consistency, i.e. spacing, formatting, etc.
     - Video Card Configuration (Best Buy only)
       - Check consistency, i.e. spacing, formatting, etc.
+  - USB (Future Shop only)
+    - Product Category
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Status
+      - On Sale
+      - On Clearance
+      - Best Sellers
+      - Top Viewed
+      - Top-rated
+      - In-store
+      - Web Only
+      - New Release
+    - Storage Capacity
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Colour
+      - Check that colours aren't duplicated
+  - Optical Drives (Future Shop only)
+    - Product Category
+      - Blu-ray Disc Drives
+      - External DVD Writers
+      - Internal DVD Writers
+    - Status
+      - Best Sellers
+      - In-Store
+      - Web Only
+      - Top Viewed
+      - New Release
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Internal/External
+      - External
+      - Internal
+  - Blank Discs and Cases (Future Shop only)
+    - Product Category
+      - Dual Layer DVD
+      - DVD+R
+      - DVD-R
+      - Lightscribe
+      - Printable Discs
+      - Blu-ray
+      - Blank CDs
+      - CD & DVD Storage
+      - CD Wallets
+      - Jewel Cases
+      - Disc Cleaning & Repair
+    - Status
+      - On Sale
+      - Best Sellers
+      - Top Viewed
+      - In-Store
+      - Web Only
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
 
 French:
-  - Check french links for all departments. 
-  - Check that titles are french. 
-  - Check that links go to french PDPs
-  - Check that the copy and units are all french
+  - Check French links for all departments. 
+  - Check that titles are French. 
+  - Check that links go to French PDPs
+  - Check that the copy and units are all French
   - Check that the numbers are formatted in French ($ after the amount, ',' as a decimal separator)
