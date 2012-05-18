@@ -77,9 +77,12 @@ html {
     background: url(<%= asset_data_uri "leftnav_list.gif" %>);
   }
   .ie67 .y_bottom  {
+    background: url(<%= asset_path "leftnav_list.gif" %>);
+  }
+  
+  .ie678 .y_bottom {
     padding-bottom: 0px;
     height: auto;
-    background: url(<%= asset_path "leftnav_list.gif" %>);
     a {
       margin: 0px;
     }
@@ -88,7 +91,7 @@ html {
   .ie_bottom_curve {
     display: none;
   }
-  #IE .ie_bottom_curve {  
+  .ie678 .ie_bottom_curve {  
     display: block;
     width: 190px;
     height: 37px;

@@ -185,13 +185,13 @@
     else
       parts = data.split('[BRK]')
       IEwrapper_pre = "<!--[if lte IE 6]>
-      <div id='IE' class='ie6 ie67'>
+      <div id='IE' class='ie6 ie67 ie678'>
       <![endif]-->
       <!--[if IE 7]>
-      <div id='IE' class='ie7 ie67'>
+      <div id='IE' class='ie7 ie67 ie678'>
       <![endif]-->
       <!--[if IE 8]>
-      <div id='IE' class='ie8'>
+      <div id='IE' class='ie8 ie678'>
       <![endif]-->
       <!--[if gte IE 9]>
       <div id='IE'>
