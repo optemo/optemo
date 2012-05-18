@@ -77,7 +77,12 @@ html {
     background: url(<%= asset_data_uri "leftnav_list.gif" %>);
   }
   .ie67 .y_bottom  {
+    padding-bottom: 0px;
+    height: auto;
     background: url(<%= asset_path "leftnav_list.gif" %>);
+    a {
+      margin: 0px;
+    }
   }
 
   .ie_bottom_curve {
@@ -85,20 +90,9 @@ html {
   }
   #IE .ie_bottom_curve {  
     display: block;
-    width: 37px;
-    height: 33px;
-    background: url(<%= asset_path "IE/filterbar_lower_right_curve.gif" %>);
-    position: absolute;
-    right: -8px;
-    bottom: 23px;
-  }
-  .ie6#IE .ie_bottom_curve {
-    background: url(<%= asset_path "IE/filter_bar_bottom_ie6.gif" %>);
     width: 190px;
-    height: 36px;
-    bottom: 22px;
-    right: 0;
-    clear: both;
+    height: 37px;
+    background: url(<%= asset_path "IE/filterbar_lower_right_curve.gif" %>);
   }
   .pagination-container {
     position: relative;

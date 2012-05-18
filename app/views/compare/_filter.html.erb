@@ -1,3 +1,4 @@
+<div id="inside_filter">
   <div class="y_heading">
     <% if Session.futureshop? -%>
       <div class="refine_text">
@@ -146,5 +147,6 @@
     <% if Session.futureshop? %>» <% end %>
     <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
   </div>
-  <div class="ie_bottom_curve"></div>
+</div>
+<div class="ie_bottom_curve"><!-- --></div>
 <div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
