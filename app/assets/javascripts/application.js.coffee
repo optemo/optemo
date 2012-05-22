@@ -44,6 +44,8 @@
   $('.bundle_more_deals_stub').live 'click', ->
     $(this).siblings('.bundle_item').slideToggle()
     $(this).siblings('.bundle_spacer').slideToggle()
+    $(this).children('.bundle_package_stub_text').each -> 
+      $(this).toggle()
     return false
 
   #/* End of LiveInit functions */
