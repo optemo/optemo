@@ -213,7 +213,6 @@ div#reviews {
     font-size: 13px;
     font-weight: bold;
     padding: 0;
-    margin: 5px 0px 5px 0px;
     text-decoration: none;
     color: #FFF;
   }
@@ -236,26 +235,17 @@ div#reviews {
     display: block;
     width: 100px; /* This is to help with IE6 layout error */
   }
-  #IE .y_bottom a.regular_reset{
-    margin-left: 5px;
-    height: 15px;
-  }
-  .ie7 .y_bottom a {
-    margin-bottom: 0;
-  }
+  
   #IE.ie6 .y_bottom {
     margin-bottom: 10px;
-    padding-bottom: 8px;
-    padding-top: 0;
-    height: 35px;
-    vertical-align: top;
+    padding: 0;
     position: relative;
     margin-bottom: 0;
     clear:both;
+    a {
+      padding: 0;
+    }
   }
-  #IE.ie6 .y_bottom a.regular_reset {
-      margin-bottom: 0;
-  }  
   #bestbuy_sibling_images {
     height: 40px;
     float: right;

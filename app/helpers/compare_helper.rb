@@ -79,7 +79,7 @@ module CompareHelper
     optionlist, toplist = cat_order(f, chosen_cats)
     chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
     expanded = Session.search.expanded.try{|b| b.include?(f.name)}
-    no_display = optionlist.map{|k,v| 1 if v>0}.compact.empty?
+    no_display = !optionlist.to_a.inject(false){|res,(k,v)| res || v > 0} #Don't display if there are no counts
     return {:all_options => optionlist, :top_options => toplist, :expanded => expanded, :no_display => no_display}
   end
   
@@ -350,7 +350,7 @@ module CompareHelper
         optionlist = process_product_type_hash(templist)
         
        else
-        optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
+        optionlist = Hash[*CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}.flatten]
        end
     else
       if f.name == "product_type"
@@ -381,7 +381,7 @@ module CompareHelper
             CatSpec.count_feat(f.name).each {|a,b| optionlist[a.downcase] = b}
         end   
         unless order.empty?
-          optionlist = optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] } 
+          optionlist = Hash[*optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] }.flatten]
         end
       end
     end
