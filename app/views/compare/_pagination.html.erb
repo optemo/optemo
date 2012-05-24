@@ -3,7 +3,7 @@
   <% products = Session.search.paginated_products %>
   <div class='pagination-container<%= " bottom" if local_assigns[:bottom] %>'><span class='pagi-info'><%= page_entries_info(products) %></span>
     <%= raw "<b>#{t('products.page')}:</b>" unless Session.futureshop? %>
-    <%= will_paginate(products, {:previous_label => (Session.futureshop? ? t("will_paginate.page_entries_info.futureshop_previous") : image_tag('prev-page.gif')), :next_label => (Session.futureshop? ? t("will_paginate.page_entries_info.futureshop_next") : image_tag('next-page.gif')), :page_links=>true, :outer_window => -4})%>
+    <%= will_paginate(products, {:previous_label => (Session.futureshop? ? t("will_paginate.page_entries_info.futureshop_previous") : raw("<span class='pagination-prev'></span>")), :next_label => (Session.futureshop? ? t("will_paginate.page_entries_info.futureshop_next") : raw("<span class='pagination-next'></span>")), :page_links=>true, :outer_window => -4}) %>
     <%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" if (local_assigns[:bottom] && !Session.futureshop?) %>
   </div>
 

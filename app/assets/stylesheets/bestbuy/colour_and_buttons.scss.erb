@@ -139,7 +139,27 @@ html {
   .pagination .disabled {
     display: none;
   }
-
+  .pagination-prev {
+    background: url(<%= asset_data_uri 'prev-page.gif' %>) no-repeat;
+    width: 8px;
+    height: 11px;
+    display: inline-block;
+  }
+  .ie67 .pagination-prev {
+    background: url(<%= asset_path 'prev-page.gif' %>) no-repeat center;
+  }
+  .pagination-next {
+    background: url(<%= asset_data_uri 'next-page.gif' %>) no-repeat;
+    width: 8px;
+    height: 11px;
+    display: inline-block;
+  }
+  .ie67 .pagination-next {
+    background: url(<%= asset_path 'next-page.gif' %>) no-repeat center;
+  }
+  #IE.ie7 .pagination-next, #IE.ie7 .pagination-prev {
+    margin-bottom: 3px;
+  }
   .pagi-info {
     position: absolute;
     left: 0;
