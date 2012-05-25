@@ -32,7 +32,7 @@
           optemo_module.submitAJAX() #Auto-submit
         movable: (value) ->
           [curmin,curmax] = (parseFloat(i) for i in value.split(";"))
-          curmin <= parseFloat(t.attr('data-distmax')) and curmax >= parseFloat(t.attr('data-distmin'))
+          curmin < parseFloat(t.attr('data-distmax')) and curmax > parseFloat(t.attr('data-distmin'))
         calculate: (value, label) ->
           #GB / TB conversion
           if label?
