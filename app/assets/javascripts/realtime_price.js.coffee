@@ -83,16 +83,13 @@
                   c.find('.save > span').html(french_price_format(savings) + " $")
                 else
                   c.find('.save > span').html("$" + savings)
-                #Remove saleEnd dates that are in the past -- code this
-              # c.find('.saleends').hide()
-            
             #Set checked flag to true
             c.attr("data-checked", true)
           )
           $('.productinfo[data-checked!="true"]').each( ->
             #These products weren't found so remove links
             t = $(this)
-            title = $(this).children(".easylink")
+            title = t.children(".easylink")
             title.after($('<span>').html(title.html()))
             title.hide()
             #And also remove the add to cart button
