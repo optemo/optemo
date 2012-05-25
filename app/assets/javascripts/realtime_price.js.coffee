@@ -83,8 +83,8 @@
                   c.find('.save > span').html(french_price_format(savings) + " $")
                 else
                   c.find('.save > span').html("$" + savings)
-                #Remove saleEnd data because we don't have accurate ones
-              c.find('.saleends').hide()
+                #Remove saleEnd dates that are in the past -- code this
+              # c.find('.saleends').hide()
             
             #Set checked flag to true
             c.attr("data-checked", true)
