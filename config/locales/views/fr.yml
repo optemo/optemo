@@ -45,7 +45,7 @@ fr:
             selections:       "Votre sélection"
             undo:             "Annuler"
             futureshop_refineyoursearch1: "Peaufinez votre"
-            refineyoursearch2: "RECHERCHE"
+            refineyoursearch2: "recherche"
             
         show:
             title:          "Renseignements sur le produit"

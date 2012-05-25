@@ -1,6 +1,6 @@
 <%if product && product.id%>
   <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
-  <% bundles = product.product_bundles -%>
+  <% bundles = product.product_bundles.map{|b| b if Product.find_by_id(b.bundle_id).instock}.compact -%>
   <% unless bundles.empty? %>
     <div class="bundle_box_border_container" style="<%= 'margin-right:0px;background:none;' if last_in_row %>">
       <div class="bundlesbox">

@@ -95,32 +95,16 @@
       if ($.browser.msie && $.browser.version.substr(0,1)<7) # IE6 comparison page "more specs" spacing issue
         # This is a weird combination of margins, absolute positioning, and an inserted spacer div. It seems stable.
         $('<div>&nbsp;</div>').insertBefore('#info div.togglespecs').css({"height" : "23px", "width" : "1px", "display" : "block", "clear" : "both"})
-        $('#info div.togglespecs').css({'left' : ($("#info").width() - 450) / 2.0, 'bottom' : "15px"})
+        $('#info div.togglespecs').css({'margin-left' : ($("#info").width() - 100) / 4.0, 'margin-right' : 0}) # 4.0? Yes, for the IE6 double-margin bug
       optemo_module.getRealtimePrices(true) # get pricing for compare page
     return false
   
   row_height = (length,isLabel) ->
     h
     if (isLabel)
-      if (length >= 55) 
-        h = 4
-      else if (length >= 37) 
-        h = 3
-      else if (length >= 19) 
-        h = 2
-      else 
-        h = 1
-   
+      h = Math.ceil(length / 18.0)
     else
-      if (length >= 85) 
-        h = 4
-      else if (length >= 57) 
-        h = 3
-      else if (length >= 29) 
-        h = 2
-      else 
-        h = 1
-   
+      h = Math.ceil(length/ 28.0)
     return h
   
   #had to change var row_class to rowClass, because function name became a variable name after first call
@@ -181,10 +165,13 @@
     for heading of grouped_specs
       if (heading != "")
         #Add Heading
-        result += '<div class="'+row_class(row_height(heading.length,true))+'"><div class="cell ' + (if whitebg then 'whitebg' else 'graybg') + ' leftcolumntext" style="font-style: italic;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>'
+        rowHeight = row_height(heading.length,true) * 16
+        # The 16 pixel-per-line height is arbitrary. Different layouts might need a change here.
+        # In that case, it might be a bit of work, but moving to a table-based layout might make sense.
+        result += '<div class="compare_row"><div class="cell ' + (if whitebg then 'whitebg' else 'graybg') + ' leftcolumntext" style="font-style: italic; height: '+rowHeight+'px;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>'
         
         for sku,index in skus  
-          result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + ' spec_column_'+index+'">&nbsp;</div>'
+          result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + ' spec_column_'+index+'" style="height: '+rowHeight+'px;">&nbsp;</div>'
           
         result += "</div>"
         result += divContentHolderTag
@@ -198,11 +185,12 @@
           if (i)
             array.push(i.length)
         
-        #Assign row_class
-        result += '<div class="'+row_class(Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true))) + '">'
+        # Calculate row height
+        rowHeight = Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true)) * 16
+        result += '<div class="compare_row" style="' + 'height: ' + (rowHeight + 6) + 'px;">'
         
         #Row heading
-        result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + ' leftcolumntext">' + spec.replace('&','&amp;') + ":</div>"
+        result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + ' leftcolumntext" style="height: '+rowHeight+'px;">' + spec.replace('&','&amp;') + ":</div>"
         #Data
         for sku, index in skus ###############################
           spec_value = grouped_specs[heading][spec][index]
@@ -210,10 +198,10 @@
             if (spec_value == "No" || spec_value == "Non") 
               spec_value = "-"
 
-            result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + " " + "spec_column_"+ i + '">' + spec_value.replace(/&/g,'&amp;') + "</div>"
+            result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + " " + "spec_column_"+ index + '" style="height: '+rowHeight+'px;">' + spec_value.replace(/&/g,'&amp;') + "</div>"
           else
             #Blank Cell
-            result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + " " + "spec_column_"+ i + '">-</div>'
+            result += '<div class="cell ' + (if (whitebg) then 'whitebg' else 'graybg') + " " + "spec_column_"+ index + '" style="height: '+rowHeight+'px;">-</div>'
           
         result += "</div>"
         whitebg = !whitebg

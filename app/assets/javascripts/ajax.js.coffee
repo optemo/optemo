@@ -79,6 +79,7 @@
       $('#info').css('overflow', 'hidden')
       quickview_close = $("#info .bb_quickview_close").detach()
       quickview_close.prependTo("#opt_outsidecontainer")
+      $('#opt_silkscreen').css({'height' : optemo_module.current_height()+500+'px'}) # This is for the compare screen.
     if (data)
       $('#info').html(data).css('height','')
     else

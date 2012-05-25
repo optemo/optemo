@@ -1,5 +1,14 @@
 #/* Fetching the new prices */
 @module "optemo_module", ->
+  @french_price_format = ( input_price ) ->
+    formatted_price = ""
+    input_dollars = parseInt(input_price) + ""
+    input_cents = parseInt(100 * (input_price - parseInt(input_price)))
+    for char, i in input_dollars.split('').reverse()
+      formatted_price = char + formatted_price
+      formatted_price = ' ' + formatted_price if ((i+1) % 3 == 0 && (input_dollars.length-1) != i)
+    return formatted_price + "," + input_cents
+    
   @getRealtimePrices = (comparison_flag) ->
     if optemo_module.layout == "fs"
       API_URL = "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query="
@@ -43,15 +52,21 @@
               c.find('.saleprice').find('span.price_dollars').html(parseInt(this.salePrice))
               c.find('.saleprice').find('span.price_cents').html(parseInt(100 * (this.salePrice - parseInt(this.salePrice))))
             else # Do the regular (Best Buy) layout
-              c.find('.saleprice > span').html((if optemo_french? then "" else "$") + this.salePrice + (if optemo_french? then " $" else ""))
+              if optemo_french?
+                c.find('.saleprice > span').html(french_price_format(this.salePrice) + " $")
+              else
+                c.find('.saleprice > span').html("$" + this.salePrice)
 
             #Update the regular price
             if optemo_module.layout == "fs"
               c.find('.price').find('span.price_dollars').html(parseInt(this.regularPrice))
               c.find('.price').find('span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
             else
-              c.find('.price > span').html((if optemo_french? then "" else "$") + this.regularPrice + (if optemo_french? then " $" else ""))
-            
+              if optemo_french?
+                c.find('.price > span').html(french_price_format(this.regularPrice) + " $")
+              else
+                c.find('.price > span').html("$" + this.regularPrice)
+                
             #Update the savings
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
             
@@ -64,9 +79,12 @@
               if optemo_module.layout == "fs"
                 c.find('.futureshop_sale_background > span.savings').show().html(parseInt(savings))
               else # Best buy layout
-                c.find('.save > span').html((if optemo_french? then "" else "$") + savings + (if optemo_french? then " $" else ""))
-                #Remove saleEnd data because we don't have accurate ones
-              c.find('.saleends').hide()
+                if optemo_french?
+                  c.find('.save > span').html(french_price_format(savings) + " $")
+                else
+                  c.find('.save > span').html("$" + savings)
+                #Remove saleEnd dates that are in the past -- code this
+              # c.find('.saleends').hide()
             
             #Set checked flag to true
             c.attr("data-checked", true)

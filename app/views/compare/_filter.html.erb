@@ -114,7 +114,7 @@
               <% if show_range -%>
                 <div class="hanging_indent<%= ' disabled' unless show_range %>" <%=raw 'style="font-weight:bold;"' if checked %>>
                   <%= check_box_tag "continuous[#{f.name}]", "#{dr[:min]};#{dr[:max]}", checked ,:disabled => (available_count == 0 and !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => show_range ? 'true' : 'false', :"data-min" => dr[:min], :"data-max" => dr[:max] %>
-                  <%= (available_count > 0) ? dr[:display] : link_to(dr[:display], "#", :class => "checkbox_text") %>
+                  <%= (available_count <= 0) ? dr[:display] : link_to(dr[:display], "#", :class => "checkbox_text") %>
                   <span class="av_count"><%= "(#{available_count})" unless checked %></span>
                 </div>
               <% end -%>	
