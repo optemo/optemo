@@ -77,7 +77,6 @@ module CompareHelper
   
   def getCategoricalFeature(f, chosen_cats)
     optionlist, toplist = cat_order(f, chosen_cats)
-    chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
     expanded = Session.search.expanded.try{|b| b.include?(f.name)}
     no_display = !optionlist.to_a.inject(false){|res,(k,v)| res || v > 0} #Don't display if there are no counts
     return {:all_options => optionlist, :top_options => toplist, :expanded => expanded, :no_display => no_display}
@@ -353,6 +352,7 @@ module CompareHelper
         end
       elsif f.name == "brand" # To ensure alphabetical sorting (regardless of capitalization)
         optionlist = CatSpec.count_feat(f.name)
+        chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
         if optionlist.length > 10
           toplist = optionlist.keys[0..9]
         end
