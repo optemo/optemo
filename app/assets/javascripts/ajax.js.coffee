@@ -144,6 +144,9 @@
     # Disable interface elements.
     $('.binary_filter, .cat_filter').attr('disabled', true)
     optemo_module.loading_indicator_state.disable = true #Disables any live click handlers and sliders
+    $('.jslider-pointer').each( ->
+      $(this).addClass('jslider-pointer-disabled')
+    )
     
     optemo_module.lasthash = window.location.hash.replace(/^#/, '') #Save the last request hash in case there is an error
     $.history.load($("#actioncount").html(),myurl,mydata)
@@ -224,6 +227,10 @@
       clearTimeout(optemo_module.loading_indicator_state.socket_error_timer) # We need to clear the timeout error here
       optemo_module.loading_indicator_state.spinner_timer = null
       optemo_module.loading_indicator_state.socket_error_timer = null
+      $('.jslider-pointer-disabled').each( ->
+        $(this).removeClass('jslider-pointer-disabled')
+      )
+      
 
   #Serialize an form into a hash, Warning: duplicate keys are dropped
   $.fn.serializeObject = ->

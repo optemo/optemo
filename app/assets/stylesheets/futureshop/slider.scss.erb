@@ -37,6 +37,14 @@
     background-image: url(<%= asset_path 'sliderhandlebox_futureshop.gif' %>);
   }
 }
+.jslider div.jslider-pointer-disabled {
+  background: url(<%= asset_data_uri 'sliderhandlebox_futureshop-disabled.gif' %>) no-repeat center center;
+}
+.ie6,.ie7 {
+  .jslider div.jslider-pointer-disabled {
+    background-image: url(<%= asset_path 'sliderhandlebox_futureshop-disabled.gif' %>);
+  }
+}
 #IE .jslider .jslider-pointer {
   width: 13px;
   margin-left: -6px;
