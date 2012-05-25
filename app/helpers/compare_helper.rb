@@ -199,7 +199,11 @@ module CompareHelper
     if spec.instance_of?(Userdatabin)
       spec.name
     elsif spec.instance_of?(Userdatacat)
-      t(spec.value, :scope => [:cat_option, spec.name], :default => spec.value)
+      if spec.name == "product_type"
+        t("#{spec.value}.name", :default => spec.value)
+      else
+        t(spec.value, :scope => [:cat_option, Session.retailer, spec.name], :default => spec.value)
+      end
     elsif spec.instance_of?(Userdatacont)
       unless range.nil?
         range[:display]
