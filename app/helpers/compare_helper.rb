@@ -165,23 +165,13 @@ module CompareHelper
 
   def getSearchFilters()
     # getting the currently applied filters
-    
     filters = Session.search.userdataconts + Session.search.userdatacats + Session.search.userdatabins
-    if filters.empty?
-      return []
-    end
-    # grouping by facet name
-    grouped = {}
-    filters.each do |fs|
-      name = fs.name
-      if grouped.has_key?(name)
-        grouped[name] << fs 
-      else
-        grouped[name] = [fs]
-      end
-    end
+    return [] if filters.empty?
+
     # make the filter facets grouped by name into a list sorted by the order of each facet
-    sorted = grouped.sort_by {|name, v| Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').value }
+    sorted = filters.group_by(&:name).sort_by  do |name, values|
+      Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').try(:value) || 0
+    end
     
     # add ordering
     # FIXME: make page_order into a hash by name

@@ -25,24 +25,21 @@ class CatSpec < ActiveRecord::Base
   end
   
   def self.count_feat(feat,level=nil)
-    q = {}
     if feat == "product_type" && level == 1
       feat= "first_ancestors"
     elsif feat=="product_type" && level == 2
       feat= "second_ancestors"
     end
-    Session.search.solr_cached.facet(feat.to_sym).rows.each do |r|
+    Session.search.solr_cached.facet(feat.to_sym).rows.inject({}) do |q,r|
       q[r.value] = r.count
+      q
     end
-    q
   end
   
   def self.order(feat)
     q = Facet.where(used_for: "ordering", product_type: Session.product_type, feature_type: feat)
     CachingMemcached.cache_lookup("CatOrder#{q.to_sql.hash}") do
-      h={}
-      q.each{|f| h[f.name] = f.value}
-      h
+      q.inject({}){|h,f| h[f.name] = f.value; h}
     end
   end
 end
