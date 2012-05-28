@@ -197,7 +197,7 @@ module CompareHelper
   
   def displaySelectedString(spec, range)
     if spec.instance_of?(Userdatabin)
-      spec.name
+      t "#{Session.product_type}.filter.#{spec.name}.name", default: spec.name
     elsif spec.instance_of?(Userdatacat)
       if spec.name == "product_type"
         t("#{spec.value}.name", :default => spec.value)
@@ -215,9 +215,8 @@ module CompareHelper
 
   def getRanges(feat)
     num_ranges = 6
-    cats = Session.search.userdatacats.map{|d| d if d.name=="product_type"}.compact
     feats = Session.features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact
-    Ranges.cacherange(feats, num_ranges, cats)[feat.to_sym]
+    Ranges.cacherange(feats, num_ranges, [])[feat.to_sym]
   end  
   
 	def getDist(feat)
