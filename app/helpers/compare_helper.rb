@@ -197,7 +197,7 @@ module CompareHelper
   
   def displaySelectedString(spec, range)
     if spec.instance_of?(Userdatabin)
-      spec.name
+      t "#{Session.product_type}.filter.#{spec.name}.name", default: spec.name
     elsif spec.instance_of?(Userdatacat)
       if spec.name == "product_type"
         t("#{spec.value}.name", :default => spec.value)
