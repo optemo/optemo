@@ -46,6 +46,7 @@ en:
             refineyoursearch1: "REFINE YOUR SEARCH"
             futureshop_refineyoursearch1: "Refine Your Search"
             refineyoursearch2: ""
+            environmentalfee: "Environmental Handling Fee"
         show:
             title:          "Product Details"
             noimage:        "No Image Available"

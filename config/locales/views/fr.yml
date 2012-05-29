@@ -46,7 +46,7 @@ fr:
             undo:             "Annuler"
             futureshop_refineyoursearch1: "Peaufinez votre"
             refineyoursearch2: "recherche"
-            
+            environmentalfee: "Fee de environmental handlage"
         show:
             title:          "Renseignements sur le produit"
             noimage:        "Image non disponible"
