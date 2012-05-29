@@ -4,6 +4,7 @@
   @SliderInit = ->
     $('.slider').each ->
       t = $(this)
+      set_handle = $("#optemo_filter").data("which_slider")
       min = parseFloat(t.attr('data-min'))
       max = parseFloat(t.attr('data-max'))
       mystep = parseFloat(t.attr('data-step'))
@@ -19,6 +20,7 @@
         step: mystep
         smooth: true
         round: if mystep >= 1 then 0 else if mystep * 10 >= 1 then 1 else 2
+        top_handle: if set_handle then set_handle else 0
         dimension: ''
         format: myformat
         skin: "plastic"
