@@ -177,19 +177,21 @@ module CompareHelper
     page_order = Session.features['filter'].map{ |f| {:name => f.name, :feature_type => f.feature_type, :value => f.value, :printed => false} }
     new_sorted = []
     sorted.each do |name, values|
-      new_group = {name => []}
-      values.each do |v|
-        item = page_order.select{|f| f[:name] == name}[0] # this possibly can be optimized
-        if item[:feature_type] == 'Binary'
-          past_headings = page_order.select{|f| f[:value] < item[:value] and f[:feature_type] == 'Heading'}
-          if !past_headings.empty? and past_headings.last[:printed] == false
-            past_headings.last[:printed] = true
-            new_group[name] << Session.features['filter'].select{ |f|f.name == past_headings.last[:name] }.first
+      item = page_order.select{|f| f[:name] == name}[0]
+      unless item.nil?
+        new_group = {name => []}
+        values.each do |v|
+          if item[:feature_type] == 'Binary'
+            past_headings = page_order.select{|f| f[:value] < item[:value] and f[:feature_type] == 'Heading'}
+            if !past_headings.empty? and past_headings.last[:printed] == false
+              past_headings.last[:printed] = true
+              new_group[name] << Session.features['filter'].select{ |f|f.name == past_headings.last[:name] }.first
+            end
           end
+          new_group[name] << v
         end
-        new_group[name] << v
+        new_sorted << [name, new_group[name]]
       end
-      new_sorted << [name, new_group[name]]
     end
     # Possible extension: also order the values within each 'name', i.e. the different categorical values of each facet
     new_sorted
