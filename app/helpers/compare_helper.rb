@@ -245,8 +245,13 @@ module CompareHelper
         end
         dist[i] = sum
       end
-      dataMin = discretized.select{|p| (min..max)===p.value }.first.value
-      dataMax = discretized.select{|p| (min..max)===p.value }.last.value
+      unless discretized.select{|p| (min..max)===p.value }.empty?
+        dataMin = discretized.select{|p| (min..max)===p.value }.first.value
+        dataMax = discretized.select{|p| (min..max)===p.value }.last.value
+      else
+        dataMin = min
+        dataMax = max
+      end
       #Normalize to a max of 1
       maxval = dist.max
       dist.map!{|i| i.to_f / maxval}
