@@ -166,7 +166,7 @@ module CompareHelper
     # getting the currently applied filters
     filters = Session.search.userdataconts + Session.search.userdatacats + Session.search.userdatabins
     return [] if filters.empty?
-
+    
     # make the filter facets grouped by name into a list sorted by the order of each facet
     sorted = filters.group_by(&:name).sort_by  do |name, values|
       Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').try(:value) || 0
@@ -201,13 +201,12 @@ module CompareHelper
     if spec.instance_of?(Userdatabin)
       t "#{Session.product_type}.filter.#{spec.name}.name", default: spec.name
     elsif spec.instance_of?(Userdatacat)
-      CGI::unescape(
-        if spec.name == "product_type"
-          t("#{spec.value}.name", :default => spec.value)
-        else
-          t(spec.value, :scope => [:cat_option, Session.retailer, spec.name], :default => spec.value)
-        end
-      )
+      escaped_value = spec.value.gsub('.','-')
+      if spec.name == "product_type"
+        t("#{escaped_value}.name", :default => spec.value)
+      else
+        t(escaped_value, :scope => [:cat_option, Session.retailer, spec.name], :default => spec.value)
+      end
     elsif spec.instance_of?(Userdatacont)
       unless range.nil?
         range[:display]
