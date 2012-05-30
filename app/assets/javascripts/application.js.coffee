@@ -42,9 +42,10 @@
     return false
 
   $('.bundle_more_deals_stub').live 'click', ->
-    $(this).siblings('.bundle_item').slideToggle()
-    $(this).siblings('.bundle_spacer').slideToggle()
-    $(this).children('.bundle_package_stub_text').each -> 
+    t = $(this)
+    t.siblings('.bundle_item').slideToggle()
+    t.siblings('.bundle_spacer').slideToggle()
+    t.children('.bundle_package_stub_text, .bundle_icon').each -> 
       $(this).toggle()
     return false
 

@@ -29,7 +29,8 @@
         <% end %>
         <% if bundles.length > 1 %>
           <div class="bundle_more_deals_stub">
-            <div class="more_package_deals_plus"><!-- --></div>
+            <div class="more_package_deals_plus bundle_icon"><!-- --></div>
+            <div class="more_package_deals_minus bundle_icon" style="display:none;"><!-- --></div>
             <div class="bundle_package_stub_text"><%= raw t("products.show.morepackagedeals")%></div>
             <div class="bundle_package_stub_text" style="display:none;"><%= raw t("products.show.fewerpackagedeals")%></div>
           </div>

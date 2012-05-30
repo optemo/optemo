@@ -276,18 +276,26 @@
   .ie67 .bundle_image {
     background-image: url(<%= asset_path('bundle_arrow.gif') %>);    
   }
-  .more_package_deals_plus {
+  .bundle_icon {
     width: 16px;
     height: 16px;
     position: absolute;
     top: 1px;
     left: 12px; 
+  }
+  .more_package_deals_plus {
     background: url(<%= asset_data_uri('more_package_deals_plus.gif') %>) no-repeat bottom right;
   }
   .ie67 .more_package_deals_plus {
     background-image: url(<%= asset_path('more_package_deals_plus.gif') %>);  
-  } 
-  .ie6 .more_package_deals_plus {
+  }
+  .more_package_deals_minus {
+    background: url(<%= asset_data_uri('more_package_deals_minus.gif') %>) no-repeat bottom right;
+  }
+  .ie67 .more_package_deals_minus {
+    background-image: url(<%= asset_path('more_package_deals_minus.gif') %>);  
+  }
+  .ie6 .bundle_icon {
     left: -18px;
   }
   .bundle_package_stub_text {
