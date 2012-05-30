@@ -11,7 +11,7 @@
           <% bundle_link = (TextSpec.cacheone(bundle.bundle_id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")) -%>
           <div class="<%= i == 0 ? 'bundle_first_item' : 'bundle_item'%>">
             <div class="bundle_header">
-              <%= raw t("products.show.packagedeals")+"<br>" if i == 0 %>
+              <%= raw t("products.show.packagedeals")+"<br><div style='height: 7px'></div>" if i == 0 %>
               <%= link_to number_to_currency(bundle_cont_specs["saleprice"], precision: 2), bundle_link, :class => "easylink" %>
             </div>
             <% bundleText = TextSpec.cacheone(bundle_id, "bundle#{fr?}") %>
