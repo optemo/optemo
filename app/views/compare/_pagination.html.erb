@@ -1,5 +1,5 @@
 
-<% if Session.search.products_size > SearchProduct.per_page %>
+<% if Session.search.products_size > Product.per_page %>
   <% products = Session.search.paginated_products %>
   <div class='pagination-container<%= " bottom" if local_assigns[:bottom] %>'><span class='pagi-info'><%= page_entries_info(products) %></span>
     <%= raw "<b>#{t('products.page')}:</b>" unless Session.futureshop? %>

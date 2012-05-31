@@ -14,6 +14,7 @@ class Product < ActiveRecord::Base
   has_one :equivalence
 
   attr_writer :product_name
+  self.per_page = 18 #for will_paginate
   
   searchable do
     #text :title do

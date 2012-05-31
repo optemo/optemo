@@ -33,61 +33,6 @@ class ContSpec < ActiveRecord::Base
   def self.initial_specs(feat)
     joins("INNER JOIN search_products ON cont_specs.product_id = search_products.product_id").where(:cont_specs => {:name => feat}, :search_products => {:search_id => Session.product_type_id}).select("value").all.map(&:value)
   end
-
-  public
-  class << self
-    def fq2
-      mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-      mybins = Session.search.userdatabins
-      myconts = Session.search.userdataconts
-      res = ContSpec.joins("INNER JOIN (#{Equivalence.no_duplicate_variations(mycats,mybins,myconts,Session.search.sortby).to_sql}) as pids ON pids.product_id = `cont_specs`.`product_id`").products_and_specs.sorting(Session.search.sortby)
-      q = res.to_sql
-      cached = CachingMemcached.cache_lookup("Products-#{q.hash}") do
-        run_query_no_activerecord(q)
-      end
-      #ComparableSet.from_storage(cached)
-      cached.map{|c|ProductAndSpec.from_storage(c)}
-    end
-  end
-    private
-  class << self
-    def sorting(sortby)
-      sortby ||= "utility" #Default sorting
-      if sortby =~ /(\w+)_asc/
-          sortby = $1
-          Session.features['sortby'].select{|f|f.name == sortby}.first.style == 'asc'
-          order = "ASC"
-      else
-          order =  "DESC"
-      end
-      joins("INNER JOIN cont_specs cont_specs_sort ON cont_specs_sort.product_id = `cont_specs`.product_id").where("cont_specs_sort.name = '#{sortby}'").order("cont_specs_sort.value #{order}")
-    end
-    
-    def products_and_specs
-      #This returns product ids along with products spec names and values, to be used in ProductAndSpec
-      select("`cont_specs`.`product_id`, group_concat(`cont_specs`.name) AS names, group_concat(`cont_specs`.value) AS vals").group("`cont_specs`.`product_id`")
-    end
-    
-    def run_query_no_activerecord(q)
-      #We don't want to store the activerecord here
-      tried_once = true
-      begin
-        result = self.connection.execute(q).to_a
-        raise SearchError, "No products match that search criteria for #{Session.product_type}" if result.empty?
-      rescue SearchError
-        #Check if the initial products are missing
-        if SearchProduct.search_id_q.count == 0 && tried_once
-          SearchProduct.transaction do
-            Product.instock.current_type.map{|product| SearchProduct.new(:product_id => product.id, :search_id => Session.product_type_id)}.each(&:save)
-          end
-          tried_once = false
-          retry
-        else
-          raise
-        end
-      end
-      result
-    end
-  end
+  
 end
 class SearchError < StandardError; end
