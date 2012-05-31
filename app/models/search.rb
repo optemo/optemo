@@ -19,6 +19,7 @@ class Search < ActiveRecord::Base
     mycats = opt[:mycats] || userdatacats
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || @validated_keyword
+    
     filtering = Product.search do
    
       if search_term
@@ -315,19 +316,23 @@ class Search < ActiveRecord::Base
     @parentconts=[]
     r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
-      v.split("*").each do |cont|
-        if res = r.match(cont)
-          @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
+      unless extra_dynamic_facet?(k, p)
+        v.split("*").each do |cont|
+          if res = r.match(cont)
+            @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
+          end
         end
-      end    
+      end
     end
     
     #Binary Features
     @userdatabins = []
     Maybe(p[:binary]).each_pair do |k,v|
-      #Handle false booleans
-      if v != '0'
-        @userdatabins << Userdatabin.new({:name => k, :value => v})
+      unless extra_dynamic_facet?(k, p)
+        #Handle false booleans
+        if v != '0'
+          @userdatabins << Userdatabin.new({:name => k, :value => v})
+        end
       end
     end
     
@@ -336,22 +341,24 @@ class Search < ActiveRecord::Base
     @userdatacats = []
     @parentcats=[]
     Maybe(p[:categorical]).each_pair do |k,v|
-      if k == "product_type"
-         temp=[]
-         v.split("*").each do |cat|
-           nested_cats = cat.split("+")
-           nested_cats.each do |subcat|
-              @parentcats << Userdatacat.new({:name => k , :value => temp.delete(subcat)})  if temp.include?(subcat)
+      unless extra_dynamic_facet?(k, p)
+        if k == "product_type"
+           temp=[]
+           v.split("*").each do |cat|
+             nested_cats = cat.split("+")
+             nested_cats.each do |subcat|
+                @parentcats << Userdatacat.new({:name => k , :value => temp.delete(subcat)})  if temp.include?(subcat)
+             end
+             temp << nested_cats.last if nested_cats.last 
            end
-           temp << nested_cats.last if nested_cats.last 
-         end
-         temp.each do |t|
-            @userdatacats << Userdatacat.new({:name => k, :value => t})
-         end
-         temp=[]
-      else   
-        v.split("*").each do |cat|
-          @userdatacats << Userdatacat.new({:name => k, :value => cat})
+           temp.each do |t|
+              @userdatacats << Userdatacat.new({:name => k, :value => t})
+           end
+           temp=[]
+        else   
+          v.split("*").each do |cat|
+            @userdatacats << Userdatacat.new({:name => k, :value => cat})
+          end
         end
       end
     end
@@ -369,6 +376,24 @@ class Search < ActiveRecord::Base
       @parentconts= []
     end
 
+  end
+  
+  def extra_dynamic_facet?(name, params)
+    # condition true iff the facet is a dynamic facet but a matching product category is not also selected in the search
+    dynamic_facets = Facet.find_by_name_and_product_type(name, Session.product_type).dynamic_facets
+    unless dynamic_facets.empty? or name == 'product_type'
+      unless params[:categorical].nil?
+        if product_types = params[:categorical][:product_type]
+          product_types.split('*').each do |p_type|
+            unless dynamic_facets.where(:category => p_type).empty?
+              return false
+            end
+          end
+        end
+      end
+      return true
+    end
+    return false # default to false
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
