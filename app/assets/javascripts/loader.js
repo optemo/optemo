@@ -79,7 +79,7 @@ var urlRegex = new RegExp("([0-9]+)opt\.aspx", "i");
 var url_category = urlRegex.exec(window.location.href);
 if (url_category != null) {
   var opt_brand = new RegExp("futureshop\.ca", "i").exec(window.location.href);
-  opt_category_id = (opt_brand ? "F" : "B") + url_passed_category[1];
+  opt_category_id = (opt_brand ? "F" : "B") + url_category[1];
 }
 
 //Check the URL for the categories in the category_hash  
