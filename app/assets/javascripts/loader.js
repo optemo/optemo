@@ -73,6 +73,14 @@ if (url_passed_category == null)
   var opt_category_id = 0;
 else
   var opt_category_id = url_passed_category[1] || 0;
+  
+//Check for new BB URL pattern
+var urlRegex = new RegExp("(\d)+opt\.aspx");
+var url_category = urlRegex.exec(window.location.href);
+if (url_category != null) {
+  var opt_brand = new RegExp("futureshop\.ca").exec(window.location.href);
+  opt_category_id = (opt_brand ? "F" : "B") + url_passed_category[1];
+}
 
 //Check the URL for the categories in the category_hash  
 for (var i in category_id_hash) {
