@@ -23,9 +23,7 @@
     <div id='your_selections' class='feature'>
       <div class="selection_label"><%= t('products.compare.selections') %></div>
       <div id="selections_text" class='categorical'>
-        <% grouped_filters.each do |f| -%>
-          <% values = f[1] %>
-          <% fname = f[0] %>
+        <% grouped_filters.each do |fname, values| -%>
           <% unless values.nil? %>
             <% if values.count > 0 %>
               <% unless spec_type(values.first) == 'facet' or spec_type(values.first) == 'binary' %>
@@ -64,7 +62,7 @@
     </div>
   <% end %>
   <form id="filter_form" method="get" action="/compare">
-    <% #Function that determines which facets to display and pulls up the values needed to display %>
+    <%# Function that determines which facets to display and pulls up the values needed to display %>
     <% get_active_features().each do |display_feature| -%>
       <% f = display_feature[:f] -%>
       <div class="feature">
@@ -83,7 +81,7 @@
             </div>
           <% else %>
             <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-            <% # TODO: look into the difference between the two tests -- no_display vs optionlist %>
+            <%# TODO: look into the difference between the two tests -- no_display vs optionlist %>
             <% unless display_feature[:all_options].empty? %>
               <% unless display_feature[:no_display] %>
                 <%= render partial: 'filter_label', object: f %>
