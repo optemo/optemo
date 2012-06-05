@@ -27,7 +27,7 @@ class DirectComparisonController < ApplicationController
     # even though it seems deprecated. Ask Ray -ZAT
     Session.set_features([])
     @bestvalue = calculateBestValues
-
+    
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @products }
@@ -43,16 +43,16 @@ private
         # For every feature in ContinuousFeatures
         # For every product in @products
         # Find the min value and assign @bestvalue[feature]=product-id
-        bestval = -1000000000
+        bestval = nil
         bestproducts = []
         if LOW_IS_BETTER.include?(feature.name)
           @products.each do |p|
             next if @sp["Continuous"][p.id][feature.name].nil?
             featval = @sp["Continuous"][p.id][feature.name]*(feature.value < 0 ? -1 : 1)
-            if featval < bestval*-1
+            if bestval.nil? or featval < bestval
               bestproducts = [p.id]
               bestval = featval
-            elsif featval == bestval
+            elsif !featval.nil? and featval == bestval
               bestproducts << p.id
             end
           end
@@ -60,10 +60,10 @@ private
           @products.each do |p|
             next if @sp["Continuous"][p.id][feature.name].nil?
             featval = @sp["Continuous"][p.id][feature.name]*(feature.value < 0 ? -1 : 1)
-            if featval > bestval
+            if bestval.nil? or featval > bestval
               bestproducts = [p.id]
               bestval = featval
-            elsif featval == bestval
+            elsif !featval.nil? and featval == bestval
               bestproducts << p.id
             end
           end
