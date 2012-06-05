@@ -102,11 +102,11 @@ class SearchProduct < ActiveRecord::Base
     def sorting(sortby,table_id)
       sortby ||= "utility" #Default sorting
       if sortby =~ /(\w+)_asc/
-          sortby = $1
-          Session.features['sortby'].select{|f|f.name == sortby}.first.style == 'asc'
-          order = "ASC"
+        sortby = $1
+        Session.features['sortby'].select{|f|f.name == sortby}.first.style == 'asc'
+        order = "ASC"
       else
-          order =  "DESC"
+        order =  "DESC"
       end
       where("cont_specs#{table_id}.name = '#{sortby}'").order("cont_specs#{table_id}.value #{order}")
     end
