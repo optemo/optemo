@@ -19,28 +19,30 @@ class Search < ActiveRecord::Base
     mycats = opt[:mycats] || userdatacats
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || @validated_keyword
+    #puts "\nmybins: #{mybins}\nmycats: #{mycats}\nmyconts: #{myconts}\n"
     filtering = Product.search do
-   
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
-        
         fulltext phrase do
-        #boost(
-        #  function do
-        #    for i in (0..size-1)
-        #      a = sum(filters_bins[i].name.to_sym, a)
-        #    end
-        #  end       
-        #)
+          #boost() 
+          #  function do
+          #    for i in (0..size-1)
+          #      a = sum(filters_bins[i].name.to_sym, a)
+          #    end
+          #  end
+          # )
           filters_bins.each do |b|
+            puts b.name
             boost(30) {with(b.name.to_sym, b.value)}
           end
           
           filters_cats.each do |ca|
+            puts ca.name
             boost(20) {with ca.name, ca.value}
-          end    
+          end
           
           filters_conts.each do |c|
+            puts c.name
             boost(10) { with (c.name.to_sym), c.min||0..c.max||100000}   
           end
         end
@@ -56,6 +58,10 @@ class Search < ActiveRecord::Base
         cat_filters[name] = any_of do  #disjunction inside the category part
           group.each do |cats|
             if cats.name == "product_type"
+              puts "PRODUCT TYPE"
+              puts cats.product_id
+              puts cats.value
+              puts
               leaves = ProductCategory.get_leaves(cats.value)
               with :product_type, leaves  
             else
@@ -64,7 +70,7 @@ class Search < ActiveRecord::Base
           end
         end
       end
-     
+      
       #The default is a conjunction for all the items
       mybins.each do |bins|
         with bins.name.to_sym, bins.value
@@ -126,15 +132,15 @@ class Search < ActiveRecord::Base
   end
   
   def userdataconts
-      @userdataconts ||= Userdatacont.find_all_by_search_id(id)
+    @userdataconts ||= Userdatacont.find_all_by_search_id(id)
   end
   
   def userdatacats
-      @userdatacats ||= Userdatacat.find_all_by_search_id(id)
+    @userdatacats ||= Userdatacat.find_all_by_search_id(id)
   end
   
   def userdatabins
-      @userdatabins ||= Userdatabin.find_all_by_search_id(id)
+    @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
   def parentcats
     @parentcats ||=[]
@@ -145,35 +151,35 @@ class Search < ActiveRecord::Base
   end  
   
   def filters_cats
-      @filters_cats ||= []
+    @filters_cats ||= []
   end
   
   def filters_conts
-      @filters_conts ||= []
+    @filters_conts ||= []
   end
   
   def filters_bins
-      @filters_bins ||= []
+    @filters_bins ||= []
   end
  
   def paginated_products #set the paginated_products
     unless @paginated_products
-       products
+      products
     end
     @paginated_products
   end
  
   def products_size
-     unless @products_size
-       products
-      end
-      @products_size     
+    unless @products_size
+      products
+    end
+    @products_size     
   end  
   def validated_keyword
     unless @validated_keyword
-       products
-      end
-      @keyword
+      products
+    end
+    @keyword
   end  
   def products
     @validated_keyword = keyword_search
@@ -213,7 +219,7 @@ class Search < ActiveRecord::Base
   def grouping(things)    
     res=[]
     things.group(:eq_id_str).groups.each do |g|
-         res << g.results.first
+      res << g.results.first
     end
     res
   end

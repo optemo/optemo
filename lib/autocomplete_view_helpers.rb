@@ -90,7 +90,6 @@
 #
 #  
 module AutocompleteViewHelpers
-  
   # Generates a text input using the given <code>object_name</code> and <code>method</code>.
   # The generated text field autocompletes given <code>solr_url</code>: the url to your solr instance (e.g. http://127.0.0.1:8983/solr/)
   # Autocompletion is fetching results that only begins with the given part of word.

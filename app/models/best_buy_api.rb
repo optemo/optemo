@@ -82,7 +82,6 @@ class BestBuyApi
     end
     
     def keyword_search(query)
-      
         page = 1
         totalpages = nil
         skus = []

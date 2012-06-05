@@ -12,11 +12,11 @@ class Product < ActiveRecord::Base
   has_many :product_siblings
   has_many :product_bundles
   has_one :equivalence
-
+  
   attr_writer :product_name
+  attr_writer :all_searchable_data
   
   searchable do
-    #text :title do
     text :title do
       cat_specs.find_by_name("title").try(:value)
     end
@@ -34,25 +34,26 @@ class Product < ActiveRecord::Base
     string :first_ancestors
     string :second_ancestors
     
-   (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
-    if (s.feature_type == "Continuous")
-      float s.name.to_sym, trie: true do
-        cont_specs.find_by_name(s.name).try(:value)
-      end
-    elsif (s.feature_type == "Categorical")
-      string s.name.to_sym do
-        cat_specs.find_by_name(s.name).try(:value)
-      end
-    elsif (s.feature_type == "Binary")
-      string s.name.to_sym do
-        bin_specs.find_by_name(s.name).try(:value)
+    (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
+      if (s.feature_type == "Continuous")
+        float s.name.to_sym, trie: true do
+          cont_specs.find_by_name(s.name).try(:value)
+        end
+      elsif (s.feature_type == "Categorical")
+        string s.name.to_sym do
+          cat_specs.find_by_name(s.name).try(:value)
+        end
+      elsif (s.feature_type == "Binary")
+        string s.name.to_sym do
+          bin_specs.find_by_name(s.name).try(:value)
+        end
       end
     end
-   end
     float :lr_utility, trie: true do
       cont_specs.find_by_name(:lr_utility).try(:value)
     end
-    autosuggest :product_name, :using => :instock?                  
+    autosuggest :all_searchable_data, :using => :instock?
+    autosuggest :product_name, :using => :instock?
   end
   
   def first_ancestors

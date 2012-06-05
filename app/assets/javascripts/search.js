@@ -19,7 +19,6 @@ optemo_module = (function (my){
   $('#keyword_submit').live("click", function(){
    	if (my.loading_indicator_state.disable) return false;
  	 	var selections = get_filtering_specs();
-	
 		if ($("#product_name").val()!="" && $("#product_name").val()!= "Keyword or Web Code")
 		 {my.ajaxcall("/search", $.extend(selections,{"keyword" : $("#product_name").val()}));}
 		else
@@ -39,7 +38,7 @@ optemo_module = (function (my){
       my.ajaxcall('/', {});
       return false;
   });
- 
+
   /* End of LiveInit Functions */
   return my;
 })(optemo_module || {});

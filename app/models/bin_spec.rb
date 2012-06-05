@@ -1,5 +1,6 @@
 class BinSpec < ActiveRecord::Base
   belongs_to :product
+  
   # Get specs for a single item
   def self.cache_all(p_id)
     CachingMemcached.cache_lookup("BinSpecs#{p_id}") do
