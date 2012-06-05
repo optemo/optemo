@@ -315,9 +315,15 @@ class Search < ActiveRecord::Base
     
     @userdataconts = []
     @parentconts=[]
+    
+    unless p[:categorical].nil?
+      product_types = p[:categorical][:product_type]
+    end  
+    current_product_type = Session.product_type
+    
     r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
-      unless extra_dynamic_facet?(k, p)
+      unless extra_dynamic_facet?(k, product_types, current_product_type)
         v.split("*").each do |cont|
           if res = r.match(cont)
             @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
@@ -329,7 +335,7 @@ class Search < ActiveRecord::Base
     #Binary Features
     @userdatabins = []
     Maybe(p[:binary]).each_pair do |k,v|
-      unless extra_dynamic_facet?(k, p)
+      unless extra_dynamic_facet?(k, product_types, current_product_type)
         #Handle false booleans
         if v != '0'
           @userdatabins << Userdatabin.new({:name => k, :value => v})
@@ -342,7 +348,7 @@ class Search < ActiveRecord::Base
     @userdatacats = []
     @parentcats=[]
     Maybe(p[:categorical]).each_pair do |k,v|
-      unless extra_dynamic_facet?(k, p)
+      unless extra_dynamic_facet?(k, product_types, current_product_type)
         if k == "product_type"
            temp=[]
            v.split("*").each do |cat|
@@ -379,22 +385,29 @@ class Search < ActiveRecord::Base
 
   end
   
-  def extra_dynamic_facet?(name, params)
-    # condition true iff the facet is a dynamic facet but a matching product category is not also selected in the search
-    dynamic_facets = Facet.find_by_name_and_product_type(name, Session.product_type).dynamic_facets
-    unless dynamic_facets.empty? or name == 'product_type'
-      unless params[:categorical].nil?
-        if product_types = params[:categorical][:product_type]
-          product_types.split('*').each do |p_type|
-            unless dynamic_facets.where(:category => p_type).empty?
-              return false
+  def extra_dynamic_facet?(facet_name, selected_product_types, current_product_type)
+    CachingMemcached.cache_lookup("ExtraFacet#{facet_name}Selected#{selected_product_types}Current#{current_product_type}") do
+      # condition true iff the facet is a dynamic facet but a matching product category is not also selected in the search
+      category_found = false
+      unless facet_name == 'product_type'
+        dynamic_facets = Facet.find_by_name_and_product_type(facet_name, current_product_type).dynamic_facets
+        unless dynamic_facets.empty?
+          unless selected_product_types.nil?
+            selected_product_types.split('*').each do |p_type|
+              category_found = true unless dynamic_facets.where(:category => p_type).empty?
             end
           end
+          if category_found == false
+            true
+          else
+            false
+          end
+        else
+          false
         end
       end
-      return true
+      false
     end
-    return false # default to false
   end
   
   # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
