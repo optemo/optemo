@@ -32,17 +32,14 @@ class Search < ActiveRecord::Base
           #  end
           # )
           filters_bins.each do |b|
-            puts b.name
             boost(30) {with(b.name.to_sym, b.value)}
           end
           
           filters_cats.each do |ca|
-            puts ca.name
             boost(20) {with ca.name, ca.value}
           end
           
           filters_conts.each do |c|
-            puts c.name
             boost(10) { with (c.name.to_sym), c.min||0..c.max||100000}   
           end
         end
@@ -58,10 +55,6 @@ class Search < ActiveRecord::Base
         cat_filters[name] = any_of do  #disjunction inside the category part
           group.each do |cats|
             if cats.name == "product_type"
-              puts "PRODUCT TYPE"
-              puts cats.product_id
-              puts cats.value
-              puts
               leaves = ProductCategory.get_leaves(cats.value)
               with :product_type, leaves  
             else
