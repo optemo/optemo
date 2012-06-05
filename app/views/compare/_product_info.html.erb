@@ -4,6 +4,7 @@
 <div class="productinfo" data-sku=<%= product.sku %>>
   <% if Session.futureshop? -%>
     <div class="price" <%=raw only_if_not_onsale(product) %>>
+      <div style="height:15px;"><!-- Sale Spacer --></div>
       <div class="futureshop_price">
         <% p = cont_specs["price"] + recycling_fee -%>
         <span class="price_dollars"><%= number_with_precision(p.to_i, :precision => 0) %></span>

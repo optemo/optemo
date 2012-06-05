@@ -205,7 +205,7 @@ module CompareHelper
       if spec.name == "product_type"
         t("#{escaped_value}.name", :default => spec.value)
       else
-        t(escaped_value, :scope => [:cat_option, Session.retailer, spec.name], :default => CGI::unescape(spec.value))
+        t(escaped_value, :scope => [:cat_option, Session.retailer, spec.name], :default => spec.value)
       end
     elsif spec.instance_of?(Userdatacont)
       unless range.nil?
