@@ -1,7 +1,8 @@
 module DirectComparisonHelper
   def feature_value(product_id, spec, gray, feature, column_number)
     feat = feature.name
-    content_tag :div, :class => ["cell", gray ? "graybg" : "whitebg", "spec_column_"+column_number.to_s], :style => Maybe(@bestvalue[feature.name]).include?(product_id) ? "font-weight:bold;" : "" do
+    is_bold = (Maybe(@bestvalue[feature.name]).include?(product_id) == true)
+    content_tag :div, :class => ["cell", gray ? "graybg" : "whitebg", "spec_column_"+column_number.to_s], :style => is_bold ? "font-weight:bold;" : "" do
       if feature.feature_type == "Continuous"
     	  if spec.nil?
     		  "-"
