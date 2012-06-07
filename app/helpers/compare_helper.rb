@@ -268,6 +268,8 @@ module CompareHelper
     dr = []
     unless ranges.nil?
       ranges.each_with_index do |r, ind|
+        r[:min] = r[:min].to_i if r[:min]==r[:min].to_i
+        r[:max] = r[:max].to_i if r[:max]==r[:max].to_i
         dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
         if r[:min] == r[:max]
           if feat == "saleprice"
@@ -278,7 +280,9 @@ module CompareHelper
         else
           if feat == "saleprice"
             dis = number_to_currency(r[:min]) + " - " + number_to_currency(r[:max])              
-          else
+          elsif (feat=="capacity" && r[:min] >=1000) 
+            dis = "#{number_with_delimiter(r[:min]/1000)} - #{number_with_delimiter(r[:max]/1000)} " + "TB"
+          else  
             dis = "#{number_with_delimiter(r[:min])} - #{number_with_delimiter(r[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit")
           end    
         end 
@@ -288,10 +292,15 @@ module CompareHelper
     unless dr.empty? or full == true
       if feat == "saleprice"
          dr.first[:display] = (dr.first[:max] > 0 ? t("features.belowbefore") : '') + number_to_currency(dr.first[:max])
-         dr.last[:display] = number_to_currency(dr.last[:min]) + t("features.rangeabove")
+         dr.last[:display] = number_to_currency(dr.last[:min]) + t("features.rangeabove")  
       else
-         dr.first[:display] = "#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit") + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
-         dr.last[:display] = "#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
+        if (feat=="capacity")
+          dr.first[:display] = dr.first[:max] >= 1000 ? ("#{number_with_delimiter(dr.first[:max]/1000)} " + (I18n.locale == 'en' ? "TB" : "To")) : ("#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit")) + (dr.first[:max] > 0 ? t("features.rangebelow") : "") 
+          dr.last[:display] = dr.last[:min] >= 1000 ? ( "#{number_with_delimiter(dr.last[:min]/1000)} "+ (I18n.locale == 'en' ? "TB" : "To")) : ("#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit"))+ t("features.rangeabove")
+        else
+          dr.first[:display] = "#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit") + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
+          dr.last[:display] = "#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
+        end  
       end
     end
     dr
