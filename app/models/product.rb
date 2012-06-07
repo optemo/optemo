@@ -106,24 +106,34 @@ class Product < ActiveRecord::Base
   
   
   def image_url(imgSize) #creates the url to a product's image given and sku and image size (thumbnail, small, medium, large -> predetermined sizes)
-    if Session.retailer == "B"
-      baseUrl = "http://www.bestbuy.ca/multimedia/Products/"
-    elsif Session.retailer == "F"
-      baseUrl = "http://www.futureshop.ca/multimedia/Products/"
-    end
-    skuUrl = sku[0..2]+"/"+sku[0..4]+"/"+sku[0..7]+".jpg"
     case imgSize
     when :thumbnail
       sizeUrl = "55x55/"
+      name = 'thumbnail_url'
     when :small
       sizeUrl = "100x100/"
+      name = 'image_url_s'
     when :medium
       sizeUrl = "150x150/"
+      name = 'image_url_m'
     when :large
       sizeUrl = "250x250/"
-    
+      name = 'image_url_l'
     end
-    return baseUrl+sizeUrl+skuUrl
+    retailer = cat_specs.find_by_name_and_product_id("product_type",id).try(:value)
+    url_spec = TextSpec.where(product_id: id, name: name).first
+    if url_spec.nil?
+      if retailer =~ /^B/
+        url = "http://www.bestbuy.ca/multimedia/Products/#{sizeUrl}/"
+      elsif retailer =~ /^F/
+        url = "http://www.futureshop.ca/multimedia/Products/#{sizeUrl}/"
+      else
+        raise "No known image link for product: #{sku}"
+      end
+      url += sku[0..2].to_s+"/"+sku[0..4].to_s+"/"+sku.to_s+".jpg"
+    else
+      url_spec.value
+    end
   end
 end
 class ValidationError < ArgumentError; end
