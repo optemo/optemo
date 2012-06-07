@@ -381,6 +381,14 @@ module CompareHelper
           toplist = optionlist.keys[0..9]
         end
         optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+      elsif f.name == "processorType" && Session.retailer == 'F'
+        optionlist = CatSpec.count_feat(f.name)
+        order = CatSpec.order(f.name)
+        chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
+        if optionlist.length > 6
+          toplist = optionlist.keys[0..5]
+        end
+        optionlist = Hash[*optionlist.sort{|a,b| order[a[0]] <=> order[b[0]] }.flatten]
       else
         # Check if the feature has translations
         if I18n.t("cat_option.#{f.name}", :default => '').empty?
