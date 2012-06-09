@@ -388,7 +388,10 @@ module CompareHelper
         if optionlist.length > 6
           toplist = order.keys[0..5]
         end
-        optionlist = Hash[*optionlist.sort{|a,b| order[a[0]] <=> order[b[0]] }.flatten]
+        # for all elements in optionlist and not in order, add them to order with index > last
+        listed = optionlist.to_a.select{|k,v| !order[k].nil?}.sort{|a,b| order[a[0]] <=> order[b[0]] }
+        not_listed = optionlist.to_a.select{|k,v| order[k].nil?}
+        optionlist = Hash[*(listed + not_listed).flatten]
       else
         # Check if the feature has translations
         if I18n.t("cat_option.#{f.name}", :default => '').empty?
