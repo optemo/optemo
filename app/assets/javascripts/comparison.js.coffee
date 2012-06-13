@@ -142,6 +142,11 @@
             merged[heading][spec_name] = []
           merged[heading][spec_name][index] = value
     return merged
+    
+  getkeys = (obj) ->
+    keys = []
+    keys.push key for own key of obj
+    keys
   
   #Build spec matrix from API data
   buildComparisonMatrix = ->
@@ -152,7 +157,7 @@
     emptyspecs = true #See if all the specs are empty
     $.each skus, (index,value) ->   #maybe should be $.each skus, do (index,value) -> #(lose bottom thumbnail with this)
       skudata = $('body').data('bestbuy_specs_'+value)
-      emptyspecs = false if Object.keys(skudata).length
+      emptyspecs = false if getkeys(skudata).length
       array.push(skudata)
     if emptyspecs
       $(".togglespecs").hide()
