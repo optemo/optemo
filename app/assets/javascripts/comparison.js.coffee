@@ -149,9 +149,13 @@
     anchor = $('#hideable_matrix')
     # Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
     array = []
+    emptyspecs = true #See if all the specs are empty
     $.each skus, (index,value) ->   #maybe should be $.each skus, do (index,value) -> #(lose bottom thumbnail with this)
-      array.push($('body').data('bestbuy_specs_'+value))
-
+      skudata = $('body').data('bestbuy_specs_'+value)
+      emptyspecs = false if Object.keys(skudata).length
+      array.push(skudata)
+    if emptyspecs
+      $(".togglespecs").hide()
     grouped_specs = merge_bb_json.apply(null,array)
     #Set up Headers
     for sku,index in skus
