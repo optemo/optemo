@@ -30,7 +30,7 @@ Site::Application.configure do
   # config.cache_store = :mem_cache_store
   # 86400 = 1.day
   config.cache_store = :dalli_store, '127.0.0.1:11211',
-      { :namespace => "OPTEMO_DISCOVERY", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }
+      { :namespace => "OPT", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }
   
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
