@@ -43,6 +43,7 @@
       # show them again for landing page
       if (bb_divs.length != 0) # Make sure they exist
         bb_divs.show()
+    $('#pagecontentleft2 .sublevel, #pagecontentleft2 .leftnavbox-white').hide();
         
   @SetLayout = ->
     optemo_module.layout = $('#opt_outsidecontainer').attr('data-layout') # This will be either fs or bb to indicate which layout
