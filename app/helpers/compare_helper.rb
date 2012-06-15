@@ -263,6 +263,13 @@ module CompareHelper
       []
     end
   end
+  def my_number_to_currency(num)
+    if num.to_i == num 
+      number_to_currency(num, :precision => 0)
+    else
+      number_to_currency(num, :precision => 2)  
+    end  
+  end  
   
   def displayRanges(feat, ranges, full=false)
     dr = []
@@ -273,7 +280,7 @@ module CompareHelper
         dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
         if r[:min] == r[:max]
           if feat == "saleprice"
-            dis = number_to_currency(r[:min])
+            dis = my_number_to_currency(r[:min])
           elsif (feat=="capacity" && r[:min] >=1000) 
             dis = "#{number_with_delimiter(r[:min]/1000)} " + (I18n.locale == :en ? "TB" : "To")
           else
@@ -281,7 +288,7 @@ module CompareHelper
           end
         else
           if feat == "saleprice"
-            dis = number_to_currency(r[:min]) + " - " + number_to_currency(r[:max])              
+            dis = my_number_to_currency(r[:min]) + " - " + my_number_to_currency(r[:max])              
           elsif (feat=="capacity" && r[:min] >=1000) 
             dis = "#{number_with_delimiter(r[:min]/1000)} - #{number_with_delimiter(r[:max]/1000)} " + (I18n.locale == :en ? "TB" : "To")
           else  
@@ -293,8 +300,8 @@ module CompareHelper
     end  
     unless dr.empty? or full == true
       if feat == "saleprice"
-         dr.first[:display] = (dr.first[:max] > 0 ? t("features.belowbefore") : '') + number_to_currency(dr.first[:max])
-         dr.last[:display] = number_to_currency(dr.last[:min]) + t("features.rangeabove")  
+         dr.first[:display] = (dr.first[:max] > 0 ? t("features.belowbefore") : '') + my_number_to_currency(dr.first[:max])
+         dr.last[:display] = my_number_to_currency(dr.last[:min]) + t("features.rangeabove")  
       else
         if (feat=="capacity")
           dr.first[:display] = dr.first[:max] >= 1000 ? ("#{number_with_delimiter(dr.first[:max]/1000)} " + (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit")) + (dr.first[:max] > 0 ? t("features.rangebelow") : "") 
