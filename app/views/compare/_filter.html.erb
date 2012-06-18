@@ -39,10 +39,13 @@
                   </div>
                 <% else -%>
                   <div class='list_item hanging_margin' data-name='<%= spec_type(spec) %>_<%= spec.name %>' class='current_filter' 
-                    <% if spec_type(spec) == 'continuous' %>
-                      data-value='<%=spec.min%>;<%=spec.max%>'
-                    <% elsif spec_type(spec) == 'categorical' %>
+                    <% if spec_type(spec) == 'categorical' %>
                       data-value='<%= spec.value %>'
+                    <% elsif spec_type(spec) == 'slider'%>
+                      data-value='<%= spec.min %>;<%= spec.max %>'
+                    <% elsif spec_type(spec) == 'continuous' -%>
+                      <% range = rangesShow[index] %>
+                      data-value='<%= range[:min] %>;<%= range[:max] %>'
                     <% end %>
                       >
                     <%= displaySelectedString(spec, rangesShow[index]) -%>
@@ -81,7 +84,6 @@
             </div>
           <% else %>
             <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-            <%# TODO: look into the difference between the two tests -- no_display vs optionlist %>
             <% unless display_feature[:all_options].empty? %>
               <% unless display_feature[:no_display] %>
                 <%= render partial: 'filter_label', object: f %>

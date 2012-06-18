@@ -151,7 +151,11 @@ module CompareHelper
     ret = nil
     case 
     when spec.class == Userdatacont
-      ret = 'continuous'
+      if Facet.find_by_name_and_product_type_and_used_for(spec.name, Session.product_type, 'filter').ui == "slider"
+        ret = 'slider'
+      else
+        ret = 'continuous'
+      end
     when spec.class == Userdatacat
       ret = 'categorical'
     when spec.class == Userdatabin

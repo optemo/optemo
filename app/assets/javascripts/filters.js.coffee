@@ -41,6 +41,10 @@
       value = selected_node.attr('data-value')
       if value == undefined
         filter_node = $('#'+name)
+      if name.match(/binary/)
+        filter_node = $('#'+name)
+      else if name.match(/slider/)
+        filter_node = $('#continuous_' + name.split('_')[1])
       else if name.match(/continuous/)
         the_min = value.split(';')[0]
         filter_node = $('#' + name + '[data-min="' + the_min + '"]')
