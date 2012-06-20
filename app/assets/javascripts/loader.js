@@ -75,7 +75,7 @@ else
   var opt_category_id = url_passed_category[1] || 0;
   
 //Check for new BB URL pattern
-var urlRegex = new RegExp("([0-9]+)opt\.aspx", "i");
+var urlRegex = new RegExp("([0-9]+)(opt)?\.aspx", "i");
 var url_category = urlRegex.exec(window.location.href);
 if (url_category != null) {
   var opt_brand = new RegExp("futureshop\.ca", "i").exec(window.location.href);
