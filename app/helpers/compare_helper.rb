@@ -325,8 +325,8 @@ module CompareHelper
          dr.last[:display] = my_number_to_currency(dr.last[:min]) + t("features.rangeabove")  
       else
         if (feat=="capacity")
-          dr.first[:display] = dr.first[:max] >= 1000 ? ("#{number_with_delimiter(tb(dr.first[:max]))} " + (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit")) + (dr.first[:max] > 0 ? t("features.rangebelow") : "") 
-          dr.last[:display] = dr.last[:min] >= 1000 ? ( "#{number_with_delimiter(tb(dr.last[:min]))} "+ (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit"))+ t("features.rangeabove")
+          dr.first[:display] = (dr.first[:max] >= 1000 ? ("#{number_with_delimiter(tb(dr.first[:max]))} " + (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit"))) + (dr.first[:max] > 0 ? t("features.rangebelow") : "") 
+          dr.last[:display] = (dr.last[:min] >= 1000 ? ("#{number_with_delimiter(tb(dr.last[:min]))} "+ (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit")) ) + t("features.rangeabove")
         else
           dr.first[:display] = "#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit") + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
           dr.last[:display] = "#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit")+ t("features.rangeabove")
