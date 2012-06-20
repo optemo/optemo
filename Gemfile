@@ -28,6 +28,7 @@ gem 'mysql2', '> 0.3'
 # Deploy with Capistrano
 gem 'capistrano'
 gem 'capistrano-ext'
+gem 'rvm-capistrano'
 
 gem 'i18n-active_record',
       #:git => 'git://github.com/svenfuchs/i18n-active_record.git',
