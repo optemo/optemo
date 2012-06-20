@@ -34,7 +34,7 @@
       optemo_module.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections) )
 
   @BestBuyLandingElements = ->
-    bb_divs = $("#pagecontentmain2 [id^=ctl00_CP_ContentSlot], #pagecontentmain2 .std-bottommargin, #contentleft1 [id^=ctl00_CC_C6_ctl00], #contentleft1 .department-headline")
+    bb_divs = $("#pagecontentmain2 [id^=ctl00_CP], #pagecontentmain2 .std-bottommargin, #pagecontentmain2 .ui-tabcontrol, #contentleft1 [id^=ctl00_CC], #contentleft1 .department-headline")
     if ($("#landingpage_indicator").length == 0)
       # If they exist, hide the Best Buy landing page elements
       if (bb_divs.length != 0) # Make sure they exist
