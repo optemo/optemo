@@ -42,6 +42,10 @@ gem 'i18n-active_record',
 gem 'sunspot_rails', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo"
 gem 'ruby_core_source'
 gem 'progress_bar'
+gem 'aws-sdk'
+gem 'ruby-aws'
+gem 'ruby-aaws'
+gem 'nokogiri'
 #gem 'sunspot_rails', '2.0.0.optemo', :path => 'vendor/plugins/sunspot'
 
 
