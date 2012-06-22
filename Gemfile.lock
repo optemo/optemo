@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: git://github.com/wildoats/sunspot.git
-  revision: 10350d1b7525332224631b924e162b3c43587fb9
-  ref: 10350d1b75
+  revision: 01c365cb72bf3bf3610aa61cc2632586912bd3b7
+  ref: 01c365cb72
   branch: optemo
   specs:
     sunspot_rails (2.0.0.pre.111215)
