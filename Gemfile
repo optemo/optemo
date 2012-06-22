@@ -42,7 +42,7 @@ gem 'i18n-active_record',
 # gem 'nokogiri'
 # gem 'sqlite3-ruby', :require => 'sqlite3'
 # gem 'aws-s3', :require => 'aws/s3'
-gem 'sunspot_rails', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo", ref: "01c365cb72"
+gem 'sunspot_rails', :git=> "git://github.com/wildoats/sunspot.git", ref: "01c365cb72"
 gem 'ruby_core_source'
 gem 'progress_bar'
 #gem 'sunspot_rails', '2.0.0.optemo', :path => 'vendor/plugins/sunspot'
