@@ -518,7 +518,7 @@ module CompareHelper
   end
   
   def product_image(product,size)
-    if BinSpec.find_by_product_id_and_name(product.id, "missingImage")
+    if BinSpec.cache_all(product.id)["missingImage"]
       #Load missing image placeholder
       content_tag(:div, "", :class => "imageholder", :'data-sku' => product.sku, :'data-id' => product.id)      
     else

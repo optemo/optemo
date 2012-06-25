@@ -8,13 +8,14 @@
           <% bundle_id = bundle.bundle_id -%>
           <% bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
           <% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
-          <% bundle_link = (TextSpec.cacheone(bundle.bundle_id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")) -%>
+          <% bundle_text_specs = TextSpec.cache_all(bundle_id) -%>
+          <% bundle_link = (bundle_text_specs["productUrl#{fr?}"] || bundle_text_specs["productUrl"]) -%>
           <div class="<%= i == 0 ? 'bundle_first_item' : 'bundle_item'%>">
             <div class="bundle_header">
               <%= raw t("products.show.packagedeals")+"<br><div style='height: 7px'></div>" if i == 0 %>
               <%= link_to number_to_currency(bundle_cont_specs["saleprice"], precision: 2), bundle_link, :class => "easylink" %>
             </div>
-            <% bundleText = TextSpec.cacheone(bundle_id, "bundle#{fr?}") %>
+            <% bundleText = bundle_text_specs["bundle#{fr?}"] %>
             <% unless bundleText.nil? %>
               <% bundledesc = JSON.parse(bundleText.gsub("=>",":")) %>
               <% bundledesc[1..-1].each do |item| %>
@@ -39,9 +40,9 @@
     </div> <!-- bundle_box_border_container -->
 
     <% if false %>
-      <div class="bundlediv" data-url="<%= TextSpec.cacheone(bundle_id, "productUrl#{fr?}") %>">
-        <%= link_to TextSpec.cacheone(bundle_id, "productUrl#{fr?}"), :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
-          <% bundledesc = JSON.parse(TextSpec.cacheone(bundle_id, 'bundle').gsub("=>",":")) %>
+      <div class="bundlediv" data-url="<%= bundle_text_specs["productUrl#{fr?}"] %>">
+        <%= link_to bundle_text_specs["productUrl#{fr?}"], :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
+          <% bundledesc = JSON.parse(bundle_text_specs['bundle'].gsub("=>",":")) %>
           <div class="sibling">
             <% bundledesc[1..-1].each do |item| %>
               <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"] ) %>

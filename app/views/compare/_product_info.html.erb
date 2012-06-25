@@ -28,7 +28,7 @@
       </div>
     <% end -%>
   <% end %>
-  <%= link_to (text_specs["title#{fr?}"] || text_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :class => "easylink", :title => t('products.compare.clickforspecs') %>
+  <%= link_to (text_specs["title#{fr?}"] || text_specs["title"]), (text_specs["productUrl#{fr?}"] || text_specs["productUrl"]), :class => "easylink", :title => t('products.compare.clickforspecs') %>
   <div class="productspecs"><!--&--></div>
   <% unless Session.futureshop? -%>
     <div class="price" <%=raw only_if_not_onsale(product) %>>
