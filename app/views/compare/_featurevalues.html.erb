@@ -1,3 +1,3 @@
 <% if val %>
-<%=t @s.product_type+"."+f, :default => f.capitalize %>: <% unless f == 'price' %><%= val == val.to_i ? val.to_i : val %> <%=t @s.product_type+"."+f+"unit", :default => '' %><% else %><div class='price'><%= number_to_currency(val) %></div><%='&nbsp;' + t("#{@s.product_type}.priceunit") unless t("#{@s.product_type}.priceunit") == '$' %><% end %><br>
+<%= @t[@s.product_type+"."+f] || f.capitalize %>: <% unless f == 'price' %><%= val == val.to_i ? val.to_i : val %> <%= @t[@s.product_type+"."+f+"unit"] || '' %><% else %><div class='price'><%= number_to_currency(val) %></div><%='&nbsp;' + @t["#{@s.product_type}.priceunit"] unless @t["#{@s.product_type}.priceunit"] == '$' %><% end %><br>
 <% end %>

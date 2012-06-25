@@ -44,6 +44,11 @@ class CompareController < ApplicationController
     Session.search = search
     @search_view = true if params[:keyword] || !Session.search.keyword_search.blank? 
     Session.set_features(search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value})
+    @t = I18n::Backend::ActiveRecord::Translation.find_by_sql("SELECT `key`,`value` FROM `translations` WHERE `locale` = '#{I18n.locale}' AND (`key` IN ('#{Session.product_type}.%') OR `key` LIKE '#{Session.product_type}.%')")
+    @t = @t.inject({}) do |h,f|
+      h[f["key"]] = f["value"]
+      h
+    end
   end
   
   def correct_render
