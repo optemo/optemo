@@ -93,7 +93,7 @@ class Product < ActiveRecord::Base
   
   #Returns an array of results
   def self.manycached(ids)
-    res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',').hash}"){find(ids)}
+    res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',')}"){find(ids)}
     if res.class == Array
       res
     else
@@ -121,7 +121,7 @@ class Product < ActiveRecord::Base
       name = 'image_url_l'
     end
     retailer = cat_specs.find_by_name_and_product_id("product_type",id).try(:value)
-    url_spec = TextSpec.where(product_id: id, name: name).first
+    url_spec = TextSpec.cacheone(id, name)
     if url_spec.nil?
       if retailer =~ /^B/
         url = "http://www.bestbuy.ca/multimedia/Products/#{sizeUrl}/"
@@ -132,7 +132,7 @@ class Product < ActiveRecord::Base
       end
       url += sku[0..2].to_s+"/"+sku[0..4].to_s+"/"+sku.to_s+".jpg"
     else
-      url_spec.value
+      url_spec#.value
     end
   end
 end

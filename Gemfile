@@ -29,6 +29,8 @@ gem 'mysql2', '> 0.3'
 gem 'capistrano'
 gem 'capistrano-ext'
 gem 'rvm-capistrano'
+gem 'newrelic_rpm'
+
 
 gem 'i18n-active_record',
       #:git => 'git://github.com/svenfuchs/i18n-active_record.git',
