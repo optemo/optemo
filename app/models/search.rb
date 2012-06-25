@@ -160,26 +160,28 @@ class Search < ActiveRecord::Base
  
   def paginated_products #set the paginated_products
     unless @paginated_products
-       products
+      products
     end
     @paginated_products
   end
  
   def products_size
-     unless @products_size
-       products
-      end
-      @products_size     
-  end  
+    unless @products_size
+      products
+    end
+    @products_size     
+  end
+
   def validated_keyword
     unless @validated_keyword
-       products
-      end
+      products
+    end
       @keyword
-  end  
+  end
+
   def products
     @validated_keyword = keyword_search
-    #puts "hashed_product_type #{Session.porduct_type}"
+    #puts "hashed_product_type #{Session.product_type}"
     if (keyword_search)
       things = solr_cached
       res = grouping(things)
@@ -215,9 +217,9 @@ class Search < ActiveRecord::Base
   def grouping(things)    
     res=[]
     things.group(:eq_id_str).groups.each do |g|
-         res << g.results.first
+         res << g.hits.first.primary_key.to_i
     end
-    res
+    Product.manycached(res)
   end
   
   def products_list(things, total) #paginate products through sunspot pagination

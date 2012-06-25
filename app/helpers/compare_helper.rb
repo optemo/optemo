@@ -1,7 +1,7 @@
 module CompareHelper
   def main_boxes
     res = []
-    Session.search.paginated_products.map{|p|Product.cached(p.id)}.each_slice(3) do |box1,box2,box3|
+    Session.search.paginated_products.each_slice(3) do |box1,box2,box3|
       res << content_tag("div", :style => "padding: 10px 0") do
         content_tag("div", :class => "row_bounding_box") do
           navbox_content = render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
@@ -121,15 +121,15 @@ module CompareHelper
     step = calcInterval(distribution_data.first[2].floor,distribution_data.first[3].ceil)
     datamin = roundedInterval(distribution_data.first[2],step,true)
     datamax = roundedInterval(distribution_data.first[3],step,false)
-    unit = t("#{Session.product_type}.filter.#{f.name}.unit", :default => '')
+    unit = @t["#{Session.product_type}.filter.#{f.name}.unit"] || ''
     return current, step, datamin, datamax, unit
   end
   
   def product_title
     if I18n.locale == :fr
-      t("#{Session.product_type}.name")
+      @t["#{Session.product_type}.name"]
     else
-      Session.search.products_size > 1 ? t("#{Session.product_type}.name").pluralize : t("#{Session.product_type}.name")
+      Session.search.products_size > 1 ? @t["#{Session.product_type}.name"].pluralize : @t["#{Session.product_type}.name"]
     end
   end
  
@@ -203,10 +203,11 @@ module CompareHelper
   
   def displaySelectedString(spec, range)
     if spec.instance_of?(Userdatabin)
-      t "#{Session.product_type}.filter.#{spec.name}.name", default: spec.name
+      @t["#{Session.product_type}.filter.#{spec.name}.name"] || spec.name
     elsif spec.instance_of?(Userdatacat)
       escaped_value = spec.value.gsub('.','-')
       if spec.name == "product_type"
+        # ZAT don't know if this one is a translation or not; like the one below
         t("#{escaped_value}.name", :default => spec.value)
       else
         t(escaped_value, :scope => [:cat_option, Session.retailer, spec.name], :default => spec.value)
@@ -295,7 +296,7 @@ module CompareHelper
   def displayRanges(feat, ranges, full=false)
     dr = []
     unless ranges.nil?
-      unit = t("#{Session.product_type}.filter.#{feat}.unit")
+      unit = @t["#{Session.product_type}.filter.#{feat}.unit"]
       ranges.each_with_index do |r, ind|
         r[:min] = my_to_i(r[:min]) 
         r[:max] = my_to_i(r[:max])
@@ -313,7 +314,7 @@ module CompareHelper
             dis = my_number_to_currency(r[:min]) + " - " + my_number_to_currency(r[:max])              
           elsif (feat=="capacity" && r[:min] >=1000) 
             dis = "#{number_with_delimiter(tb(r[:min]))} - #{number_with_delimiter(tb(r[:max]))} " + (I18n.locale == :en ? "TB" : "To")
-          else  
+          else
             dis = "#{number_with_delimiter(r[:min])} - #{number_with_delimiter(r[:max])} " + unit
           end    
         end 
@@ -327,8 +328,8 @@ module CompareHelper
          dr.last[:display] = my_number_to_currency(dr.last[:min]) + t("features.rangeabove")  
       else
         if (feat=="capacity")
-          dr.first[:display] = (dr.first[:max] >= 1000 ? ("#{number_with_delimiter(tb(dr.first[:max]))} " + (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.first[:max])} " + t("#{Session.product_type}.filter.#{feat}.unit"))) + (dr.first[:max] > 0 ? t("features.rangebelow") : "") 
-          dr.last[:display] = (dr.last[:min] >= 1000 ? ("#{number_with_delimiter(tb(dr.last[:min]))} "+ (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.last[:min])} "+ t("#{Session.product_type}.filter.#{feat}.unit")) ) + t("features.rangeabove")
+          dr.first[:display] = (dr.first[:max] >= 1000 ? ("#{number_with_delimiter(tb(dr.first[:max]))} " + (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.first[:max])} " + @t["#{Session.product_type}.filter.#{feat}.unit"])) + (dr.first[:max] > 0 ? t("features.rangebelow") : "") 
+          dr.last[:display] = (dr.last[:min] >= 1000 ? ("#{number_with_delimiter(tb(dr.last[:min]))} "+ (I18n.locale == :en ? "TB" : "To")) : ("#{number_with_delimiter(dr.last[:min])} "+ @t["#{Session.product_type}.filter.#{feat}.unit"]) ) + t("features.rangeabove")
         else
           dr.first[:display] = "#{number_with_delimiter(dr.first[:max])} " + unit + (dr.first[:max] > 0 ? t("features.rangebelow") : "")
           dr.last[:display] = "#{number_with_delimiter(dr.last[:min])} "+ unit + t("features.rangeabove")
@@ -352,7 +353,7 @@ module CompareHelper
     current_sorting_option = Session.search.sortby || "utility_desc"
     (Session.features["sortby"] || []).map do |f|
         suffix = f.style.length > 0 ? '_' + f.style : ''
-        content_tag :li, (current_sorting_option == (f.name+suffix)) ? t(Session.product_type+".sortby."+f.name+suffix+".name") : link_to(t(Session.product_type+".sortby."+f.name+suffix+".name"), "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
+        content_tag :li, (current_sorting_option == (f.name+suffix)) ? @t[Session.product_type+".sortby."+f.name+suffix+".name"] : link_to(@t[Session.product_type+".sortby."+f.name+suffix+".name"], "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
     end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))    
   end
   

@@ -1,3 +1,3 @@
 <div class="<%= filter_label.style.blank? ? "label" : filter_label.style %>">
-  <%= t("#{Session.product_type}.filter.#{filter_label.name}.name", :default => filter_label.name.capitalize ) %>
+  <%= @t["#{Session.product_type}.filter.#{filter_label.name}.name"] || filter_label.name.capitalize %>
 </div>
