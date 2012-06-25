@@ -54,7 +54,7 @@
     <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
     <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
   </div>
-  <% siblings = product.product_siblings.map{|s| s if Product.find_by_id(s.sibling_id).instock}.compact -%>
+  <% siblings = product.product_siblings.map{|s| s if Product.cached(s.sibling_id).instock}.compact -%>
   <!-- Colour swatches -->
   <%# Colour swatches go after customer rating in Future Shop design %>
   <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>

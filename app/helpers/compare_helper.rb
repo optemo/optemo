@@ -1,7 +1,7 @@
 module CompareHelper
   def main_boxes
     res = []
-    Session.search.paginated_products.map{|p|Product.cached(p.id)}.each_slice(3) do |box1,box2,box3|
+    Session.search.paginated_products.each_slice(3) do |box1,box2,box3|
       res << content_tag("div", :style => "padding: 10px 0") do
         content_tag("div", :class => "row_bounding_box") do
           navbox_content = render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
