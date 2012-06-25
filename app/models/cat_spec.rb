@@ -9,7 +9,7 @@ class CatSpec < ActiveRecord::Base
   end
 
   def self.cachemany(p_ids, feat) # Returns different values 
-    CachingMemcached.cache_lookup("CatSpecs#{feat}#{p_ids.join(',').hash}") do
+    CachingMemcached.cache_lookup("CatSpecs#{feat}#{p_ids.join(',')}") do
       select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
     end
   end
@@ -38,7 +38,7 @@ class CatSpec < ActiveRecord::Base
   
   def self.order(feat)
     q = Facet.where(used_for: "ordering", product_type: Session.product_type, feature_type: feat)
-    CachingMemcached.cache_lookup("CatOrder#{q.to_sql.hash}") do
+    CachingMemcached.cache_lookup("CatOrder#{q.to_sql}") do
       q.inject({}){|h,f| h[f.name] = f.value; h}
     end
   end
