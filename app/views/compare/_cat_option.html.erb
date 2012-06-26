@@ -6,7 +6,7 @@
 <div class="list_item hanging_indent<%= ' invisible' if available_count == 0 and !checked %><%= ' minor' unless intoplist %>" style="<%= "font-weight:bold;" if checked %><%= "display:none;" unless display %>">
   <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
   <% trans_key = (f.name == "product_type") ? "#{Session.product_type}.filter.#{k}.name" : "cat_option.#{Session.retailer}.#{f.name}.#{k.gsub('.','-')}" %>
-  <% d_str = @t[trans_key] || @t["#{k}.name".to_sym] || k %>
+  <% d_str = @t[trans_key] || @t["#{k}.name"] || t(trans_key, :default => ["#{k}.name".to_sym, k]) %>
   <%= (available_count == 0) ? d_str : link_to(d_str, "#", :class => "checkbox_text") %>
   <span class="av_count"><%= "(#{available_count})" unless checked %></span>
   <% if checked && f.name == "product_type" %>
