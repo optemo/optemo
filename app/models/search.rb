@@ -78,9 +78,6 @@ class Search < ActiveRecord::Base
           end
         end
       end
-      #myconts.each do |conts|
-      #  with (conts.name.to_sym), conts.min||0..conts.max||1000000
-      #end
       
       spellcheck :count => 4
       with :instock, 1

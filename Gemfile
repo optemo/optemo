@@ -42,13 +42,11 @@ gem 'i18n-active_record',
 # gem 'nokogiri'
 # gem 'sqlite3-ruby', :require => 'sqlite3'
 # gem 'aws-s3', :require => 'aws/s3'
-gem 'sunspot_rails', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo", ref: "10350d1b75"
+gem 'sunspot_rails', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo", ref: "e522dc5aec"
+#gem 'sunspot_rails', :git=> "git://github.com/sunspot/sunspot.git"
 gem 'ruby_core_source'
 gem 'progress_bar'
-#gem 'sunspot_rails', '2.0.0.optemo', :path => 'vendor/plugins/sunspot'
 
-
-#gem 'thinking-sphinx', '2.0.1', :require => 'thinking_sphinx'
 gem 'will_paginate', '3.0.0'
 #gem 'rmagick'
 
@@ -58,7 +56,7 @@ end
 
 group :development do
    gem 'sunspot_solr', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo" # optional pre-packaged Solr distribution for use in development
-   #gem 'sunspot_solr', '2.0.0.optemo', :path => 'vendor/plugins/sunspot' # optional pre-packaged Solr distribution for use in development
+   #gem 'sunspot_solr', :git=> "git://github.com/sunspot/sunspot.git" # optional pre-packaged Solr distribution for use in development
 end
 
 # Bundle gems for the local environment. Make sure to
