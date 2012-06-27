@@ -90,7 +90,7 @@
             #These products weren't found so remove links
             t = $(this)
             title = t.children(".easylink")
-            title.after($('<span>').html(title.html()))
+            title.after($('<span>').html(title.html())) unless t.children('span').length
             title.hide()
             #And also remove the add to cart button
             addlink = t.siblings('.shopnowhero') #See if we're dealing with the hero product 
