@@ -73,7 +73,7 @@
       # Hide the clear option if it is visible
       $('.nav_clear_btn:visible').hide()
   
-  show_comparison_window = ->
+  show_comparison_window = (num_tries = 0)->
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
     width = undefined
 
@@ -91,7 +91,7 @@
       # Jquery 1.5 would finish all the requests before building the comparison matrix once
       # With 1.4.2 we can't do that. Keep code for later.
       # $.when.apply(this,reqs).done();
-      buildComparisonMatrix()
+      buildComparisonMatrix(num_tries)
       if ($.browser.msie && $.browser.version.substr(0,1)<7) # IE6 comparison page "more specs" spacing issue
         # This is a weird combination of margins, absolute positioning, and an inserted spacer div. It seems stable.
         $('<div>&nbsp;</div>').insertBefore('#info div.togglespecs').css({"height" : "23px", "width" : "1px", "display" : "block", "clear" : "both"})
@@ -149,7 +149,7 @@
     keys
   
   #Build spec matrix from API data
-  buildComparisonMatrix = ->
+  buildComparisonMatrix = (num_tries = 0)->
     skus = $('#basic_matrix').attr('data-skus').split(',')
     anchor = $('#hideable_matrix')
     # Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
@@ -160,7 +160,11 @@
       emptyspecs = false if getkeys(skudata).length
       array.push(skudata)
     if emptyspecs
+      if (num_tries < 2) then show_comparison_window(num_tries + 1) # try 3 times to get the data, then give up
+      alert ('Failed: '+(num_tries+1)+' try/tries')
       $(".togglespecs").hide()
+    else
+      alert ('Succeeded: '+(num_tries+1)+' try/tries')
     grouped_specs = merge_bb_json.apply(null,array)
     #Set up Headers
     for sku,index in skus
