@@ -74,6 +74,7 @@
       $('.nav_clear_btn:visible').hide()
   
   show_comparison_window = (num_tries = 0)->
+    # num_tries refers to the number of times the page has tried to refresh the compare window due to failed spec searches. Defaults to 0 unless overridden by the refresh call in buildComparisonMatrix()
     skus = optemo_module.readAllCookieValues(optemo_module.cmpcookie)
     width = undefined
 
@@ -91,7 +92,8 @@
       # Jquery 1.5 would finish all the requests before building the comparison matrix once
       # With 1.4.2 we can't do that. Keep code for later.
       # $.when.apply(this,reqs).done();
-      buildComparisonMatrix(num_tries)
+      buildComparisonMatrix(num_tries) # Passes num_tries because if the spec search fails, buildComparisonMatrix needs to know
+                                       # how many times it's already tried to refresh the page
       if ($.browser.msie && $.browser.version.substr(0,1)<7) # IE6 comparison page "more specs" spacing issue
         # This is a weird combination of margins, absolute positioning, and an inserted spacer div. It seems stable.
         $('<div>&nbsp;</div>').insertBefore('#info div.togglespecs').css({"height" : "23px", "width" : "1px", "display" : "block", "clear" : "both"})
@@ -150,6 +152,7 @@
   
   #Build spec matrix from API data
   buildComparisonMatrix = (num_tries = 0)->
+    # num_tries defaults to 0 but otherwise can be overriden if the page has been refreshed by this function (in the case of a failed spec search)
     skus = $('#basic_matrix').attr('data-skus').split(',')
     anchor = $('#hideable_matrix')
     # Build up the direct comparison table. Similar method to views/direct_comparison/index.html.erb
@@ -161,10 +164,11 @@
       array.push(skudata)
     if emptyspecs
       if (num_tries < 2) then show_comparison_window(num_tries + 1) # try 3 times to get the data, then give up
-      alert ('Failed: '+(num_tries+1)+' try/tries')
+                                                                    # this implies a total failure for some inexplicable reason,
+                                                                    # or that there are no specs to find
       $(".togglespecs").hide()
-    else
-      alert ('Succeeded: '+(num_tries+1)+' try/tries')
+    #else
+    #  alert ('Tried '+(num_tries+1)+' time(s)') ####### Uncomment this to see how many tries it takes a product to succeed #######
     grouped_specs = merge_bb_json.apply(null,array)
     #Set up Headers
     for sku,index in skus
