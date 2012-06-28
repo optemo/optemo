@@ -60,7 +60,7 @@
             #Update the regular price
             if optemo_module.layout == "fs"
               c.find('.price').find('span.price_dollars').html(parseInt(this.regularPrice))
-              c.find('.price').find('span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))              
+              c.find('.price').find('span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))
             else
               if optemo_french?
                 c.find('.price > span').html(french_price_format(this.regularPrice) + " $")
@@ -85,6 +85,7 @@
                   c.find('.save > span').html("$" + savings)
             #Set checked flag to true
             c.attr("data-checked", true)
+            c.siblings(".productimg").addClass("productimgchecked")
           )
           $('.productinfo[data-checked!="true"]').each( ->
             #These products weren't found so remove links
