@@ -1,0 +1,110 @@
+@mixin button-prop {
+  float: left;
+}
+@mixin button-link {
+  cursor: pointer;
+  display: block;
+  font-weight: bold;
+  line-height: 14px;
+  overflow: visible;
+  text-align: center;
+  outline: 0 none;
+  text-decoration: none;
+}
+
+.optemo {
+  .buttons {
+    background: url(<%= asset_data_uri('mccpbluebackground.gif') %>) repeat-x scroll 0 0 transparent;
+    @include button-prop;
+    .left {
+      background: url(<%= asset_data_uri('mccpblueleft.gif') %>) no-repeat scroll left top transparent;
+      @include button-prop;
+    }
+    .right {
+      background: url(<%= asset_data_uri('mccpblueright.gif') %>) no-repeat scroll right top transparent;
+      @include button-prop;
+      overflow: hidden;
+      text-align: center;
+      width: 140px;
+      height: 25px;
+    }
+    a {
+      @include button-link;
+      color: black !important;
+      font-size: 11px;
+      padding: 4px 12px 5px;
+    }
+  }
+  .ie6,.ie7 {
+    .buttons {
+      background: url(<%= asset_path('mccpbluebackground.gif') %>);
+      .left {
+        background: url(<%= asset_path('mccpblueleft.gif') %>) no-repeat left;
+      }
+      .right {
+        background: url(<%= asset_path('mccpblueright.gif') %>) no-repeat right;
+      }
+      a:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  
+  .morespecs {
+    background: url(<%= asset_data_uri('yellow_m.gif') %>) repeat-x scroll 0 0 transparent;
+    display: table;
+    .left {
+      background: url(<%= asset_data_uri('yellow_l.gif') %>) no-repeat scroll left top transparent;
+    }
+    .right {
+      background: url(<%= asset_data_uri('yellow_r.gif') %>) no-repeat scroll right top transparent;
+      overflow: hidden;
+      text-align: center;
+      width: 130px;
+      height: 29px;
+    }
+    a {
+      @include button-link;
+      color: #737474 !important;
+      font-size: 12px;
+      padding: 6px 12px 5px;
+    }
+    a div {
+      background: url(<%= asset_data_uri('gt.gif') %>);
+      display: inline-block;
+      width: 8px;
+      height: 13px;
+      position: relative;
+      top: 2px;
+      left: 0;
+    }
+  }
+  #IE {
+    .morespecs {
+      a div {
+        display: inline;
+        zoom: 1;
+      }
+    }
+  }
+  .ie6,.ie7 {
+    .morespecs {
+      background: url(<%= asset_path('yellow_m.gif') %>);
+      @include button-prop;
+      .left {
+        background: url(<%= asset_path('yellow_l.gif') %>) no-repeat left;
+        @include button-prop;
+      }
+      .right {
+        background: url(<%= asset_path('yellow_r.gif') %>) no-repeat right;
+        @include button-prop;
+      }
+      a:hover {
+        text-decoration: none;
+      }
+      a div {
+        background: url(<%= asset_path('gt.gif') %>);
+      }
+    }
+  }
+}

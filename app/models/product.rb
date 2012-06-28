@@ -13,7 +13,6 @@ class Product < ActiveRecord::Base
   has_many :product_bundles
   has_one :equivalence
   
-  attr_writer :product_name
   attr_writer :all_searchable_data
   
   searchable do
@@ -53,7 +52,7 @@ class Product < ActiveRecord::Base
       cont_specs.find_by_name(:lr_utility).try(:value)
     end
     autosuggest :all_searchable_data, :using => :instock?
-    autosuggest :product_name, :using => :instock?
+    autosuggest :product_name, :using => :instock? # REMOVE this once solr is reindexed with the new changes
   end
   
   def first_ancestors

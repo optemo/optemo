@@ -1,0 +1,85 @@
+/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
+
+/*--------------------------------------//
+//             Filter Boxes             //
+//--------------------------------------*/
+.optemo {
+  #filter_form, #your_selections {
+  	font-size: 0.85em;
+  }
+  #your_selections {
+    margin-top: 8px;
+    padding-top: 2px;
+  }
+  .ie6 #your_selections {
+    overflow: hidden;
+  }
+  .remove_filter {
+    font-size: 10px;
+    div {
+      width: 12px;
+      height: 12px;
+      vertical-align: text-top;
+      display: inline-block;
+      background-image: url(<%= asset_data_uri "undo.gif" %>);
+    }
+  }
+  #IE .label{
+    padding-top: 10px;
+  }
+  .ie67 .remove_filter div {
+    background: url(<%= asset_path "undo.gif" %>) no-repeat top left;
+    display: inline;
+  }
+  .label {
+  	font-weight: bold;
+  	text-align: left;
+  	clear: left;
+  	padding: 6px 0;
+  }
+  .unitdisp {      /* Display units of features in filters */
+  	font-size: 0.8em;
+  	font-weight: normal;
+  }
+  .feature {
+    padding: 0 0 0 6px;
+  }
+  .ie6 .feature {
+    position: relative;
+  }
+  .desc {
+  	display: none;
+  	position: absolute;
+  	bottom: 1.5em;
+  	left: 0;
+  	padding: 4px;
+  	border: solid thin black;
+  	background-color: #fff;
+  	z-index: 1001;
+  }
+  .hist {
+  	position: absolute;
+  	left: 4px;
+  	top: 3px;
+  	text-align: left;
+  }
+  #IE.ie6 .hist {
+    left: 0;
+  }
+  .boldlabel {
+  	font-weight: bold;
+  	text-align: left;
+  	clear: left;
+  	height: 17px;
+  	padding-top: 5px;
+  	padding-bottom: 4px;
+    padding-left: 6px;
+    background-color: #FFF102;
+    margin: 8px 0 8px -6px;
+    border-top: 1px #ccc solid;
+    border-bottom: 1px #ccc solid;
+    background-image:-moz-linear-gradient(center bottom, #98fb98, #98fb98);
+    background-image:-o-linear-gradient(bottom, rgb(152,251,152), rgb(152,251,152));
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#98fb98), to(#98fb98)); 
+  }
+}

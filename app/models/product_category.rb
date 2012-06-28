@@ -5,7 +5,6 @@ require "autocomplete_view_helpers"
 class ProductCategory < ActiveRecord::Base
   searchable do
     autosuggest :all_searchable_data, using: :find_product_category
-    autosuggest :product_category, using: :find_product_category
   end
   
   def find_product_category
