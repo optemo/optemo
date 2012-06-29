@@ -29,7 +29,12 @@ Site::Application.configure do
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
   # 86400 = 1.day
-  config.cache_store = :dalli_store, '127.0.0.1:11211',
+  memcache_server = case `hostname`
+    when /linode\d+/ then "mysqll"
+    when /rackspace\d+/ then "mysqlr"
+    else "localhost"
+  end
+  config.cache_store = :dalli_store, memcache_server+":11211",
       { :namespace => "OPT", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }
   
   # Disable Rails's static asset server
