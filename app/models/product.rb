@@ -92,13 +92,17 @@ class Product < ActiveRecord::Base
   end
   
   #Returns an array of results
-  def self.manycached(ids)
+  def self.cachemany(ids)
     res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',')}"){find(ids)}
     if res.class == Array
       res
     else
       [res]
     end
+  end
+  
+  def siblings_cached
+    CachingMemcached.cache_lookup("Product-siblings#{id}"){product_siblings}
   end
   
   scope :instock, :conditions => {:instock => true}
@@ -120,8 +124,8 @@ class Product < ActiveRecord::Base
       sizeUrl = "250x250/"
       name = 'image_url_l'
     end
-    retailer = cat_specs.find_by_name_and_product_id("product_type",id).try(:value)
-    url_spec = TextSpec.cacheone(id, name)
+    retailer = Session.search.specs[id]["cat"]["product_type"]
+    url_spec = Session.search.specs[id]["text"][name]
     if url_spec.nil?
       if retailer =~ /^B/
         url = "http://www.bestbuy.ca/multimedia/Products/#{sizeUrl}/"

@@ -1,61 +1,61 @@
 <%if product && product.id%>
-  <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
-  <% bundles = product.product_bundles.map{|b| b if Product.cached(b.bundle_id).instock}.compact -%>
-  <% unless bundles.empty? %>
-    <div class="bundle_box_border_container" style="<%= 'margin-right:0px;background:none;' if last_in_row %>">
-      <div class="bundlesbox">
-        <% bundles.each_with_index do |bundle, i| %>
-          <% bundle_id = bundle.bundle_id -%>
-          <% bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
-          <% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
-          <% bundle_text_specs = TextSpec.cache_all(bundle_id) -%>
-          <% bundle_link = (bundle_text_specs["productUrl#{fr?}"] || bundle_text_specs["productUrl"]) -%>
-          <div class="<%= i == 0 ? 'bundle_first_item' : 'bundle_item'%>">
-            <div class="bundle_header">
-              <%= raw t("products.show.packagedeals")+"<br><div style='height: 7px'></div>" if i == 0 %>
-              <%= link_to number_to_currency(bundle_cont_specs["saleprice"], precision: 2), bundle_link, :class => "easylink" %>
-            </div>
-            <% bundleText = bundle_text_specs["bundle#{fr?}"] %>
-            <% unless bundleText.nil? %>
-              <% bundledesc = JSON.parse(bundleText.gsub("=>",":")) %>
-              <% bundledesc[1..-1].each do |item| %>
-                <div class="bundle_bullet_point">• <%= link_to item["name"], bundle_link, :class => 'easylink' %></div>
-              <% end %>
-            <% end %>
-            <a href="<%= bundle_link %>" class="easylink"><div class="bundle_image"><!-- --></div></a>
-          </div>
-          <% unless bundles.length == 1 %>
-            <div class="<%= i == 0 ? 'bundle_first_spacer' : 'bundle_spacer' %>"><!-- --></div>
-          <% end %>
-        <% end %>
-        <% if bundles.length > 1 %>
-          <div class="bundle_more_deals_stub">
-            <div class="more_package_deals_plus bundle_icon"><!-- --></div>
-            <div class="more_package_deals_minus bundle_icon" style="display:none;"><!-- --></div>
-            <div class="bundle_package_stub_text"><%= raw t("products.show.morepackagedeals")%></div>
-            <div class="bundle_package_stub_text" style="display:none;"><%= raw t("products.show.fewerpackagedeals")%></div>
-          </div>
-        <% end %>
-      </div> <!-- bundlesbox -->
-    </div> <!-- bundle_box_border_container -->
-
-    <% if false %>
-      <div class="bundlediv" data-url="<%= bundle_text_specs["productUrl#{fr?}"] %>">
-        <%= link_to bundle_text_specs["productUrl#{fr?}"], :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
-          <% bundledesc = JSON.parse(bundle_text_specs['bundle'].gsub("=>",":")) %>
-          <div class="sibling">
-            <% bundledesc[1..-1].each do |item| %>
-              <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"] ) %>
-            <% end %>
-            <%= number_to_currency(bundle_cont_specs["saleprice"], precision: 2) %>
-          </div>
-        <% end %>
-      </div>
-    <% end %>  
+  <% bundles = Session.search.bundle_assocs[product.id] %>
+  <% unless bundles.nil? %>
+    <% bundles = bundles.map{|b| b if Session.search.bundles[b].instock}.compact -%>
+    <% unless bundles.empty? %>
   
-  <% else %>
-    <div class="bundle_box_border_container" style="<%= 'margin-right:0px;background:none;' if last_in_row %>">
-      <div class="bundlesbox_spacer">&nbsp;</div>
-    </div>
+      <div class="bundle_box_border_container" style="<%= 'margin-right:0px;background:none;' if last_in_row %>">
+        <div class="bundlesbox">
+          <% bundles.each_with_index do |bundle_id, i| %>
+            <% bundle_specs = Session.search.specs[bundle_id] -%>
+            <% bundle_link = (bundle_specs["text"]["productUrl#{fr?}"] || bundle_specs["text"]["productUrl"]) -%>
+            <div class="<%= i == 0 ? 'bundle_first_item' : 'bundle_item'%>">
+              <div class="bundle_header">
+                <%= raw t("products.show.packagedeals")+"<br><div style='height: 7px'></div>" if i == 0 %>
+                <%= link_to number_to_currency(bundle_specs["cont"]["saleprice"], precision: 2), bundle_link, :class => "easylink" %>
+              </div>
+              <% bundleText = bundle_specs["text"]["bundle#{fr?}"] %>
+              <% unless bundleText.nil? %>
+                <% bundledesc = JSON.parse(bundleText.gsub("=>",":")) %>
+                <% bundledesc[1..-1].each do |item| %>
+                  <div class="bundle_bullet_point">• <%= link_to item["name"], bundle_link, :class => 'easylink' %></div>
+                <% end %>
+              <% end %>
+              <a href="<%= bundle_link %>" class="easylink"><div class="bundle_image"><!-- --></div></a>
+            </div>
+            <% unless bundles.length == 1 %>
+              <div class="<%= i == 0 ? 'bundle_first_spacer' : 'bundle_spacer' %>"><!-- --></div>
+            <% end %>
+          <% end %>
+          <% if bundles.length > 1 %>
+            <div class="bundle_more_deals_stub">
+              <div class="more_package_deals_plus bundle_icon"><!-- --></div>
+              <div class="more_package_deals_minus bundle_icon" style="display:none;"><!-- --></div>
+              <div class="bundle_package_stub_text"><%= raw t("products.show.morepackagedeals")%></div>
+              <div class="bundle_package_stub_text" style="display:none;"><%= raw t("products.show.fewerpackagedeals")%></div>
+            </div>
+          <% end %>
+        </div> <!-- bundlesbox -->
+      </div> <!-- bundle_box_border_container -->
+
+      <% if false %>
+        <div class="bundlediv" data-url="<%= bundle_text_specs["productUrl#{fr?}"] %>">
+          <%= link_to bundle_specs["text"]["productUrl#{fr?}"], :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
+            <% bundledesc = JSON.parse(bundle_specs["text"]['bundle'].gsub("=>",":")) %>
+            <div class="sibling">
+              <% bundledesc[1..-1].each do |item| %>
+                <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"] ) %>
+              <% end %>
+              <%= number_to_currency(bundle_specs["cont"]["saleprice"], precision: 2) %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>  
+  
+    <% else %> <%# bundles.empty? is true -- put in a spacer %>
+      <div class="bundle_box_border_container" style="<%= 'margin-right:0px;background:none;' if last_in_row %>">
+        <div class="bundlesbox_spacer">&nbsp;</div>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

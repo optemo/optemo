@@ -35,7 +35,7 @@ class Session
       subcategories.empty? || #We don't store subcategories for features which are always used
       subcategories.any?{|e| categories.include? e} ||
       (dynamically_excluded << f && false) #If a feature is not selected, we need to note this
-    end.group_by(&:used_for)
+    end.group_by{|x|x.used_for}
    
     # Some filters of last search need to be removed when dynamic filters removed
     unless categories.empty?

@@ -9,6 +9,7 @@ module CompareHelper
           render(:partial => 'navbox', :locals => {product: box3, last_in_row: true}) +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
+          # ZAT we need to cache this product_bundles call somehow
           if !box1.product_bundles.empty? || (box2 && !box2.product_bundles.empty?) || (box3 && !box3.product_bundles.empty?)
             navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
@@ -77,6 +78,10 @@ module CompareHelper
   
   def getCategoricalFeature(f, chosen_cats)
     optionlist, toplist = cat_order(f, chosen_cats)
+    if f.name == "brand" && @t
+      brand_keys = Translation.cache_brands(optionlist.keys)
+      @t.merge!(brand_keys) # merge two hashes
+    end
     expanded = Session.search.expanded.try{|b| b.include?(f.name)}
     no_display = !optionlist.to_a.inject(false){|res,(k,v)| res || v > 0} #Don't display if there are no counts
     return {:all_options => optionlist, :top_options => toplist, :expanded => expanded, :no_display => no_display}
@@ -172,7 +177,7 @@ module CompareHelper
     return [] if filters.empty?
     
     # make the filter facets grouped by name into a list sorted by the order of each facet
-    sorted = filters.group_by(&:name).sort_by  do |name, values|
+    sorted = filters.group_by{|x|x.name}.sort_by  do |name, values|
       Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').try(:value) || 0
     end
     
@@ -207,8 +212,7 @@ module CompareHelper
     elsif spec.instance_of?(Userdatacat)
       escaped_value = spec.value.gsub('.','-')
       if spec.name == "product_type"
-        # ZAT don't know if this one is a translation or not; like the one below
-        t("#{escaped_value}.name", :default => spec.value)
+        @t["#{escaped_value}.name"] || t("#{escaped_value}.name", :default => spec.value)
       else
         t(escaped_value, :scope => [:cat_option, Session.retailer, spec.name], :default => spec.value)
       end
@@ -322,7 +326,7 @@ module CompareHelper
       end   
     end  
     unless dr.empty? or full == true
-      unit = t("#{Session.product_type}.filter.#{feat}.unit")
+      unit = @t["#{Session.product_type}.filter.#{feat}.unit"] || t("#{Session.product_type}.filter.#{feat}.unit")
       if feat == "saleprice"
          dr.first[:display] = (dr.first[:max] > 0 ? t("features.belowbefore") : '') + my_number_to_currency(dr.first[:max])
          dr.last[:display] = my_number_to_currency(dr.last[:min]) + t("features.rangeabove")  
@@ -486,11 +490,11 @@ module CompareHelper
   end
   
   def only_if_onsale(product)
-    'style="display:none;"' unless BinSpec.cache_all(product.id)["onsale"]
+    'style="display:none;"' unless Session.search.specs[product.id]["bin"]["onsale"]
   end
   
   def only_if_not_onsale(product)
-    'style="display:none;"' if BinSpec.cache_all(product.id)["onsale"]
+    'style="display:none;"' if Session.search.specs[product.id]["bin"]["onsale"]
   end
   
   def calcInterval(min,max)
@@ -520,7 +524,7 @@ module CompareHelper
   end
   
   def product_image(product,size)
-    if BinSpec.cache_all(product.id)["missingImage"]
+    if Session.search.specs[product.id]["bin"]["missingImage"]
       #Load missing image placeholder
       content_tag(:div, "", :class => "imageholder", :'data-sku' => product.sku, :'data-id' => product.id)      
     else

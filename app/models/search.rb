@@ -5,7 +5,7 @@ require 'will_paginate/array'
 class Search < ActiveRecord::Base
   attr_reader :expanded
   attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size, :filters_cats, :filters_conts, :filters_bins
-  attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :old_keyword
+  attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :old_keyword, :specs, :siblings, :sibling_assocs, :bundles, :bundle_assocs
   
   self.per_page = 18 #for will_paginate
   
@@ -53,7 +53,7 @@ class Search < ActiveRecord::Base
       order_by(:utility, :desc) #Break ties with heuristic utility (used as utility if lr_utility is nil)
           
       cat_filters = {} #Used for faceting exclude so that the counts are right
-      mycats.group_by(&:name).each_pair do |name, group|
+      mycats.group_by{|x|x.name}.each_pair do |name, group|
         cat_filters[name] = any_of do  #disjunction inside the category part
           group.each do |cats|
             if cats.name == "product_type"
@@ -71,7 +71,7 @@ class Search < ActiveRecord::Base
         with bins.name.to_sym, bins.value
       end
       cont_filters = {}
-      myconts.group_by(&:name).each_pair do |name, group|
+      myconts.group_by{|x|x.name}.each_pair do |name, group|
         cont_filters[name] = any_of do  #disjunction inside the category part
           group.each do |conts|
             with conts.name.to_sym, conts.min||0..conts.max||1000000
@@ -213,12 +213,63 @@ class Search < ActiveRecord::Base
   
   def grouping(things)    
     res=[]
+    # By using .hits, we can get just the ids instead of getting the results. See Solr documentation
     things.group(:eq_id_str).groups.each do |g|
          res << g.hits.first.primary_key.to_i
     end
-    Product.manycached(res)
+    
+    # Product spec hash looks like this:
+    # { product_id => 
+    #   { "cont" => {name => value, name => value }, 
+    #     "cat" => {name => value, name => value }, ... },
+    #  product_id => 
+    #   { "cont" ... }
+    # }
+    # To access a spec:
+    # @specs[pid]["cont"]["price"]
+
+    #@cached_products = Product.cachemany(res).inject({}) do |h, r| 
+    #  h[r.id] = r
+    #  h
+    #end
+
+    @products = Product.cachemany(res)
+
+    # Pre-fetch bundles and siblings
+    @sibling_assocs = ProductSibling.cachemany(res)
+    @siblings = {}
+    unless @sibling_assocs.blank?
+      res.concat(@sibling_assocs.values.flatten)
+      sibling_products = Product.cachemany(@sibling_assocs.values.flatten)
+      sibling_products.each do |p|
+        @siblings[p.id] = p
+      end
+    end
+
+    @bundle_assocs = ProductBundle.cachemany(res)
+    @bundles = {}
+    unless @bundle_assocs.blank?
+      res.concat(@bundle_assocs.values.flatten)
+      bundle_products = Product.cachemany(@bundle_assocs.values.flatten)
+      bundle_products.each do |p|
+        @bundles[p.id] = p
+      end
+    end
+
+    @specs = CachingMemcached.cache_lookup("SpecHash#{res.join(',')}") do 
+      spec_table = {}
+      res.each{|pid| spec_table[pid] = {"cont" => {}, "cat" => {}, "text" => {}, "bin" => {}} }
+      [ContSpec, CatSpec, TextSpec, BinSpec].each do |spec_name|
+        specs = spec_name.cache_group(res)
+        index_name = spec_name.to_s[0...-4].downcase
+        specs.each{|cs| spec_table[cs.product_id][index_name][cs.name] = cs.value}
+      end    
+      spec_table
+    end
+    #@cached_products.values
+    Product.cachemany(res)
   end
-  
+
   def products_list(things, total) #paginate products through sunspot pagination
     @products_size = total    
     @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
@@ -229,7 +280,7 @@ class Search < ActiveRecord::Base
 
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
-      CatSpec.joins("INNER JOIN `bin_specs` ON `cat_specs`.product_id = `bin_specs`.product_id").where(bin_specs: {name: "featured"}, cat_specs: {name: "product_type", value: Session.product_type_leaves}).map(&:product_id)
+      CatSpec.joins("INNER JOIN `bin_specs` ON `cat_specs`.product_id = `bin_specs`.product_id").where(bin_specs: {name: "featured"}, cat_specs: {name: "product_type", value: Session.product_type_leaves}).map{|x|x.product_id}
     end
   end
   

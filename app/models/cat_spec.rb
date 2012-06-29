@@ -10,17 +10,22 @@ class CatSpec < ActiveRecord::Base
 
   def self.cachemany(p_ids, feat) # Returns different values 
     CachingMemcached.cache_lookup("CatSpecs#{feat}#{p_ids.join(',')}") do
-      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
+      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map{|x|x.value}
     end
   end
   def self.all(feat)
     CachingMemcached.cache_lookup("#{Session.product_type}Cats-#{feat}") do
-      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map(&:value)
+      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map{|x|x.value}
+    end
+  end
+  def self.cache_group(p_ids) # Returns specs for every product in the list
+    CachingMemcached.cache_lookup("CatSpecsGroup#{p_ids.join(',')}") do
+      select("product_id, name, value").where(["product_id IN (?)", p_ids]).all
     end
   end
   def self.alloptions(feat)
     CachingMemcached.cache_lookup("#{Session.product_type}Cats-#{feat}-options") do
-      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map(&:value).uniq
+      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map{|x|x.value}.uniq
     end
   end
   

@@ -9,4 +9,9 @@ class TextSpec < ActiveRecord::Base
        select("value").where(["product_id = ? and name = ?", p_id, feat]).map{|x|x.value}.first
      end
   end
+  def self.cache_group(p_ids) # Returns specs for every product in the list
+    CachingMemcached.cache_lookup("TextSpecsGroup#{p_ids.join(',')}") do
+      select("product_id, name, value").where(["product_id IN (?)", p_ids]).all
+    end
+  end
 end

@@ -1,11 +1,12 @@
+<% ss = Session.search %>
 <% unless siblings.empty? or siblings.map{ |s| s.name.nil? }.inject{|res,ele| res & ele} %>
   <div class="navboxcolours">
     <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
     <% siblings.each do |sibling| -%>
       <% sibling_id = sibling.sibling_id -%>
-      <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
-      <% color = sibling_cat_specs["color"] %>
-      <%= link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
+      <% sibling_specs = Session.search.specs[sibling_id] -%>
+      <% color = sibling_specs["cat"]["color"] %>
+      <%= link_to sibling_specs["text"]["productUrl#{fr?}"], :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_specs["cat"]["color#{fr?}"] : sibling_specs["cat"]["title#{fr?}"] do %>
         <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"><!-- --></div>
       <% end %>
     <% end %>

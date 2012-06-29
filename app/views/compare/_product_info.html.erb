@@ -1,4 +1,4 @@
-<% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id); text_specs = TextSpec.cache_all(product.id) %>
+<% ss = Session.search; cont_specs = ss.specs[product.id]["cont"]; cat_specs = ss.specs[product.id]["cat"]; text_specs = ss.specs[product.id]["text"] %>
 <% recycling_fee = (false ? 10 : 0) %> <%# Or use Session.Quebec or similar %>
 <%# Real-time price checking should now also take $("div.price_breakdown") into account and change its value based on the feed. This is not done yet and depends on whether the feed has the recycling fee integrated or not. %>
 <div class="productinfo" data-sku=<%= product.sku %>>
@@ -50,11 +50,12 @@
       <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
     </div>
   <% end -%>
-  <div class="saleends" <%=raw 'style="display:none;"' if !(BinSpec.cache_all(product.id)["onsale"]) || (cat_specs["saleEndDate"] && Time.now > Date.parse(cat_specs["saleEndDate"])) %>>
+  <div class="saleends" <%=raw 'style="display:none;"' if !(ss.specs[product.id]["bin"]["onsale"]) || (cat_specs["saleEndDate"] && Time.now > Date.parse(cat_specs["saleEndDate"])) %>>
     <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
     <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
   </div>
-  <% siblings = product.product_siblings.map{|s| s if Product.cached(s.sibling_id).instock}.compact -%>
+  <%# This should be done the same as for bundles -- associations separate from sibling data %>
+  <% siblings = product.siblings_cached.map{|s| s if ss.siblings[s.sibling_id]}.compact -%>
   <!-- Colour swatches -->
   <%# Colour swatches go after customer rating in Future Shop design %>
   <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>

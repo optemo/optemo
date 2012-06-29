@@ -63,7 +63,7 @@ class ComparableSet
   end
   
   def to_storage
-    map(&:to_storage)
+    map{|x|x.to_storage}
   end
   
   def self.from_storage(storage)

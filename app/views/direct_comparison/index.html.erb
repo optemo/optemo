@@ -4,7 +4,7 @@
 <div class="clear">&nbsp;</div>
 </div>
 
-<div id="basic_matrix" class="comparisonmatrix" style="width: <%= box_width %>px" data-skus="<%= @products.map(&:sku).join(",") %>">
+<div id="basic_matrix" class="comparisonmatrix" style="width: <%= box_width %>px" data-skus="<%= @products.map{|x|x.sku}.join(",") %>">
 
   <%# Rows are like this: %>
   <%# remove buttons %>

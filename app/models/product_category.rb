@@ -19,7 +19,7 @@ class ProductCategory < ActiveRecord::Base
       CachingMemcached.cache_lookup("PCat#{name}#{nodes.join("-")}") do
         search = build_query(nodes,left,right,level)
         if search
-          ProductCategory.where(block_given? ? yield(search) : search).map(&:product_type)
+          ProductCategory.where(block_given? ? yield(search) : search).map{|x|x.product_type}
         else
           nil
         end
@@ -31,7 +31,7 @@ class ProductCategory < ActiveRecord::Base
         root = ProductCategory.where(:product_type => node).first
         search = yield(root) if root
         if search
-          ProductCategory.where(search).map(&:product_type)
+          ProductCategory.where(search).map{|x|x.product_type}
         else
           nil
         end
