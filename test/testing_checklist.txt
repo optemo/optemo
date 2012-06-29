@@ -273,6 +273,14 @@ Filters:
       - What's New (Best Buy)
       - New Release (Future Shop)
       - Refurbished
+		- Usage Type (Future Shop)
+			- Ultrabook
+			- Thin and Light
+			- On the Go
+			- Everyday
+			- Entertainment
+			- Gaming
+			- Microsoft Premium Collection PC
     - Brands
       - Check for typos
     - Price
