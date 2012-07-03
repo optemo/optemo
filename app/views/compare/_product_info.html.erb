@@ -54,8 +54,8 @@
     <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
     <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
   </div>
-  <%# This should be done the same as for bundles -- associations separate from sibling data %>
-  <% siblings = product.siblings_cached.map{|s| s if ss.siblings[s.sibling_id]}.compact -%>
+  <% siblings = ss.sibling_assocs[product.id] ? ss.sibling_assocs[product.id].map{|s| ss.siblings[s]} : [] -%>
+  <%# siblings = product.siblings_cached.map{|s| s if ss.siblings[s.sibling_id]}.compact -%>
   <!-- Colour swatches -->
   <%# Colour swatches go after customer rating in Future Shop design %>
   <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>
