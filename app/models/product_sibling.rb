@@ -4,8 +4,7 @@ class ProductSibling < ActiveRecord::Base
   def self.cachemany(ids)
     CachingMemcached.cache_lookup("ManyProductSiblings#{ids.join(',')}") do
       sibling_hash = {}
-      ProductSibling.find(:all, :conditions => ["product_id IN (?) OR sibling_id IN (?)",ids, ids])
-      find_all_by_product_id(ids).each do |x|
+      ProductSibling.find(:all, :conditions => ["product_id IN (?)",ids]).each do |x|
         if sibling_hash[x.product_id]
           sibling_hash[x.product_id] << x.sibling_id
         else
