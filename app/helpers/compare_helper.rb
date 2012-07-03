@@ -11,7 +11,7 @@ module CompareHelper
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
           # ZAT we need to cache this product_bundles call somehow
-          if (ss.bundle_assocs[box1.id] || ss.bundle_assocs[box2.id] || ss.bundle_assocs[box3.id])
+          if (ss.bundle_assocs[box1.id] || box2 && ss.bundle_assocs[box2.id] || box3 && ss.bundle_assocs[box3.id])
             navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
