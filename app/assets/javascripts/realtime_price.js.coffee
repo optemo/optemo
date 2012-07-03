@@ -50,7 +50,8 @@
             #Update the saleprice
             if optemo_module.layout == "fs"
               c.find('.saleprice').find('span.price_dollars').html(parseInt(this.salePrice))
-              c.find('.saleprice').find('span.price_cents').html(parseInt(100 * (this.salePrice - parseInt(this.salePrice))))
+              # This contrived next line eliminates floating point bugs
+              c.find('.saleprice').find('span.price_cents').html(Math.round(0.01 * parseInt(10000 * (this.salePrice - parseInt(this.salePrice)))))
             else # Do the regular (Best Buy) layout
               if optemo_french?
                 c.find('.saleprice > span').html(french_price_format(this.salePrice) + " $")
@@ -60,7 +61,7 @@
             #Update the regular price
             if optemo_module.layout == "fs"
               c.find('.price').find('span.price_dollars').html(parseInt(this.regularPrice))
-              c.find('.price').find('span.price_cents').html(parseInt(100 * (this.regularPrice - parseInt(this.regularPrice))))
+              c.find('.price').find('span.price_cents').html(Math.round(0.01 * parseInt(10000 * (this.regularPrice - parseInt(this.regularPrice)))))
             else
               if optemo_french?
                 c.find('.price > span').html(french_price_format(this.regularPrice) + " $")
