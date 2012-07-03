@@ -1,7 +1,8 @@
 module CompareHelper
   def main_boxes
     res = []
-    Session.search.paginated_products.each_slice(3) do |box1,box2,box3|
+    ss = Session.search
+    ss.paginated_products.each_slice(3) do |box1,box2,box3|
       res << content_tag("div", :style => "padding: 10px 0") do
         content_tag("div", :class => "row_bounding_box") do
           navbox_content = render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
@@ -10,7 +11,7 @@ module CompareHelper
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
           # ZAT we need to cache this product_bundles call somehow
-          if !box1.product_bundles.empty? || (box2 && !box2.product_bundles.empty?) || (box3 && !box3.product_bundles.empty?)
+          if (ss.bundle_assocs[box1.id] || ss.bundle_assocs[box2.id] || ss.bundle_assocs[box3.id])
             navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
             render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
