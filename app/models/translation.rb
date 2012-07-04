@@ -16,7 +16,7 @@ class Translation < ActiveRecord::Base
   
   def self.cache_product_translations
     # This function is probably far too specific but it is fast
-    CachingMemcached.cache_lookup("TranslationProductType#{Session.product_type}") do
+    CachingMemcached.cache_lookup("TranslationProductType#{I18n.locale}#{Session.product_type}") do
       I18n::Backend::ActiveRecord::Translation.find_by_sql("SELECT `key`,`value` FROM `translations` WHERE `locale` = '#{I18n.locale}' AND (`key` LIKE '#{Session.product_type}%'" + ProductCategory.get_leaves(Session.product_type).map{|x| " OR `key` LIKE '" + x + "%'"}.join("")+")").inject({}) do |h,f|
         h[f["key"]] = f["value"]
         h
