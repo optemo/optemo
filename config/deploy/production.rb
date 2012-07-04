@@ -1,6 +1,6 @@
 set :application, "production"
 set :repository,  "git@jaguar:site.git"
-set :domain, "uniserve"
+role :app, "linode1", "rackspace1"
 set :branch, "master"
 set :user, "#{ `whoami`.chomp }"
 
@@ -20,10 +20,6 @@ default_run_options[:pty] = true
 set :use_sudo, false
 # There is also this method, might be better in some cases:
 # { Capistrano::CLI.ui.ask("User name: ") }
-
-role :app, domain
-role :web, domain
-role :db,  domain, :primary => true
 
 load 'deploy/assets'
 load 'config/deploy/recipes'
