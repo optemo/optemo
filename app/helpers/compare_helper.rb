@@ -53,20 +53,26 @@ module CompareHelper
       res[:f] = f
       active_features << res unless res[:no_display]
     end
-    
     display_features = []
     # get rid of the elements which are headings that have nothing logically under them
     active_features.each_with_index do |feature, index|
-      if feature[:f][:feature_type] == 'Heading' 
-        if feature[:f].style != '' # bold style heading
-        # do not display a bold heading if the next thing is a bold heading or nothing at all
-          unless active_features[index+1].nil? or (active_features[index+1][:feature_type] == 'Heading' and active_features[index+1][:f].style != '')
-            display_features << feature
-          end
-        else 
-        # only display a non-bold heading if the next item is a binary feature value; assumption: all non-bold headings are binary group titles
-          if !active_features[index+1].nil? and active_features[index+1][:f].feature_type == 'Binary'
-            display_features << feature
+      if feature[:f][:feature_type] == 'Heading'
+        next_feature = active_features[index+1]
+        unless next_feature.nil?
+          next_feature_type = next_feature[:f][:feature_type]
+          case next_feature_type
+          when 'Binary'
+              display_features << feature
+          when 'Heading'
+            unless active_features[index+2].nil?
+              if feature[:f][:style] != '' and next_feature[:f].style == ''
+                display_features << feature
+              elsif feature[:f][:style] == '' and next_feature[:f].style != ''
+                  display_features << feature
+              end
+            end
+          else # when 'Categorical', 'Continuous'
+            next
           end
         end
       else
