@@ -267,7 +267,7 @@ class Search < ActiveRecord::Base
       spec_table
     end
     #@cached_products.values
-    Product.cachemany(res)
+    @products
   end
 
   def products_list(things, total) #paginate products through sunspot pagination
