@@ -3,16 +3,20 @@ class Translation < ActiveRecord::Base
   # This saves on individual Activerecord requests / instantiations later.
 
   def self.cache_brands(brand_array) # Returns specs for every product in the list
-    CachingMemcached.cache_lookup("TranslationGroup#{I18n.locale}#{brand_array.join(',')}") do
-      brand_hash = {}
-      I18n::Backend::ActiveRecord::Translation.find_by_sql("SELECT `key`,`value` FROM `translations` WHERE `locale` = '#{I18n.locale}' AND `key` LIKE "+ brand_array.map{|x|"'%B.brand."+x+"%'"}.join(" OR `key` LIKE ")).each{|b| brand_hash[b.key] = b["value"]}
-      brand_hash
+    if brand_array.blank?
+      {}
+    else
+      CachingMemcached.cache_lookup("TranslationGroup#{I18n.locale}#{brand_array.join(',')}") do
+        brand_hash = {}
+        I18n::Backend::ActiveRecord::Translation.find_by_sql("SELECT `key`,`value` FROM `translations` WHERE `locale` = '#{I18n.locale}' AND `key` LIKE "+ brand_array.map{|x|"'%B.brand."+x+"%'"}.join(" OR `key` LIKE ")).each{|b| brand_hash[b.key] = b["value"]}
+        brand_hash
+      end
     end
   end
   
   def self.cache_product_translations
     # This function is probably far too specific but it is fast
-    CachingMemcached.cache_lookup("TranslationProductType#{Session.product_type}") do
+    CachingMemcached.cache_lookup("TranslationProductType#{I18n.locale}#{Session.product_type}") do
       I18n::Backend::ActiveRecord::Translation.find_by_sql("SELECT `key`,`value` FROM `translations` WHERE `locale` = '#{I18n.locale}' AND (`key` LIKE '#{Session.product_type}%'" + ProductCategory.get_leaves(Session.product_type).map{|x| " OR `key` LIKE '" + x + "%'"}.join("")+")").inject({}) do |h,f|
         h[f["key"]] = f["value"]
         h

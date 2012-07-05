@@ -32,7 +32,7 @@ Site::Application.configure do
   memcache_server = case `hostname`
     when /linode\d+/ then "mysqll"
     when /rackspace\d+/ then "mysqlr"
-    else "localhost"
+    else "mysqll"
   end
   config.cache_store = :dalli_store, memcache_server+":11211",
       { :namespace => "OPT", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }

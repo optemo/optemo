@@ -28,6 +28,8 @@ class CompareController < ApplicationController
       end
     end
     correct_render
+    #Don't use private cache so that varnish can cache
+    expires_in 5.minutes, public: true
   end
 
   def create
