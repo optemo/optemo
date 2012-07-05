@@ -93,7 +93,7 @@ class Product < ActiveRecord::Base
   
   #Returns an array of results
   def self.cachemany(ids)
-    res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',')}"){find(ids)}
+    res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',')}"){ids.map{|id|find(id)}}
     if res.class == Array
       res
     else
