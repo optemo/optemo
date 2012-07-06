@@ -163,7 +163,8 @@ module CompareHelper
   end
 
   def getSearchFilters()
-    # getting the currently applied filters
+    # getting the currently applied filters in order that they appear in the page
+    # without extra processing, the values of the categorical filters are also in the same order as in the page
     filters = Session.search.userdataconts + Session.search.userdatacats + Session.search.userdatabins
     return [] if filters.empty?
 
@@ -172,8 +173,7 @@ module CompareHelper
       Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').try(:value) || 0
     end
     
-    # add ordering
-    # FIXME: make page_order into a hash by name
+    # add ordering; another option would be to make page_order into a hash by name 
     page_order = Session.features['filter'].map{ |f| {:name => f.name, :feature_type => f.feature_type, :value => f.value, :printed => false} }
     new_sorted = []
     sorted.each do |name, values|
@@ -191,7 +191,6 @@ module CompareHelper
       end
       new_sorted << [name, new_group[name]]
     end
-    # Possible extension: also order the values within each 'name', i.e. the different categorical values of each facet
     new_sorted
   end
   
@@ -458,11 +457,12 @@ module CompareHelper
   end
   
   def product_image(product,size)
-    if BinSpec.find_by_product_id_and_name(product.id, "missingImage")
+    imageUrl = product.image_url(size, product.id)
+    if BinSpec.find_by_product_id_and_name(product.id, "missingImage") or imageUrl.nil?
       #Load missing image placeholder
       content_tag(:div, "", :class => "imageholder", :'data-sku' => product.sku, :'data-id' => product.id)      
     else
-      image_tag product.image_url(size), :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.onerror='';this.src='#{product.image_url(:large)}';return true;"
+      image_tag imageUrl, :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.onerror='';this.src='#{product.image_url(:large)}';return true;"
     end
   end
 end

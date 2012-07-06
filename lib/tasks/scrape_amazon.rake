@@ -47,7 +47,7 @@ def create_amazon_specs(item, id)
   make_cat_spec(id, 'screen_type', item['screen_type']) if item['screen_type']
   
   make_cat_spec(id, 'hd_video', item['hd_video']) if item['hd_video']
-  make_cat_spec(id, 'colour', item['colour']) if item['colour']
+  make_cat_spec(id, 'color', item['colour']) if item['colour']
   
   make_cat_spec(id, 'app_type', item['app_type']) if item['app_type']
   make_cat_spec(id, 'platform', item['platform']) if item['platform']
@@ -75,7 +75,7 @@ def save(items)
   retailer = "A"
   total_items = items.length
   completed = 0
-    
+  products_to_save = []
   for item in items
     puts "Uploading to database: #{completed*100/total_items}%"
     if item['title'] # Don't upload products without names
@@ -83,9 +83,21 @@ def save(items)
       prod = Product.find_or_initialize_by_sku_and_retailer(item['sku'], retailer)
       prod.update_attributes(instock: true)
       create_amazon_specs(item, Product.find_by_sku_and_retailer(item['sku'], retailer).id)
+      products_to_save << prod
     end
     completed += 1
   end
+  
+  # save equivalences
+  categories = ['Acamera_amazon', 'Atv_amazon', 'Amovie_amazon', 'Asoftware_amazon']
+  categories.each do |category|
+    Session.new category
+    Equivalence.fill
+  end
+  #Reindex sunspot
+  Sunspot.index(products_to_save)
+  Sunspot.commit
+  
   puts "Save complete: #{Product.where(retailer: retailer).length} products saved"
 end
 

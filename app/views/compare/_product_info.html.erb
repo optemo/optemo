@@ -34,6 +34,7 @@
   <% unless Session.futureshop? -%>
     <div class="save" <%=raw only_if_onsale(product) %>>
       <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
+      <% debugger if cont_specs["price"].nil? or cont_specs["saleprice"].nil? %>
       <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
     </div>
   <% end -%>

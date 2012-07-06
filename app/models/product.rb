@@ -14,10 +14,11 @@ class Product < ActiveRecord::Base
   has_one :equivalence
   
   attr_writer :all_searchable_data
+  attr_writer :title  # FIXME: remove this and test if after reindexing title is still part of the searchable data; when was it introduced?
   
   searchable do
     text :title do
-      cat_specs.find_by_name("title").try(:value)
+      text_specs.find_by_name("title").try(:value)
     end
      
     text :description do
@@ -51,8 +52,18 @@ class Product < ActiveRecord::Base
     float :lr_utility, trie: true do
       cont_specs.find_by_name(:lr_utility).try(:value)
     end
-    autosuggest :all_searchable_data, :using => :instock?
-    autosuggest :product_name, :using => :instock? # REMOVE this once solr is reindexed with the new changes
+    # FIXME: remove the product_instock_title field, change the field to (testing):
+    # autosuggest :all_searchable_data, :using => :instock?
+    autosuggest :all_searchable_data, :using => :get_title
+    autosuggest :product_instock_title, :using => :instock?
+  end
+  
+  def get_title
+    name = text_specs.find_by_name("title").try(:value)
+    if name.nil?  
+      name = "Unknown Title / Title Not In Database"
+    end
+    name
   end
   
   def first_ancestors
@@ -72,10 +83,10 @@ class Product < ActiveRecord::Base
   def eq_id_str
     Equivalence.find_by_product_id(id).try(:eq_id).to_s
   end
-  
+
   def instock?
     if (instock)
-      cat_specs.find_by_name("title").try(:value)
+      text_specs.find_by_name("title").try(:value)
     else
       false
     end
@@ -103,11 +114,18 @@ class Product < ActiveRecord::Base
   scope :current_type, lambda{ joins(:cat_specs).where(cat_specs: {name: "product_type", value: Session.product_type_leaves})}
   
   
-  def image_url(imgSize) #creates the url to a product's image given and sku and image size (thumbnail, small, medium, large -> predetermined sizes)
+  def image_url(imgSize, pid=nil) #creates the url to a product's image given and sku and image size (thumbnail, small, medium, large -> predetermined sizes)
     if Session.retailer == "B"
       baseUrl = "http://www.bestbuy.ca/multimedia/Products/"
     elsif Session.retailer == "F"
       baseUrl = "http://www.futureshop.ca/multimedia/Products/"
+    elsif Session.retailer == "A"
+      url = TextSpec.find_by_product_id_and_name(pid, 'image_url_m')
+      if url.nil?
+        return nil
+      else
+        return url.value
+      end
     end
     skuUrl = sku[0..2]+"/"+sku[0..4]+"/"+sku[0..7]+".jpg"
     case imgSize

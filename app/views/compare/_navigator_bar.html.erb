@@ -25,7 +25,7 @@
   <% else %>
     <%= link_to(t(Session.futureshop? ? "products.compare.futureshop_compare" : "products.compare.compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>"nav_compare_btn#{'_bottom' if local_assigns[:bottom]}"})  %>
     <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :id => (local_assigns[:bottom] ? "bottom" : "top"), :rel => "nofollow", :title => t('products.compare.cleardesc') unless local_assigns[:bottom] && Session.futureshop? %>
-    <% if request.host == "keyword" && local_assigns[:bottom].nil? %>
+    <% if local_assigns[:bottom].nil? %>
     	<%= render 'pagination_search' %>	
     <% end %>	
   <% end %>
