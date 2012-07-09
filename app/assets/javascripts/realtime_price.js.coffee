@@ -96,7 +96,6 @@
                   c.find('.save > span').html(price_format(savings, "en"))
             #Set checked flag to true
             c.attr("data-checked", true)
-            c.siblings(".productimg").addClass("productimgchecked")
           )
           $('.productinfo[data-checked!="true"]').each( ->
             #These products weren't found so remove links
