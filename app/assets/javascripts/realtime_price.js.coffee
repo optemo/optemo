@@ -1,24 +1,6 @@
 #/* Fetching the new prices */
 @module "optemo_module", ->
-  @price_format = ( input_price, locale ) ->
-    formatted_price = ""
-    if locale == "en"
-      thousand_separator = ","
-      cent_separator = "."      
-    else # locale == "fr"
-      thousand_separator = " "
-      cent_separator = ","
-    input_dollars = parseInt(input_price) + ""
-    input_cents = parseInt(100 * (input_price - parseInt(input_price)))
-    for char, i in input_dollars.split('').reverse()
-      formatted_price = char + formatted_price
-      formatted_price = thousand_separator + formatted_price if ((i+1) % 3 == 0 && (input_dollars.length-1) != i)
-    formatted_price = formatted_price + cent_separator + input_cents
-    if locale == "en"
-      return "$" + formatted_price
-    else # locale == "fr"
-      return formatted_price + " $"
-
+  #****Public Functions****
   @getRealtimePrices = (comparison_flag) ->
     if optemo_module.layout == "fs"
       API_URL = "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query="
@@ -64,7 +46,7 @@
               c.find('.saleprice').find('span.price_cents').html(Math.round(0.01 * parseInt(10000 * (this.salePrice - parseInt(this.salePrice)))))
             else # Do the regular (Best Buy) layout
               if optemo_french?
-                c.find('.saleprice > span').html(price_format(this.salePrice), "fr")
+                c.find('.saleprice > span').html(price_format(this.salePrice, "fr"))
               else
                 c.find('.saleprice > span').html(price_format(this.salePrice, "en"))
 
@@ -74,9 +56,9 @@
               c.find('.price').find('span.price_cents').html(Math.round(0.01 * parseInt(10000 * (this.regularPrice - parseInt(this.regularPrice)))))
             else
               if optemo_french?
-                c.find('.price > span').html(price_format(this.regularPrice), "fr")
+                c.find('.price > span').html(price_format(this.regularPrice, "fr"))
               else
-                c.find('.price > span').html(price_format(this.regularPrice))
+                c.find('.price > span').html(price_format(this.regularPrice, "en"))
                 
             #Update the savings
             savings = (parseFloat(this.regularPrice)-parseFloat(this.salePrice)).toFixed(2)
@@ -91,7 +73,7 @@
                 c.find('.futureshop_sale_background > span.savings').show().html(parseInt(savings))
               else # Best buy layout
                 if optemo_french?
-                  c.find('.save > span').html(price_format(savings), "fr")
+                  c.find('.save > span').html(price_format(savings, "fr"))
                 else
                   c.find('.save > span').html(price_format(savings, "en"))
             #Set checked flag to true
@@ -119,9 +101,25 @@
       ) # $.ajax()
     # endif skus != blank
   
-  #****Public Functions****
-  
   #****Private Functions****
+  price_format = ( input_price, locale ) ->
+    formatted_price = ""
+    if locale == "en"
+      thousand_separator = ","
+      cent_separator = "."
+    else # locale == "fr"
+      thousand_separator = " "
+      cent_separator = ","
+    input_dollars = parseInt(input_price) + ""
+    input_cents = parseInt(100 * (input_price - parseInt(input_price)))
+    for char, i in input_dollars.split('').reverse()
+      formatted_price = char + formatted_price
+      formatted_price = thousand_separator + formatted_price if ((i+1) % 3 == 0 && (input_dollars.length-1) != i)
+    formatted_price = formatted_price + cent_separator + input_cents
+    if locale == "en"
+      return "$" + formatted_price
+    else # locale == "fr"
+      return formatted_price + " $"
   
   #/* LiveInit functions */
   

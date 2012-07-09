@@ -29,7 +29,7 @@ class CompareController < ApplicationController
     end
     correct_render
     #Don't use private cache so that varnish can cache
-    expires_in 5.minutes, public: true
+    #expires_in(5.minutes, public: true) if params[:hist].blank?
   end
 
   def create
