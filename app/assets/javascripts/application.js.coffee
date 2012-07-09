@@ -24,7 +24,7 @@
   #/* LiveInit functions */
   
   #Product links
-  $(".productimg, .easylink, .futureshop_price, .futureshop_sale_background").live "click", ->
+  $(".productimgchecked, .easylink, .futureshop_price, .futureshop_sale_background").live "click", ->
     # This is the show page
     t = $(this)
     href = t.attr('href') or t.parent().find('.easylink').attr('href') or t.parent().parent().find('.easylink').attr('href')
