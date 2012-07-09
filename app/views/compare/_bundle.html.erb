@@ -15,7 +15,7 @@
                 <%= raw t("products.show.packagedeals")+"<br><div style='height: 7px'></div>" if i == 0 %>
                 <%= link_to number_to_currency(bundle_cont_specs["saleprice"], precision: 2), bundle_link, :class => "easylink" %>
               </div>
-              <% bundleText = TextSpec.cache_one(bundle_id, "bundle#{fr?}") %>
+              <% bundleText = TextSpec.cacheone(bundle_id, "bundle#{fr?}") %>
               <% unless bundleText.nil? %>
                 <% bundledesc = JSON.parse(bundleText.gsub("=>",":")) %>
                 <% bundledesc[1..-1].each do |item| %>
