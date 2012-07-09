@@ -5,7 +5,7 @@
       <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
       <div class="bundle_box_border_container">
         <div class="bundlesbox">
-          <% bundles.each_with_index do |bundle_id, i| %>
+          <% bundles.each_with_index do |bundle, i| %>
             <% bundle_id = bundle.bundle_id -%>
             <%# Don't need this for now # bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
             <% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
