@@ -1,16 +1,18 @@
 <%if product && product.id%>
-  <div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %>">
-    <div class="navboxcompare">
-      <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
-      <a class="regular_reset optemo_compare_button" href="#" title="<%=t('products.compare.clickforcompare')%>">
-        <span><%=t('products.compare.compare')%></span>
-      </a>
+  <% cache "Navbox#{I18n.locale}#{product.id}" do %>
+    <div id="box<%= product.id %>" class="navbox">
+      <div class="navboxcompare">
+        <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
+        <a class="regular_reset optemo_compare_button" href="#" title="<%=t('products.compare.clickforcompare')%>">
+          <span><%=t('products.compare.compare')%></span>
+        </a>
+      </div>
+      <%= product_image(product, :medium) %>
+      <%= render partial: "product_info", locals: {product: product} %>
     </div>
-    <%= product_image(product, :medium) %>
-    <%= render partial: "product_info", locals: {product: product} %>
-  </div>
+  <% end %>
 <% else # Render a navbox shell so that the rendering is consistent -%>
-  <div class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %> height:240px;">
+  <div class="navbox" style="height:240px;">
     &nbsp;
   </div>
 <%end%>

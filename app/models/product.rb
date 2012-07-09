@@ -100,11 +100,15 @@ class Product < ActiveRecord::Base
       [res]
     end
   end
-  
+
   def siblings_cached
-    CachingMemcached.cache_lookup("Product-siblings#{id}"){product_siblings}
+    CachingMemcached.cache_lookup("Product#{id}Siblings"){product_siblings}
   end
   
+  def bundles_cached
+    CachingMemcached.cache_lookup("Product#{id}Bundles"){product_bundles}    
+  end
+
   scope :instock, :conditions => {:instock => true}
   scope :current_type, lambda{ joins(:cat_specs).where(cat_specs: {name: "product_type", value: Session.product_type_leaves})}
   
@@ -124,8 +128,7 @@ class Product < ActiveRecord::Base
       sizeUrl = "250x250/"
       name = 'image_url_l'
     end
-    retailer = Session.search.specs[id]["cat"]["product_type"]
-    url_spec = Session.search.specs[id]["text"][name]
+    url_spec = TextSpec.cache_all(id)[name]
     if url_spec.nil?
       if retailer =~ /^B/
         url = "http://www.bestbuy.ca/multimedia/Products/#{sizeUrl}/"

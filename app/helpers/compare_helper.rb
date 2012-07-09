@@ -1,20 +1,18 @@
 module CompareHelper
   def main_boxes
     res = []
-    ss = Session.search
-    ss.paginated_products.each_slice(3) do |box1,box2,box3|
+    Session.search.paginated_products.each_slice(3) do |box1,box2,box3|
       res << content_tag("div", :style => "padding: 10px 0") do
         content_tag("div", :class => "row_bounding_box") do
-          navbox_content = render(:partial => 'navbox', :locals => {product: box1, last_in_row: false}) +
-          render(:partial => 'navbox', :locals => {product: box2, last_in_row: false}) +
-          render(:partial => 'navbox', :locals => {product: box3, last_in_row: true}) +
+          navbox_content = render(:partial => 'navbox', :locals => {product: box1}) +
+          render(:partial => 'navbox', :locals => {product: box2}) +
+          render(:partial => 'navbox', :locals => {product: box3}) +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_left') +
           content_tag(:div, raw("<!-- -->"), class: 'navbox_grey_separator_image_right')
-          # ZAT we need to cache this product_bundles call somehow
-          if (ss.bundle_assocs[box1.id] || box2 && ss.bundle_assocs[box2.id] || box3 && ss.bundle_assocs[box3.id])
-            navbox_content += render(:partial => 'bundle', :locals => {product: box1, last_in_row: false}) +
-            render(:partial => 'bundle', :locals => {product: box2, last_in_row: false}) +
-            render(:partial => 'bundle', :locals => {product: box3, last_in_row: true})
+          if !box1.bundles_cached.empty? || (box2 && !box2.bundles_cached.empty?) || (box3 && !box3.bundles_cached.empty?)
+            navbox_content += render(:partial => 'bundle', :locals => {product: box1}) +
+            render(:partial => 'bundle', :locals => {product: box2}) +
+            render(:partial => 'bundle', :locals => {product: box3})
           else
             navbox_content
           end
@@ -497,11 +495,11 @@ module CompareHelper
   end
   
   def only_if_onsale(product)
-    'style="display:none;"' unless Session.search.specs[product.id]["bin"]["onsale"]
+    'style="display:none;"' unless BinSpec.cache_all(product.id)["onsale"]
   end
   
   def only_if_not_onsale(product)
-    'style="display:none;"' if Session.search.specs[product.id]["bin"]["onsale"]
+    'style="display:none;"' if BinSpec.cache_all(product.id)["onsale"]
   end
   
   def calcInterval(min,max)
@@ -531,7 +529,7 @@ module CompareHelper
   end
   
   def product_image(product,size)
-    if (Session.search.specs[product.id]["bin"] || BinSpec.cache_all(product.id))["missingImage"]
+    if BinSpec.cache_all(product.id)["missingImage"]
       #Load missing image placeholder
       content_tag(:div, "", :class => "imageholder", :'data-sku' => product.sku, :'data-id' => product.id)      
     else

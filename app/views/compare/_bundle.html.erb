@@ -1,20 +1,21 @@
 <%if product && product.id%>
-  <% bundles = Session.search.bundle_assocs[product.id] %>
-  <% unless bundles.nil? %>
-    <% bundles = bundles.map{|b| b if Session.search.bundles[b].instock}.compact -%>
-    <% unless bundles.empty? %>
-  
-      <div class="bundle_box_border_container" style="<%= 'margin-right:0px;background:none;' if last_in_row %>">
+  <% bundles = product.bundles_cached.map{|b| b if Product.cached(b.bundle_id).instock}.compact -%>
+  <% unless bundles.empty? %>
+    <% cache "Bundle#{I18n.locale}#{product.id}" do %>
+      <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>
+      <div class="bundle_box_border_container">
         <div class="bundlesbox">
           <% bundles.each_with_index do |bundle_id, i| %>
-            <% bundle_specs = Session.search.specs[bundle_id] -%>
-            <% bundle_link = (bundle_specs["text"]["productUrl#{fr?}"] || bundle_specs["text"]["productUrl"]) -%>
+            <% bundle_id = bundle.bundle_id -%>
+            <%# Don't need this for now # bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
+            <% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
+            <% bundle_link = (TextSpec.cacheone(bundle.bundle_id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")) -%>
             <div class="<%= i == 0 ? 'bundle_first_item' : 'bundle_item'%>">
               <div class="bundle_header">
                 <%= raw t("products.show.packagedeals")+"<br><div style='height: 7px'></div>" if i == 0 %>
-                <%= link_to number_to_currency(bundle_specs["cont"]["saleprice"], precision: 2), bundle_link, :class => "easylink" %>
+                <%= link_to number_to_currency(bundle_cont_specs["saleprice"], precision: 2), bundle_link, :class => "easylink" %>
               </div>
-              <% bundleText = bundle_specs["text"]["bundle#{fr?}"] %>
+              <% bundleText = TextSpec.cache_one(bundle_id, "bundle#{fr?}") %>
               <% unless bundleText.nil? %>
                 <% bundledesc = JSON.parse(bundleText.gsub("=>",":")) %>
                 <% bundledesc[1..-1].each do |item| %>
@@ -51,11 +52,10 @@
           <% end %>
         </div>
       <% end %>  
-  
-    <% else %> <%# bundles.empty? is true -- put in a spacer %>
-      <div class="bundle_box_border_container" style="<%= 'margin-right:0px;background:none;' if last_in_row %>">
-        <div class="bundlesbox_spacer">&nbsp;</div>
-      </div>
-    <% end %>
+    <% end %> <%# caching block %>
+  <% else %> <%# bundles.empty? is true -- put in a spacer %>
+    <div class="bundle_box_border_container">
+      <div class="bundlesbox_spacer">&nbsp;</div>
+    </div>
   <% end %>
 <% end %>

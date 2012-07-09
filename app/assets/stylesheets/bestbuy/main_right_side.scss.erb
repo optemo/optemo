@@ -8,9 +8,9 @@
 .optemo {
   .navbox {
     font-size: 0.85em;
-    margin: 2px 3px 0 0;
+    margin: 2px 0 0 0;
     padding: 0 2px 12px 0;
-    width: 178px; /*+2 for the border*/
+    width: 181px; /*+2 for the border*/
     overflow: hidden;
     text-align: center;
     display: inline-block;
@@ -206,11 +206,14 @@
   /* Bundle Boxes */
 
   .bundle_box_border_container {
-    width: 175px;
+    width: 181px;
     padding-right: 2px;
-    margin: 3px 3px -11px;
+    margin: 3px 0 -11px;
     display: inline-block;
     vertical-align:top;
+  }
+  .ie6 .bundle_box_border_container {
+    width: 184px;
   }
   .bundlesbox, .bundlesbox_spacer {
     text-align: left;

@@ -217,57 +217,7 @@ class Search < ActiveRecord::Base
     things.group(:eq_id_str).groups.each do |g|
          res << g.hits.first.primary_key.to_i
     end
-    
-    # Product spec hash looks like this:
-    # { product_id => 
-    #   { "cont" => {name => value, name => value }, 
-    #     "cat" => {name => value, name => value }, ... },
-    #  product_id => 
-    #   { "cont" ... }
-    # }
-    # To access a spec:
-    # @specs[pid]["cont"]["price"]
-
-    #@cached_products = Product.cachemany(res).inject({}) do |h, r| 
-    #  h[r.id] = r
-    #  h
-    #end
-
-    @products = Product.cachemany(res)
-
-    # Pre-fetch bundles and siblings
-    @sibling_assocs = ProductSibling.cachemany(res)
-    @siblings = {}
-    unless @sibling_assocs.blank?
-      res.concat(@sibling_assocs.values.flatten)
-      sibling_products = Product.cachemany(@sibling_assocs.values.flatten)
-      sibling_products.each do |p|
-        @siblings[p.id] = p
-      end
-    end
-
-    @bundle_assocs = ProductBundle.cachemany(res)
-    @bundles = {}
-    unless @bundle_assocs.blank?
-      res.concat(@bundle_assocs.values.flatten)
-      bundle_products = Product.cachemany(@bundle_assocs.values.flatten)
-      bundle_products.each do |p|
-        @bundles[p.id] = p
-      end
-    end
-
-    @specs = CachingMemcached.cache_lookup("SpecHash#{res.join(',')}") do 
-      spec_table = {}
-      res.each{|pid| spec_table[pid] = {"cont" => {}, "cat" => {}, "text" => {}, "bin" => {}} }
-      [ContSpec, CatSpec, TextSpec, BinSpec].each do |spec_name|
-        specs = spec_name.cache_group(res)
-        index_name = spec_name.to_s[0...-4].downcase
-        specs.each{|cs| spec_table[cs.product_id][index_name][cs.name] = cs.value}
-      end    
-      spec_table
-    end
-    #@cached_products.values
-    @products
+    Product.cachemany(res)
   end
 
   def products_list(things, total) #paginate products through sunspot pagination
