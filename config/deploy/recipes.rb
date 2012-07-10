@@ -16,7 +16,7 @@ task :serversetup do
   #run "cd #{current_path}/config/ultrasphinx   && cp -f development.conf.deploy development.conf && cp -f production.conf.deploy production.conf"
 end
 
-task :restartmemcached do # Found this idea. Maybe consider it for when memcached crashes? :only => {:memcached => true}
+task :restartmemcached, roles: :memcached do # Found this idea. Maybe consider it for when memcached crashes? :only => {:memcached => true}
   run "cd #{current_path} && bundle exec rake cache:clear RAILS_ENV=production"
 end
 

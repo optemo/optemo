@@ -21,6 +21,10 @@ class Session
     product_type[0] == "F"
   end
   
+  def self.bestbuy?
+    product_type[0] == "B"
+  end
+  
   def self.feed_id
     product_type[1..-1]
   end

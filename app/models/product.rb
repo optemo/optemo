@@ -130,10 +130,10 @@ class Product < ActiveRecord::Base
     end
     url_spec = TextSpec.cache_all(id)[name]
     if url_spec.nil?
-      if retailer =~ /^B/
-        url = "http://www.bestbuy.ca/multimedia/Products/#{sizeUrl}/"
-      elsif retailer =~ /^F/
+      if Session.futureshop?
         url = "http://www.futureshop.ca/multimedia/Products/#{sizeUrl}/"
+      elsif Session.bestbuy?
+        url = "http://www.bestbuy.ca/multimedia/Products/#{sizeUrl}/"
       else
         raise "No known image link for product: #{sku}"
       end
