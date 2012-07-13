@@ -4,15 +4,15 @@ require "autocomplete_view_helpers"
 
 class ProductCategory < ActiveRecord::Base
   searchable do
-    # FIXME: remove the product_category autosuggest field
-    autosuggest :all_searchable_data, using: :find_product_category
-    autosuggest :product_category, using: :find_product_category
+    text :product_category do
+      I18n.t "#{product_type}.name"
+    end
+    autosuggest :all_searchable_data, using: :get_category
   end
-  
-  def find_product_category
-    I18n.t "#{product_type}.name"
+  def get_category
+    value = I18n.t "#{category}.name"
   end
-  
+
   class << self    
     def build_query(nodes, left, right, level)
       overall_search = []

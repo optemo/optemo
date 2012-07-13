@@ -88,7 +88,6 @@ class Search < ActiveRecord::Base
         facet #Solr patch 2898, allows only one count per group
         #truncate # facet counts are based on the most relevant document of each group matching the query
       end
-
       if (!search_term)
         with :product_type, Session.product_type_leaves
       end

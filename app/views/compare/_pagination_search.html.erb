@@ -1,7 +1,7 @@
 <div <%= "style=float:right;margin-top:28px;"%>>
 <%= form_tag("/search", :method => "post", id: "keyword_search") do %>
     <% solr_config = YAML.load_file("#{Rails.root}/config/sunspot.yml")[Rails.env] %>
-    <%=raw autosuggest_text_field "product", "name", "http://#{solr_config['solr']['hostname']}:#{solr_config['solr']['port']}/solr/", "all_searchable_data", size: 70,  value: Session.search.keyword_search || "Keyword or Web Code", onfocus: "javascript:if (this.value == 'Keyword or Web Code') {this.value='';}" %>
+    <%=raw autosuggest_text_field "product", "name", "http://#{solr_config['solr']['hostname']}:#{solr_config['solr']['port']}/solr/", "all_searchable_data", size: 70,  value: Session.search.keyword_search || "Search terms", onfocus: "javascript:if (this.value == 'Search terms') {this.value='';}" %>
     <%= submit_tag "Search", id: 'keyword_submit' %>
 <% end %>
 </div>

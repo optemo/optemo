@@ -13,49 +13,66 @@ class Product < ActiveRecord::Base
   has_many :product_bundles
   has_one :equivalence
   
-  attr_writer :all_searchable_data
-  attr_writer :title  # FIXME: remove this and test if after reindexing title is still part of the searchable data; when was it introduced?
+  #attr_writer :all_searchable_data
+  #attr_writer :category_of_product
+  #attr_writer :title  # FIXME: remove this and test if after reindexing title is still part of the searchable data; when was it introduced?
   
   searchable do
     text :title do
       text_specs.find_by_name("title").try(:value)
     end
-     
+
     text :description do
       text_specs.find_by_name("longDescription").try(:value)
     end
     text :sku
     boolean :instock
-    string :eq_id_str 
+    string :eq_id_str
+    integer :isBundleCont do
+      cont_specs.find_by_name(:isBundleCont).try(:value)
+    end
     string :product_type do
       cat_specs.find_by_name(:product_type).try(:value)
     end
-    
+    string :product_category do
+      cat_specs.find_by_name(:product_type).try(:value)
+    end
+    text :category_of_product, :using => :get_category
+
     string :first_ancestors
     string :second_ancestors
-    
-    (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
-      if (s.feature_type == "Continuous")
-        float s.name.to_sym, trie: true do
-          cont_specs.find_by_name(s.name).try(:value)
-        end
-      elsif (s.feature_type == "Categorical")
-        string s.name.to_sym do
-          cat_specs.find_by_name(s.name).try(:value)
-        end
-      elsif (s.feature_type == "Binary")
-        string s.name.to_sym do
-          bin_specs.find_by_name(s.name).try(:value)
-        end
+
+   (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
+    if (s.feature_type == "Continuous")
+      float s.name.to_sym, trie: true do
+        cont_specs.find_by_name(s.name).try(:value)
+      end
+    elsif (s.feature_type == "Categorical")
+      string s.name.to_sym do
+        cat_specs.find_by_name(s.name).try(:value)
+      end
+    elsif (s.feature_type == "Binary")
+      string s.name.to_sym do
+        bin_specs.find_by_name(s.name).try(:value)
       end
     end
+   end
     float :lr_utility, trie: true do
       cont_specs.find_by_name(:lr_utility).try(:value)
     end
-    # FIXME: remove the product_instock_title field, change the field to (testing):
-    # autosuggest :all_searchable_data, :using => :instock?
     autosuggest :all_searchable_data, :using => :get_title
-    autosuggest :product_instock_title, :using => :instock?
+    autosuggest :all_searchable_data, :using => :get_category
+    #autosuggest :product_instock_title, :using => :instock?
+  end
+
+  def get_category
+    category = cat_specs.find_by_name(:product_type).try(:value)
+    if category.nil?  
+      value = "Unknown Category"
+    else
+      value = I18n.t "#{category}.name"
+    end
+    value
   end
   
   def get_title
