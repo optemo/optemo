@@ -111,7 +111,9 @@
       thousand_separator = " "
       cent_separator = ","
     input_dollars = parseInt(input_price) + ""
-    input_cents = parseInt(100 * (input_price - parseInt(input_price)))
+    # Using Math.round in the next line corrects floating point error
+    # 17.99 - 17 = 0.9899999999999984 according to Javascript
+    input_cents = Math.round(100 * (input_price - parseInt(input_price)))
     for char, i in input_dollars.split('').reverse()
       formatted_price = char + formatted_price
       formatted_price = thousand_separator + formatted_price if ((i+1) % 3 == 0 && (input_dollars.length-1) != i)
