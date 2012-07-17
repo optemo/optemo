@@ -23,6 +23,7 @@ set :use_sudo, false
 
 role :app, domain
 role :web, domain
+role :memcached, domain
 role :db,  domain, :primary => true
 
 load 'deploy/assets'
