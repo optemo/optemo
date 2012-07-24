@@ -42,8 +42,28 @@ class CompareController < ApplicationController
   
   def classVariables(search)
     Session.search = search
-    @search_view = true if params[:keyword] || !Session.search.keyword_search.blank? 
-    Session.set_features(search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value})
+    @search_view = true if params[:keyword] || !Session.search.keyword_search.blank?
+    selected_product_type = search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value}
+    selected_product_type = effective_product_type(search) if selected_product_type.empty?
+    Session.initialize_product_type(selected_product_type.first)
+    Session.set_features(selected_product_type)
+  end
+  
+  def effective_product_type(search)
+    current_product_type = Session.product_type
+    counts = count_current_spec("product_type")
+    if counts.keys.length == 1
+      [counts.keys.first]
+    else
+      ProductCategory.get_ancestors(counts.keys)
+    end
+  end
+  
+  def count_current_spec(feat)
+    Session.search.solr_products_count.facet(feat.to_sym).rows.inject({}) do |q,r|
+      q[r.value] = r.count
+      q
+    end
   end
   
   def correct_render

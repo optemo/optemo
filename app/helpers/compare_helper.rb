@@ -132,6 +132,10 @@ module CompareHelper
       Session.search.products_size > 1 ? t("#{Session.product_type}.name").pluralize : t("#{Session.product_type}.name")
     end
   end
+  
+  def number_results
+    Session.search.products_size > 1 ? t("products.compare.product").pluralize : t("products.compare.product")
+  end
  
   def chosencats(feat)
     (Session.search.userdatacats+Session.search.parentcats).select{|d|d.name == feat}.map{|x|x.value}
@@ -167,7 +171,7 @@ module CompareHelper
     # without extra processing, the values of the categorical filters are also in the same order as in the page
     filters = Session.search.userdataconts + Session.search.userdatacats + Session.search.userdatabins
     return [] if filters.empty?
-
+    
     # make the filter facets grouped by name into a list sorted by the order of each facet
     sorted = filters.group_by(&:name).sort_by  do |name, values|
       Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').try(:value) || 0
@@ -326,61 +330,45 @@ module CompareHelper
   def cat_order(f, chosen_cats, tree_level= 1)
     optionlist={}
     toplist = []
-    if (request.host =="keyword")
-       if f.name == "product_type"
-       #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
-       #  leaves = CatSpec.count_feat(f.name)
-       # # puts "leaves_compare #{leaves}"
-       #  (ProductCategory.get_ancestors(leaves.keys, tree_level)+leaves.keys).each do |fp|
-       #    l = ProductCategory.get_leaves(fp)
-       #   # puts "first_ancestor #{fp} its leaves #{l}"
-       #    optionlist[fp] = l.map{|e| leaves[e]}.compact.inject{|res,ele| res+ ele}
-       #  end
-       #***************
-        templist = CatSpec.count_feat(f.name, tree_level)
-         puts "optionlist_test #{templist}"
-        optionlist = process_product_type_hash(templist)
-        
-       else
-        optionlist = Hash[*CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}.flatten]
-       end
+    if f.name == "product_type"
+      optionlist = {}
+      children = ProductCategory.get_subcategories(Session.product_type)
+      leaves = CatSpec.count_feat(f.name)
+      children.each do |fp|
+        l = ProductCategory.get_leaves(fp)          
+        optionlist[fp] = l.map{|e| leaves[e]}.compact.inject(0){|res,ele| res+ele}
+      end
+      if children.empty?
+        leaf_type = Session.product_type
+        optionlist[leaf_type] = leaves[leaf_type]
+      end
+    elsif f.name == "brand" # To ensure alphabetical sorting (regardless of capitalization)
+      optionlist = CatSpec.count_feat(f.name)
+      chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
+      if optionlist.length > 10
+        toplist = optionlist.keys[0..9]
+      end
+      optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
     else
-      if f.name == "product_type"
-        optionlist = {}
-        children = ProductCategory.get_subcategories(Session.product_type)
-        leaves = CatSpec.count_feat(f.name)
-        children.each do |fp|
-          l = ProductCategory.get_leaves(fp)          
-          optionlist[fp] = l.map{|e| leaves[e]}.compact.inject(0){|res,ele| res+ele}
-        end
-      elsif f.name == "brand" # To ensure alphabetical sorting (regardless of capitalization)
+      # Check if the feature has translations
+      if I18n.t("cat_option.#{f.name}", :default => '').empty?
         optionlist = CatSpec.count_feat(f.name)
-        chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
-        if optionlist.length > 10
-          toplist = optionlist.keys[0..9]
-        end
-        optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
-      else
-        # Check if the feature has translations
-        if I18n.t("cat_option.#{f.name}", :default => '').empty?
-          optionlist = CatSpec.count_feat(f.name)
-          #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
-          order = CatSpec.order(f.name)
-        else #Need to downcase the keys so that they match
-          order = {}
-          CatSpec.order(f.name).each {|a,b| order[a.downcase] = b}
-          # Take this out when the specs/translations difference has been sorted out for all products
-            optionlist = {}
-            CatSpec.count_feat(f.name).each {|a,b| optionlist[a.downcase] = b}
-        end   
-        unless order.empty?
-          optionlist = Hash[*optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] }.flatten]
-        end
+        #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
+        order = CatSpec.order(f.name)
+      else #Need to downcase the keys so that they match
+        order = {}
+        CatSpec.order(f.name).each {|a,b| order[a.downcase] = b}
+        # Take this out when the specs/translations difference has been sorted out for all products
+          optionlist = {}
+          CatSpec.count_feat(f.name).each {|a,b| optionlist[a.downcase] = b}
+      end   
+      unless order.empty?
+        optionlist = Hash[*optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] }.flatten]
       end
     end
     [optionlist, toplist]
   end
- 
+  
   def sub_level(product_type, tree_level= 2)
     optionlist={}
    #IMPLEMENTATION WITHOUT INDEXING THE FIRST AND SECOND ANCESTORS
@@ -408,16 +396,18 @@ module CompareHelper
   def process_product_type_hash(list)
     ret_list={}
     list.each do |e,k|
-      if (e[0] =='B')
-        e= 'B'+ (e.split("B"))[1]
-      elsif 
-        e = 'F'+(e.split('F'))[1]
+      # refactored the code and added 'A' 
+      # it looks like the split is not needed since e is the same before and after,
+      # TODO: remove this altogether and test that it still works wiht the original list
+      first_letter = e[0]
+      if ['B', 'F', 'A'].include? first_letter
+        e= first_letter + (e.split(first_letter))[1]
       end
-       if ret_list[e] 
-         ret_list[e]+= k 
-       else
-         ret_list[e] = k 
-       end
+      if ret_list[e] 
+       ret_list[e]+= k 
+      else
+       ret_list[e] = k 
+      end
     end
     ret_list
   end
@@ -457,9 +447,9 @@ module CompareHelper
   end
   
   def product_image(product,size)
-    imageUrl = product.image_url(size, product.id)
-    if BinSpec.find_by_product_id_and_name(product.id, "missingImage") or imageUrl.nil?
-      #Load missing image placeholder
+    imageUrl = product.image_url(size, product.id) 
+    # TODO: remove the imageUrl.nil? call
+    if BinSpec.find_by_product_id_and_name(product.id, "missingImage") or imageUrl.nil?      #Load missing image placeholder
       content_tag(:div, "", :class => "imageholder", :'data-sku' => product.sku, :'data-id' => product.id)      
     else
       image_tag imageUrl, :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.onerror='';this.src='#{product.image_url(:large)}';return true;"

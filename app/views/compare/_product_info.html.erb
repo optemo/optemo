@@ -1,27 +1,7 @@
 <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id); text_specs = TextSpec.cache_all(product.id) %>
 <div class="productinfo" data-sku=<%= product.sku %>>
-  <% if Session.futureshop? -%>
-    <div class="price" <%=raw only_if_not_onsale(product) %>>
-      <div class="futureshop_price">
-        <% p = cont_specs["price"] -%>
-        <span class="price_dollars"><%= number_with_precision(p.to_i, :precision => 0) %></span>
-        <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2, :locale => :en).to_f * 100).to_i %></span>
-      </div>
-    </div>
-    <div class="saleprice" <%=raw only_if_onsale(product) %>>
-      <div class="futureshop_sale_background">
-        <%= t('products.compare.save')+" "%><span class="superscript" <%= 'style=display:none;' unless fr?.empty? %>>$</span><span class="savings"><%= number_with_precision(cont_specs["price"]-cont_specs["saleprice"], :precision => 0) %></span><span class="superscript" <%= 'style=display:none;' if fr?.empty? %>>$</span>
-      </div>
-      <div class="futureshop_price">
-        <% p = cont_specs["saleprice"] -%>
-        <span class="price_dollars"><%= number_with_precision(p.to_i, :precision => 0) %></span>
-        <span class="price_cents"><%= (number_with_precision(p - p.to_i, :precision => 2, :locale => :en).to_f * 100).to_i %></span>
-      </div>
-    </div>	
-  <% end %>
   <%= link_to (text_specs["title#{fr?}"] || text_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :class => "easylink", :title => t('products.compare.clickforspecs') %>
   <div class="productspecs"><!--&--></div>
-  <% unless Session.futureshop? -%>
     <div class="price" <%=raw only_if_not_onsale(product) %>>
       <%= t('products.show.ourprice')+(fr?.empty? ? "" : " ")+": "%>     
       <span><%= number_to_currency(cont_specs["price"]) %></span>
@@ -30,25 +10,8 @@
     <%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": " %>
     <span><%= number_to_currency(cont_specs["saleprice"]) %></span>
   </div>	
-  <% end -%>
-  <% unless Session.futureshop? -%>
-    <div class="save" <%=raw only_if_onsale(product) %>>
-      <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
-      <% debugger if cont_specs["price"].nil? or cont_specs["saleprice"].nil? %>
-      <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
-    </div>
-  <% end -%>
-  <div class="saleends" <%=raw 'style="display:none;"' if !(BinSpec.cache_all(product.id)["onsale"]) || (cat_specs["saleEndDate"] && Time.now > Date.parse(cat_specs["saleEndDate"])) %>>
-    <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
-    <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
+  <div class="save" <%=raw only_if_onsale(product) %>>
+    <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
+    <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
   </div>
-  <% siblings = product.product_siblings.map{|s| s if Product.find_by_id(s.sibling_id).instock}.compact -%>
-  <!-- Colour swatches -->
-  <%# Colour swatches go after customer rating in Future Shop design %>
-  <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>
- 
-  <% if cont_specs["customerRating"] && cont_specs["customerRating"] > 0 %>
-    <div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
-  <% end %>
-  <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} if Session.futureshop? %>
 </div>

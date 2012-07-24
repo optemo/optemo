@@ -8,18 +8,25 @@ GIT
 
 GIT
   remote: git://github.com/wildoats/sunspot.git
-  revision: 01c365cb72bf3bf3610aa61cc2632586912bd3b7
+  revision: e522dc5aec6e4b5091b6ce697a5b2341dbf4b256
+  ref: e522dc5aec
   branch: optemo
   specs:
     sunspot (2.0.0.pre.111215)
       escape (~> 0.0.4)
       pr_geohash (~> 1.0)
       rsolr (~> 1.0.6)
+    sunspot_solr (2.0.0.pre.111215)
+      escape (~> 0.0.4)
+
+GIT
+  remote: git://github.com/wildoats/sunspot.git
+  revision: e522dc5aec6e4b5091b6ce697a5b2341dbf4b256
+  branch: optemo
+  specs:
     sunspot_rails (2.0.0.pre.111215)
       nokogiri
       sunspot (= 2.0.0.pre.111215)
-    sunspot_solr (2.0.0.pre.111215)
-      escape (~> 0.0.4)
 
 GEM
   remote: http://rubygems.org/
@@ -165,7 +172,7 @@ GEM
     rb-fsevent (0.9.0)
     rdoc (3.12)
       json (~> 1.4)
-    rsolr (1.0.7)
+    rsolr (1.0.8)
       builder (>= 2.1.2)
     ruby-aaws (0.7.0)
     ruby-aws (1.5.0)

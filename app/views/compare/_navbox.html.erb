@@ -8,7 +8,8 @@
       </a>
     </div>
     <%= product_image(product, :medium) %>
-    <%= render partial: "product_info", locals: {product: product} %>
+    <% info_partial = Session.amazon? ? "short_product_info" : "product_info" %>
+    <%= render partial: info_partial, locals: {product: product} %>
   </div>
 <% else # Render a navbox shell so that the rendering is consistent -%>
   <div class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %> height:240px;">

@@ -13,10 +13,6 @@ class Product < ActiveRecord::Base
   has_many :product_bundles
   has_one :equivalence
   
-  #attr_writer :all_searchable_data
-  #attr_writer :category_of_product
-  #attr_writer :title  # FIXME: remove this and test if after reindexing title is still part of the searchable data; when was it introduced?
-  
   searchable do
     text :title do
       text_specs.find_by_name("title").try(:value)
@@ -37,7 +33,7 @@ class Product < ActiveRecord::Base
     string :product_category do
       cat_specs.find_by_name(:product_type).try(:value)
     end
-    text :category_of_product, :using => :get_category
+    #text :category_of_product, :using => :get_category
 
     string :first_ancestors
     string :second_ancestors
@@ -61,26 +57,17 @@ class Product < ActiveRecord::Base
       cont_specs.find_by_name(:lr_utility).try(:value)
     end
     autosuggest :all_searchable_data, :using => :get_title
-    autosuggest :all_searchable_data, :using => :get_category
+    #autosuggest :all_searchable_data, :using => :get_category # TODO: remove this
     #autosuggest :product_instock_title, :using => :instock?
-  end
-
-  def get_category
-    category = cat_specs.find_by_name(:product_type).try(:value)
-    if category.nil?  
-      value = "Unknown Category"
-    else
-      value = I18n.t "#{category}.name"
-    end
-    value
   end
   
   def get_title
-    name = text_specs.find_by_name("title").try(:value)
-    if name.nil?  
-      name = "Unknown Title / Title Not In Database"
+    title = text_specs.find_by_name("title").try(:value)
+    if title.nil?
+      false
+    else
+      title
     end
-    name
   end
   
   def first_ancestors

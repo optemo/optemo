@@ -9,6 +9,12 @@ class Session
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
+  # the same as initialize except called from elseqhere
+  def self.initialize_product_type(product_type)
+    self.product_type = product_type || ProductCategory.first.product_type
+    self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
+  end
+  
   def self.product_type_leaves
     ProductCategory.get_leaves(product_type)
   end
@@ -19,6 +25,14 @@ class Session
   
   def self.futureshop?
     product_type[0] == "F"
+  end
+  
+  def self.bestbuy?
+    product_type[0] == "B"
+  end
+  
+  def self.amazon?
+    product_type[0] == "A"
   end
   
   def self.feed_id
@@ -36,7 +50,7 @@ class Session
       subcategories.any?{|e| categories.include? e} ||
       (dynamically_excluded << f && false) #If a feature is not selected, we need to note this
     end.group_by(&:used_for)
-   
+    
     # Some filters of last search need to be removed when dynamic filters removed
     unless categories.empty?
       dynamically_excluded.each do |f|

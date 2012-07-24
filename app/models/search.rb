@@ -123,6 +123,65 @@ class Search < ActiveRecord::Base
     end
   end
   
+  def solr_products_count()
+    mybins = userdatabins
+    mycats = userdatacats
+    myconts = userdataconts
+    search_term =  @validated_keyword
+    #puts "\nmybins: #{mybins}\nmycats: #{mycats}\nmyconts: #{myconts}\n"
+    filtering = Product.search do
+      if search_term
+        phrase = search_term.downcase.gsub(/\s-/,'').to_s
+        fulltext phrase
+      end
+      
+      cat_filters = {} #Used for faceting exclude so that the counts are right
+      mycats.group_by(&:name).each_pair do |name, group|
+        cat_filters[name] = any_of do  #disjunction inside the category part
+          group.each do |cats|
+            if cats.name == "product_type"
+              leaves = ProductCategory.get_leaves(cats.value)
+              with :product_type, leaves  
+            else
+              with cats.name.to_sym, cats.value
+            end
+          end
+        end
+      end
+      
+      #The default is a conjunction for all the items
+      mybins.each do |bins|
+        with bins.name.to_sym, bins.value
+      end
+      cont_filters = {}
+      myconts.group_by(&:name).each_pair do |name, group|
+        cont_filters[name] = any_of do  #disjunction inside the category part
+          group.each do |conts|
+            with conts.name.to_sym, conts.min||0..conts.max||1000000
+          end
+        end
+      end
+      #myconts.each do |conts|
+      #  with (conts.name.to_sym), conts.min||0..conts.max||1000000
+      #end
+      
+      with :instock, 1
+      group :eq_id_str do 
+        ngroups  # includes the number of groups that have matched the query
+        facet #Solr patch 2898, allows only one count per group
+        #truncate # facet counts are based on the most relevant document of each group matching the query
+      end
+      if (!search_term)
+        with :product_type, Session.product_type_leaves
+      end
+      # Counting product type results
+      f_name = "product_type"
+      facet :product_type, exclude: cat_filters[f_name]
+      facet :first_ancestors, exclude: cat_filters[f_name]
+      facet :second_ancestors, exclude: cat_filters[f_name]
+    end
+  end
+  
   def userdataconts
     @userdataconts ||= Userdatacont.find_all_by_search_id(id)
   end
@@ -208,7 +267,7 @@ class Search < ActiveRecord::Base
     end
   end
   
-  def grouping(things)    
+  def grouping(things)
     res=[]
     things.group(:eq_id_str).groups.each do |g|
       res << g.results.first

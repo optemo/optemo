@@ -58,7 +58,7 @@ group :production, :profile do
 end
 
 group :development do
-   gem 'sunspot_solr', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo" # optional pre-packaged Solr distribution for use in development
+   gem 'sunspot_solr', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo", :ref=>"e522dc5aec" # optional pre-packaged Solr distribution for use in development
    #gem 'sunspot_solr', '2.0.0.optemo', :path => 'vendor/plugins/sunspot' # optional pre-packaged Solr distribution for use in development
 end
 

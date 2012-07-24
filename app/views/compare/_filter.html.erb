@@ -9,10 +9,12 @@
         <!-- -->
         <%= t('products.compare.refineyoursearch2') %>
       </div>
-    <% else %>
+    <% elsif Session.bestbuy? %>
       <h1><%= t('products.compare.shoph1') + product_title %></h1>
+    <% elsif Session.amazon? %>
+      <h1><%= t('products.compare.filters') %></h1>
     <% end %>
-    <% unless Session.futureshop? -%>
+    <% if Session.bestbuy? -%>
       <div>
         <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
       </div>
@@ -20,49 +22,7 @@
   </div>
   <% grouped_filters = getSearchFilters() %>
   <% unless grouped_filters.empty? %>
-    <div id='your_selections' class='feature'>
-      <div class="selection_label"><%= t('products.compare.selections') %></div>
-      <div id="selections_text" class='categorical'>
-        <% grouped_filters.each do |f| -%>
-          <% values = f[1] %>
-          <% fname = f[0] %>
-          <% unless values.nil? %>
-            <% if values.count > 0 %>
-              <% unless spec_type(values.first) == 'facet' or spec_type(values.first) == 'binary' %>
-                <div class='label list_item hanging_margin'>
-                  <%= t("#{Session.product_type}.filter.#{fname}.name", :default => fname.capitalize) -%>
-                </div>
-              <% end %>
-              <% rangesShow = showSelectedRanges(values, fname) %>
-              <% values.each_with_index do |spec, index| -%>
-                <% if spec_type(spec) == 'facet' -%>
-                  <div class='label list_item hanging_margin'>
-                    <%= t("#{Session.product_type}.filter.#{spec.name}.name", :default => spec.name.capitalize) -%>
-                  </div>
-                <% else -%>
-                  <div class='list_item hanging_margin' data-name='<%= spec_type(spec) %>_<%= spec.name %>' class='current_filter' 
-                    <% if spec_type(spec) == 'continuous' %>
-                      data-value='<%=spec.min%>;<%=spec.max%>'
-                    <% elsif spec_type(spec) == 'categorical' %>
-                      data-value='<%= spec.value %>'
-                    <% end %>
-                      >
-                    <% str = displaySelectedString(spec, rangesShow.empty? ? nil : rangesShow[index]) %>
-                    <%= t("#{Session.product_type}.filter.#{str}.name", :default => str) -%>
-                    <a class='remove_filter' href='#'><div><!-- --></div> <%= Session.futureshop? ? '' : t('products.compare.undo') %> </a>
-                  </div>
-                <% end -%>
-              <% end -%>
-            <% end -%>
-          <% end -%> <%# unless values.nil? %>
-        <% end -%> <%# grouped.filters.each %>
-      </div>
-      <% if Session.futureshop? %>
-        <span>
-          » <%= link_to t('products.compare.futureshop_reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
-        </span>
-      <% end %>
-    </div>
+    <%= render partial: 'your_selections', locals: {grouped_filters: grouped_filters} %>
   <% end %>
   <form id="filter_form" method="get" action="/compare">
     <% #Function that determines which facets to display and pulls up the values needed to display %>
