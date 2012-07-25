@@ -7,10 +7,10 @@ class ProductCategory < ActiveRecord::Base
     text :product_category do
       I18n.t "#{product_type}.name"
     end
-    autosuggest :all_searchable_data, using: :get_category
+    autosuggest :all_searchable_data, using: :find_product_category
   end
-  def get_category
-    value = I18n.t "#{category}.name"
+  def find_product_category
+    value = I18n.t "#{product_type}.name"
   end
 
   class << self    

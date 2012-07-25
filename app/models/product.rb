@@ -17,7 +17,7 @@ class Product < ActiveRecord::Base
     text :title do
       text_specs.find_by_name("title").try(:value)
     end
-
+    
     text :description do
       text_specs.find_by_name("longDescription").try(:value)
     end
@@ -33,12 +33,12 @@ class Product < ActiveRecord::Base
     string :product_category do
       cat_specs.find_by_name(:product_type).try(:value)
     end
-    #text :category_of_product, :using => :get_category
-
+    text :category_of_product, :using => :get_category
+    
     string :first_ancestors
     string :second_ancestors
-
-   (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
+    
+    (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
     if (s.feature_type == "Continuous")
       float s.name.to_sym, trie: true do
         cont_specs.find_by_name(s.name).try(:value)
@@ -52,21 +52,23 @@ class Product < ActiveRecord::Base
         bin_specs.find_by_name(s.name).try(:value)
       end
     end
-   end
+    end
     float :lr_utility, trie: true do
       cont_specs.find_by_name(:lr_utility).try(:value)
     end
-    autosuggest :all_searchable_data, :using => :get_title
-    #autosuggest :all_searchable_data, :using => :get_category # TODO: remove this
-    #autosuggest :product_instock_title, :using => :instock?
+    autosuggest :all_searchable_data, :using => :instock_title
   end
   
-  def get_title
-    title = text_specs.find_by_name("title").try(:value)
-    if title.nil?
-      false
-    else
-      title
+  def get_category
+    category = cat_specs.find_by_name(:product_type).try(:value)
+    unless category.nil?  
+      I18n.t "#{category}.name"
+    end
+  end
+  
+  def instock_title
+    if (instock)
+      text_specs.find_by_name("title").try(:value)
     end
   end
   

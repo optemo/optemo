@@ -1,5 +1,4 @@
 <ul id="spellcheck_suggestion_box">
-  <a class= "last_page" style="font-size:8pt" href="#">Home</a>
   <%unless (Session.search.collation.nil? || Session.search.col_emp_result) %>
     <%if (Session.search.num_result==0)%>
       / Showing results for <b><%=Session.search.collation%></b> as there were no results for <b><%=Session.search.keyword_search%></b>

@@ -127,7 +127,7 @@ class Search < ActiveRecord::Base
     mybins = userdatabins
     mycats = userdatacats
     myconts = userdataconts
-    search_term =  @validated_keyword
+    search_term = @validated_keyword || keyword_search
     #puts "\nmybins: #{mybins}\nmycats: #{mycats}\nmyconts: #{myconts}\n"
     filtering = Product.search do
       if search_term

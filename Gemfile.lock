@@ -64,11 +64,6 @@ GEM
       multi_json (~> 1.0)
     archive-tar-minitar (0.5.2)
     arel (3.0.2)
-    aws-sdk (1.5.2)
-      httparty (~> 0.7)
-      json (~> 1.4)
-      nokogiri (>= 1.4.4)
-      uuidtools (~> 2.1)
     builder (3.0.0)
     capistrano (2.11.2)
       highline
@@ -116,9 +111,6 @@ GEM
       test-unit (~> 2.2)
     highline (1.6.11)
     hike (1.2.1)
-    httparty (0.8.3)
-      multi_json (~> 1.0)
-      multi_xml
     i18n (0.6.0)
     journey (1.0.3)
     json (1.6.6)
@@ -128,7 +120,6 @@ GEM
       treetop (~> 1.4.8)
     mime-types (1.18)
     multi_json (1.2.0)
-    multi_xml (0.5.1)
     mysql2 (0.3.11)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
@@ -174,10 +165,6 @@ GEM
       json (~> 1.4)
     rsolr (1.0.8)
       builder (>= 2.1.2)
-    ruby-aaws (0.7.0)
-    ruby-aws (1.5.0)
-      highline (>= 1.2.7)
-      nokogiri (>= 1.4)
     ruby-prof (0.10.8)
     ruby_core_source (0.1.5)
       archive-tar-minitar (>= 0.5.2)
@@ -203,7 +190,6 @@ GEM
     uglifier (1.2.4)
       execjs (>= 0.3.0)
       multi_json (>= 1.0.2)
-    uuidtools (2.1.2)
     will_paginate (3.0.0)
     yui-compressor (0.9.6)
       POpen4 (>= 0.1.4)
@@ -212,7 +198,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  aws-sdk
   capistrano
   capistrano-ext
   coffee-rails
@@ -223,12 +208,9 @@ DEPENDENCIES
   guard-test
   i18n-active_record!
   mysql2 (> 0.3)
-  nokogiri
   progress_bar
   rails (= 3.2.2)
   rb-fsevent
-  ruby-aaws
-  ruby-aws
   ruby-prof
   ruby_core_source
   sass-rails

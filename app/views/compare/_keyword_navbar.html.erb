@@ -2,13 +2,13 @@
   <% if local_assigns[:bottom].nil? %>
     <%= render 'pagination_search' %>	
   <% end %>
-  <div id="navtitle">
+  <div id="results_title">
     <% if local_assigns[:bottom] %>
       <%= Session.search.products_size %> <%= raw(number_results) %>
     <% else %>
-      <div class='nav-available-text'>
+      <div class='available-text'>
         <%= Session.search.products_size %>
-        <span class='nav-available-text'><%= raw(number_results) %></span>
+        <%= raw(number_results) %>
       </div>
     <% end %>
   </div>
