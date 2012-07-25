@@ -170,7 +170,7 @@ module CompareHelper
     # getting the currently applied filters in order that they appear in the page
     # without extra processing, the values of the categorical filters are also in the same order as in the page
     filters = Session.search.userdataconts + Session.search.userdatacats + Session.search.userdatabins
-    return [] if filters.empty?
+    return [] if filters.empty? && Session.search.keyword_search.to_s.empty?
     
     # make the filter facets grouped by name into a list sorted by the order of each facet
     sorted = filters.group_by(&:name).sort_by  do |name, values|
@@ -195,6 +195,8 @@ module CompareHelper
       end
       new_sorted << [name, new_group[name]]
     end
+    #debugger
+    new_sorted.insert(0, ["Keyword", [Userdatacat.new(name: 'keyword', value: Session.search.keyword_search)]]) unless Session.search.keyword_search.to_s.empty?
     new_sorted
   end
   

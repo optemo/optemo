@@ -49,6 +49,8 @@
         $('#categorical_color').val("")
         filter_node = $('.swatch_button[title="' + value + '"]')
         filter_node.removeClass('selected_swatch')
+      else if name.match(/keyword/)
+        $("#product_name").val('')
       else
         filter_node = $('#'+name+'[value="'+value+'"]')
       if (filter_node.attr("checked"))
