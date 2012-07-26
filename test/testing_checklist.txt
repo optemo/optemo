@@ -51,6 +51,8 @@ Filter Page:
         - check several different facets and make sure they appear properly
         - colour should be a word, not a coloured box like in the facets
         - each should have an "undo" button. Check that this works
+  - Check headers:
+    - Select filters that have a small number of results so that as many filters as possible disappear. Check that the filters and the headers for these sections are not shown (i.e. Advanced Search, etc.) when there are 0 results
 
 Product Comparison:
 
@@ -273,14 +275,14 @@ Filters:
       - What's New (Best Buy)
       - New Release (Future Shop)
       - Refurbished
-		- Usage Type (Future Shop)
-			- Ultrabook
-			- Thin and Light
-			- On the Go
-			- Everyday
-			- Entertainment
-			- Gaming
-			- Microsoft Premium Collection PC
+    - Usage Type (Future Shop)
+      - Ultrabook
+      - Thin and Light
+      - On the Go
+      - Everyday
+      - Entertainment
+      - Gaming
+      - Microsoft Premium Collection PC
     - Brands
       - Check for typos
     - Price
@@ -387,3 +389,21 @@ French:
   - Check that links go to French PDPs
   - Check that the copy and units are all French
   - Check that the numbers are formatted in French ($ after the amount, ',' as a decimal separator)
+  
+After changes to the update task:  
+  - Compare live site to sandbox once the update task has been run on Jaguar for production
+  - Things that break easily and should be checked:
+    - Product numbers
+      - Confirm that the total products for each department match
+      - Confirm that the filter product numbers (i.e. Waterproof (7)) match
+      - If products are missing, check the database for them and their specs
+        - If they are missing from the database, it's probably a scraping error
+        - If they appear in the database but not on the site, it's probably a Solr error
+    - Sorting
+      - Try one of the price sorting options and confirm it works
+        - If not, this is probably due to an error in the Solr index process
+    - In stock/Out of stock products
+      - Look for products whose images aren't clickable and whose text fields aren't links
+        - These appear when a product is indexed in Solr but is listed as out of stock in the database, so there may be a problem with the index process
+  - Check the first page of each department on sandbox against the live site with the same options set (the easiest is to set no filters and to choose a price-sorting option)
+    - Make sure products appear in the same order, with the same names, same images, same prices, etc.
