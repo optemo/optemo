@@ -1,7 +1,8 @@
 module Ranges
-  
-	def self.getRange(feats, num, cats)
-	  discretized = Session.search.solr_search({mybins: [], mycats: cats, myconts: []})
+  NUM_RANGES = 6
+	def self.getRange(feats, num)
+	  discretized = Session.search.solr_search({mybins: [], mycats: [], myconts: []})
+
 	  ranges = {}  
     feats.each do |feat| 
       dis = discretized.facet(feat.to_sym)
@@ -13,7 +14,7 @@ module Ranges
 	          rs  = self.price_ranges(dis)
           else    
 	          grouped_data = Kmeans.compute(num, dis.map{|r| [r.value]*r.count}.flatten)
-	          debugger if grouped_data.nil?  
+	          next if grouped_data.nil?
   	        grouped_data.each do |g| 
   	          rs << {:min => g.min, :max => g.max} 
   	        end
@@ -33,17 +34,16 @@ module Ranges
     end
   end
 
-  def self.cacherange(feats, num, cats) 
-    Rails.cache.fetch("Ranges#{Session.product_type}#{num}#{cats.map{|x|x.value}.join}#{feats.join}") do
-      self.getRange(feats, num, cats)
+  def self.cache
+    Rails.cache.fetch("Ranges#{Session.product_type}#{NUM_RANGES}#{Session.range_filters.join}") do
+      self.getRange(Session.range_filters, NUM_RANGES)
     end
   end
 
   def self.price_ranges(discretized)
-    min = discretized.map{|d| d.value}.min
-    max = discretized.map{|d| d.value}.max
+    min = discretized.first.value
+    max = discretized.last.value
     rs = []
-    s = self.count("saleprice", min, max) # total count of prods with this feature
     prs = [0, 50, 100, 150, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000].map{|x|x.to_f}
     gprs = [0, 10, 25, 50, 100, 150, 200, 250, 300, 400, 500, 750, 1000, 2000, 3000, 4000, 5000, 7500, 10000, 20000].map{|x|x.to_f}
     prs.each_with_index do |pr, ind|

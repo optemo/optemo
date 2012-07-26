@@ -112,7 +112,7 @@ module CompareHelper
   end
   
   def getDisplayedRanges(f, chosen_conts)
-    ranges = getRanges(f.name)
+    ranges = Ranges.cache[f.name.to_sym]
     chosen_conts.each{|c| ranges << c unless ranges.include?(c)}
     displayed_ranges = displayRanges(f.name, ranges)
     no_display = !displayed_ranges.inject(false){|res,e| res || e[:count]>0}
@@ -154,7 +154,7 @@ module CompareHelper
   end  
 
   def showSelectedRanges(values, name)
-    displayRanges(name, getRanges(name)).select{|r| !values.select{|v| v.min == r[:min]}.empty? }
+    displayRanges(name, Ranges.cache[name.to_sym]).select{|r| !values.select{|v| v.min == r[:min]}.empty? }
   end
 
   def spec_type(spec)
@@ -229,12 +229,6 @@ module CompareHelper
       end
     end
   end
-
-  def getRanges(feat)
-    num_ranges = 6
-    feats = Session.features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact
-    Ranges.cacherange(feats, num_ranges, [])[feat.to_sym]
-  end  
   
 	def getDist(feat)
     num_buckets = 24
