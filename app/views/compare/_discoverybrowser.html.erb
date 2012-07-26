@@ -2,17 +2,18 @@
 <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
   <%=raw sortby %>
 </ul>
-<%= render "spellcheck" if @search_view %>
 <div id="product_content">
     <div class='border-content'>	
     <%= raw main_boxes %>
     <span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span>
     </div>
-    <% if Session.retailer == 'A' %>
-      <%= render partial: "keyword_navbar", locals: {bottom: true} %>
-    <% else %>
-      <%= render partial: "navigator_bar", locals: {bottom: true} %>
-    <% end %>
+    <%= render partial: "navigator_bar", locals: {bottom: true} %>
+    
+    <%# if Session.retailer == 'A' %>
+      <%#= render partial: "keyword_navbar", locals: {bottom: true} %>
+    <%# else %>
+      <%#= render partial: "navigator_bar", locals: {bottom: true} %>
+    <%# end %>
     <%= render partial: "pagination", locals: {bottom: true} %>
 </div>
 <div style="clear:both;"></div>

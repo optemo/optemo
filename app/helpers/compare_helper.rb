@@ -129,12 +129,12 @@ module CompareHelper
     if I18n.locale == :fr
       t("#{Session.product_type}.name")
     else
-      Session.search.products_size > 1 ? t("#{Session.product_type}.name").pluralize : t("#{Session.product_type}.name")
+      Session.search.products_size == 1 ? t("#{Session.product_type}.name") : t("#{Session.product_type}.name").pluralize
     end
   end
   
   def number_results
-    Session.search.products_size > 1 ? t("products.compare.product").pluralize : t("products.compare.product")
+    Session.search.products_size == 1 ? t("products.compare.product") : t("products.compare.product").pluralize
   end
  
   def chosencats(feat)
@@ -355,15 +355,14 @@ module CompareHelper
       # Check if the feature has translations
       if I18n.t("cat_option.#{f.name}", :default => '').empty?
         optionlist = CatSpec.count_feat(f.name)
-        #optionlist = CatSpec.count_feat(f.name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
         order = CatSpec.order(f.name)
       else #Need to downcase the keys so that they match
         order = {}
         CatSpec.order(f.name).each {|a,b| order[a.downcase] = b}
         # Take this out when the specs/translations difference has been sorted out for all products
-          optionlist = {}
-          CatSpec.count_feat(f.name).each {|a,b| optionlist[a.downcase] = b}
-      end   
+        optionlist = {}
+        CatSpec.count_feat(f.name).each {|a,b| optionlist[a.downcase] = b}
+      end
       unless order.empty?
         optionlist = Hash[*optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] }.flatten]
       end
@@ -383,35 +382,13 @@ module CompareHelper
    # end
    #puts "sub_level #{ancestors} #{subcategories}"
    #****************
-    temp_ancestors = CatSpec.count_feat("product_type",tree_level)
-    second_ancestors = process_product_type_hash(temp_ancestors)
-    
+    second_ancestors = CatSpec.count_feat("product_type",tree_level)
     subcategories = ProductCategory.get_subcategories(product_type).each do |sub|
       if second_ancestors.has_key?(sub) && second_ancestors[sub]>0
         optionlist[sub] = second_ancestors[sub]
       end
     end
-    puts"sub_levels #{optionlist}"
     optionlist
-  end
-  
-  def process_product_type_hash(list)
-    ret_list={}
-    list.each do |e,k|
-      # refactored the code and added 'A' 
-      # it looks like the split is not needed since e is the same before and after,
-      # TODO: remove this altogether and test that it still works wiht the original list
-      first_letter = e[0]
-      if ['B', 'F', 'A'].include? first_letter
-        e= first_letter + (e.split(first_letter))[1]
-      end
-      if ret_list[e] 
-       ret_list[e]+= k 
-      else
-       ret_list[e] = k 
-      end
-    end
-    ret_list
   end
   
   def only_if_onsale(product)

@@ -19,7 +19,7 @@ optemo_module = (function (my){
   $('#keyword_submit').live("click", function(){
    	if (my.loading_indicator_state.disable) return false;
  	 	var selections = get_filtering_specs();
-		if ($("#product_name").val()!="" && $("#product_name").val()!= "Keyword or Web Code")
+		if ($("#product_name").val()!="" && $("#product_name").val()!= "Search terms")
 		 {my.ajaxcall("/search", $.extend(selections,{"keyword" : $("#product_name").val()}));}
 		else
 		 my.ajaxcall("/search", selections);

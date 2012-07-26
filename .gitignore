@@ -20,7 +20,8 @@ lib/.ruby_inline
 cache/*
 .sass-cache/
 public/assets/
-
+public/javascripts/
+public/stylesheets/
 
 solr/data
 solr/pids

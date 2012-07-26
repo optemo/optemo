@@ -31,11 +31,14 @@
     background-image:-moz-linear-gradient(center bottom, #98fb98, #98fb98);
     background-image:-o-linear-gradient(bottom, rgb(152,251,152), rgb(152,251,152));
     background-image:-webkit-gradient(linear, left bottom, left top, from(#98fb98), to(#98fb98));
-    left: 4px;
     width: 739px;
     overflow: hidden;
     position: relative;
     margin-bottom: 1px;
+  }
+  .nav_search_bar{
+    height: 80px;
+    left: 4px;
   }
   #IE #navigator_bar {
     background: url(<%= asset_path "IE/navigator_bar_bg.gif" %>) repeat-x;
@@ -65,7 +68,7 @@
     width: 250px;
   }
   
-  .available-text {
+  .nav-search-bar .available-text {
     font-weight: bold;
   }
   
@@ -75,7 +78,7 @@
     float: left;
   }
   
-  #results_title {
+  .nav_search_bar #navtitle {
     float: left;
     margin-top: 15px;
     margin-left: 5px;
@@ -212,14 +215,16 @@
   ul#sorting_method_box li a:hover{
     text-decoration: underline;
   }
-  ul#spellcheck_suggestion_box{
-  	color: red;
-	font-size: 12px;
-	height: 27px;
-	padding: 0 0 0 15px;
-	margin: 0;
+  #spellcheck_suggestion_box{
+    color: red;
+    font-size: 12px;
+    height: 27px;
+    padding: 0 0 0 15px;
+    margin: 0;
+    float: left;
+    margin-left: 10px;
   }
-  ul#spellcheck_suggestion_box b{
+  #spellcheck_suggestion_box b{
   	color: black;
   }
 }

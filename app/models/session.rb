@@ -9,7 +9,7 @@ class Session
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
-  # the same as initialize except called from elseqhere
+  # the same as initialize except called from elsewhere
   def self.initialize_product_type(product_type)
     self.product_type = product_type || ProductCategory.first.product_type
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function

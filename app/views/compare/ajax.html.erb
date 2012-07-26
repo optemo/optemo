@@ -1,8 +1,4 @@
-<% if Session.retailer == 'A' %>
-  <%= render partial: 'keyword_navbar', :locals => {landing: Session.search.initial} %>[BRK]
-<% else %>
-  <%= render partial: 'navigator_bar', :locals => {landing: Session.search.initial} %>[BRK]
-<% end %>
+<%= render partial: 'navigator_bar', :locals => {landing: Session.search.initial} %>[BRK]
 <%= render partial: 'filter' %>[BRK]
 <% if Session.search.initial %>
   <% if Session.retailer == 'A' %>
