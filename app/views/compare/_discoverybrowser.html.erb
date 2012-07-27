@@ -8,12 +8,6 @@
     <span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span>
     </div>
     <%= render partial: "navigator_bar", locals: {bottom: true} %>
-    
-    <%# if Session.retailer == 'A' %>
-      <%#= render partial: "keyword_navbar", locals: {bottom: true} %>
-    <%# else %>
-      <%#= render partial: "navigator_bar", locals: {bottom: true} %>
-    <%# end %>
     <%= render partial: "pagination", locals: {bottom: true} %>
 </div>
 <div style="clear:both;"></div>
