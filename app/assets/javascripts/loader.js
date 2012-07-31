@@ -99,7 +99,6 @@ QC_cookie_value = getValueFromCookie("isQuebec");
 var quebec = false;
 if (QC_cookie_value == "True" || QC_cookie_value == "true")
   quebec = true;
-alert(QC_cookie_value + ' ' + quebec);
 
 if (opt_history.length > 0)
   var opt_options = {embedding:'true', hist: opt_history, category_id: opt_category_id, is_quebec: quebec};
