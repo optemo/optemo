@@ -1,5 +1,5 @@
 #= require def
-#= require realtime_price
+## require realtime_price
 #= require raphael
 #= require jquery.dependClass
 #= require jquery.history
