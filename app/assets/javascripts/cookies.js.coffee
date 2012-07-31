@@ -3,9 +3,6 @@
 #//--------------------------------------//
 @module "optemo_module", ->
   #****Public Functions****
-  @getCookieValue = (name) ->
-    return readCookie(name)
-  
   # This should return all values from a cookie containing sku-type values in an array.
   @readAllCookieValues = (name) ->
     skus = undefined

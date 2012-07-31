@@ -95,7 +95,7 @@ if (opt_category_id == 0) {
   if (typeof(console) != "undefined") console.warn("Product category not recognized - Cameras used as default");
 }
 
-QC_cookie_value = optemo_module.getCookieValue("isQuebec");
+QC_cookie_value = getValueFromCookie("isQuebec");
 var quebec = false;
 if (QC_cookie_value == "True" || QC_cookie_value == "true")
   quebec = true;
@@ -201,6 +201,23 @@ JSONP.get(OPT_REMOTE, opt_options, function (data) {
     opt_insert_all_data(data)
   }
 });
+
+// Takes the name of a field present in the cookie and returns its value from the cookie
+function getValueFromCookie(name) {
+  var c, nameEQ, _i, _len, _ref;
+  nameEQ = name + "=";
+  _ref = document.cookie.split(';');
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    c = _ref[_i];
+    while (c[0] === ' ') {
+      c = c.slice(1);
+    }
+    if (c.indexOf(nameEQ) === 0) {
+      return c.slice(nameEQ.length);
+    }
+  }
+  return null;
+}; 
 
 // Private function that takes data, does split() and replace() according to rules.
 function opt_parse_data_by_pattern(mydata, split_pattern_string, replacement_function) {
