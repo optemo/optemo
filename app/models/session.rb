@@ -15,6 +15,15 @@ class Session
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
+  def self.effective_product_type
+    counts = CatSpec.count_current("product_type")
+    if counts.keys.length == 1
+      [counts.keys.first]
+    else
+      ProductCategory.get_ancestors(counts.keys)
+    end
+  end
+  
   def self.product_type_leaves
     ProductCategory.get_leaves(product_type)
   end

@@ -177,7 +177,7 @@ module CompareHelper
       Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').try(:value) || 0
     end
     
-    # add ordering; another option would be to make page_order into a hash by name 
+    # add ordering; another option would be to make page_order into a hash by name
     page_order = Session.features['filter'].map{ |f| {:name => f.name, :feature_type => f.feature_type, :value => f.value, :printed => false} }
     new_sorted = []
     sorted.each do |name, values|
@@ -195,7 +195,6 @@ module CompareHelper
       end
       new_sorted << [name, new_group[name]]
     end
-    #debugger
     new_sorted.insert(0, ["Keyword", [Userdatacat.new(name: 'keyword', value: Session.search.keyword_search)]]) unless Session.search.keyword_search.to_s.empty?
     new_sorted
   end

@@ -19,7 +19,6 @@ class Search < ActiveRecord::Base
     mycats = opt[:mycats] || userdatacats
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || @validated_keyword
-    #puts "\nmybins: #{mybins}\nmycats: #{mycats}\nmyconts: #{myconts}\n"
     filtering = Product.search do
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s

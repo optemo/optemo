@@ -33,8 +33,12 @@ class Product < ActiveRecord::Base
     string :product_category do
       cat_specs.find_by_name(:product_type).try(:value)
     end
-    text :category_of_product, :using => :get_category
-    
+    text :category_of_product do # needed for keyword search to match category
+      category = cat_specs.find_by_name(:product_type).try(:value)
+      unless category.nil?  
+        I18n.t "#{category}.name"
+      end
+    end    
     string :first_ancestors
     string :second_ancestors
     
@@ -56,19 +60,10 @@ class Product < ActiveRecord::Base
     float :lr_utility, trie: true do
       cont_specs.find_by_name(:lr_utility).try(:value)
     end
-    autosuggest :all_searchable_data, :using => :instock_title
-  end
-  
-  def get_category
-    category = cat_specs.find_by_name(:product_type).try(:value)
-    unless category.nil?  
-      I18n.t "#{category}.name"
-    end
-  end
-  
-  def instock_title
-    if (instock)
-      text_specs.find_by_name("title").try(:value)
+    autosuggest :all_searchable_data do
+      if (instock)
+        text_specs.find_by_name("title").try(:value)
+      end
     end
   end
   
@@ -126,12 +121,7 @@ class Product < ActiveRecord::Base
     elsif Session.retailer == "F"
       baseUrl = "http://www.futureshop.ca/multimedia/Products/"
     elsif Session.retailer == "A"
-      url = TextSpec.find_by_product_id_and_name(pid, 'image_url_m')
-      if url.nil?
-        return nil
-      else
-        return url.value
-      end
+      return TextSpec.find_by_product_id_and_name(pid, 'image_url_m').try(:value)
     end
     skuUrl = sku[0..2]+"/"+sku[0..4]+"/"+sku[0..7]+".jpg"
     case imgSize
