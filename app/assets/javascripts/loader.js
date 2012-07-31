@@ -95,10 +95,16 @@ if (opt_category_id == 0) {
   if (typeof(console) != "undefined") console.warn("Product category not recognized - Cameras used as default");
 }
 
+QC_cookie_value = optemo_module.getCookieValue("isQuebec");
+var quebec = false;
+if (QC_cookie_value == "True" || QC_cookie_value == "true")
+  quebec = true;
+alert(QC_cookie_value + ' ' + quebec);
+
 if (opt_history.length > 0)
-  var opt_options = {embedding:'true', hist: opt_history, category_id: opt_category_id};
+  var opt_options = {embedding:'true', hist: opt_history, category_id: opt_category_id, is_quebec: quebec};
 else
-  var opt_options = {embedding:'true', category_id: opt_category_id, landing: true};
+  var opt_options = {embedding:'true', category_id: opt_category_id, landing: true, is_quebec: quebec};
 
 JSONP.get(OPT_REMOTE, opt_options, function (data) {
   if (!/MSIE/i.test(navigator.userAgent) && (scriptSource.match(/localhost/) || scriptSource.match(/192.168/))) { // We need to do some additional work
