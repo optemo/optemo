@@ -9,9 +9,11 @@ class Session
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
-  # the same as initialize except called from elsewhere
   def self.initialize_product_type(product_type)
-    self.product_type = product_type || ProductCategory.first.product_type
+    product_type = product_type || ProductCategory.first.product_type
+    # If no facets are defined for a (sub)category, set the product type as the parent instead to get the parent's layout
+    product_type = Maybe(ProductCategory.get_parent(product_type).first) if Facet.where(product_type: product_type, active: true).empty?
+    self.product_type = product_type
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
