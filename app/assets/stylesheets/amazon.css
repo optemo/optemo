@@ -1,0 +1,20 @@
+/* 
+* This is a manifest file that'll automatically include all the stylesheets available in this directory
+* and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
+* the top of the compiled file, but it's generally better to create a new file per style scope.
+*= require shared
+*= require amazon/awesome_buttons
+*= require amazon/colour_and_buttons
+*= require amazon/direct_comparison
+*= require amazon/filter_boxes
+*= require amazon/main_nav_controls
+*= require amazon/main_right_side
+*= require amazon/nav_bar
+*= require amazon/show_page_and_related
+*= require jquery.autocomplete
+*= require jslider
+*= require amazon/slider
+*= require amazon/buttons
+*/
+
+/* Global Declarations are in colour_and_buttons.scss.erb */

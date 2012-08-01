@@ -5,7 +5,7 @@ Filter Page:
 
   - Sort options:
     - Check that Best Match is not a link but text (should be already loaded)
-    - Click Price(Low to High) link: check sorting
+    - Click Price (Low to High) link: check sorting
     - Click Price (High to Low) link: check sorting
     - Click Bestseller link: check sorting
     - Click Newest Model link: check sorting 
@@ -29,7 +29,7 @@ Filter Page:
     - Check that the default setting is the entire range
     - For each slider, check that the number of products / slider distributions change when the sliders are set to different values
     - Check the behaviour at the slider extremities
-        - Do all the products show up if you manually reset the slider after having used it, eg: move the one end of the slider, let the new page load, then move it back to its original position
+      - Do all the products show up if you manually reset the slider after having used it, eg: move the one end of the slider, let the new page load, then move it back to its original position
   - Categories:
     - Click a couple and see if they update the products available
     - Check that brand filters are sorted alphabetically
@@ -149,7 +149,9 @@ Filters:
       - Articulating Screen
       - Optical Viewfinder
     - LCD Screen Size
-      - Check Consistency, i.e. units, spacing, formatting, etc.
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Minimum Focal Length (Future Shop)
+      - Check consistency, i.e. units, spacing, formatting, etc.
   - Digital SLR
     - Product Category
       - DSLR Cameras (Best Buy)
@@ -177,7 +179,7 @@ Filters:
       - Check consistency, i.e. units, spacing, formatting, etc.
     - Lens Focal Length
       - Check consistency, i.e. units, spacing, formatting, etc.
-    - DSLR Features
+    - Features
       - Guided Shooting Mode
       - HDMI Output
       - Live Preview
@@ -249,8 +251,6 @@ Filters:
       - In-store
       - Web Only
       - New Release
-    - Storage Capacity
-      - Check consistency, i.e. units, spacing, formatting, etc.
     - Brands
       - Check for typos
     - Price
@@ -293,7 +293,7 @@ Filters:
       - Check consistency, i.e. units, spacing, formatting, etc.
     - Laptop Features
       - Blu-ray Player (Future Shop)
-      - 3D Capable Display (Best Buy)
+      - 3D Capable Display
       - Dedicated Graphics (Future Shop)
       - Bluetooth
       - Energy Star Qualified
@@ -309,17 +309,16 @@ Filters:
       - Check consistency, i.e. units, spacing, formatting, etc.
     - Screen Size (Best Buy only)
       - Check consistency, i.e. units, spacing, formatting, etc.
-    - Hard Drive Type (Future Shop doesn't have the heading)
+    - Hard Drive Type (Best Buy)
       - Mechanical
-      - SSD (Best Buy)
-      - Solid State (Future Shop)
+      - SSD
     - Hard Drive Capacity
       - Check consistency, i.e. spacing, formatting, etc.
     - Colour
       - Check that colours aren't duplicated
-    - Operating System (Best Buy only)
+    - Operating System (Best Buy)
       - Check consistency, i.e. spacing, formatting, etc.
-    - Video Card Configuration (Best Buy only)
+    - Video Card Configuration (Best Buy)
       - Check consistency, i.e. spacing, formatting, etc.
   - USB (Future Shop only)
     - Product Category
@@ -341,7 +340,7 @@ Filters:
       - Check consistency, i.e. units, spacing, formatting, etc.
     - Colour
       - Check that colours aren't duplicated
-  - Optical Drives (Future Shop only)
+  - Optical Drives (Future Shop)
     - Product Category
       - Blu-ray Disc Drives
       - External DVD Writers
@@ -359,7 +358,7 @@ Filters:
     - Internal/External
       - External
       - Internal
-  - Blank Discs and Cases (Future Shop only)
+  - Blank Discs and Cases (Future Shop)
     - Product Category
       - Dual Layer DVD
       - DVD+R

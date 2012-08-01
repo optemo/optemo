@@ -1,5 +1,18 @@
+require "sunspot"
+require 'sunspot_autocomplete'
+require "autocomplete_view_helpers"
+
 class ProductCategory < ActiveRecord::Base
-  class << self
+  searchable do
+    text :product_category do
+      I18n.t "#{product_type}.name"
+    end
+    autosuggest :all_searchable_data do
+      I18n.t "#{product_type}.name"
+    end
+  end
+  
+  class << self    
     def build_query(nodes, left, right, level)
       overall_search = []
       nodes.each do |node|

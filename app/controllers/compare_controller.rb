@@ -4,13 +4,13 @@ class CompareController < ApplicationController
   def index
     # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
 
-    if (params[:page] && params[:keyword] && params[:keyword] != "Keyword or Web Code" )
+    if (params[:page] && params[:keyword] && params[:keyword] != "Search terms" )
       classVariables(Search.create({page: params[:page], keyword: params[:keyword], sortby: params[:sortby] || 'utility', action_type: "nextpage", parent: params[:hist]}))
     
     elsif params[:page]
          classVariables(Search.create({page: params[:page], sortby: params[:sortby] || 'utility', action_type: "nextpage", parent: params[:hist]}))  
     
-    elsif (params[:sortby] && params[:keyword] && params[:keyword] != "Keyword or Web Code") # Change sorting method via navigator_bar select box
+    elsif (params[:sortby] && params[:keyword] && params[:keyword] != "Search terms") # Change sorting method via navigator_bar select box
       classVariables(Search.create({sortby: params[:sortby], keyword: params[:keyword], action_type: "sortby", parent: params[:hist]}))
     
     elsif params[:sortby]
@@ -44,8 +44,12 @@ class CompareController < ApplicationController
   
   def classVariables(search)
     Session.search = search
-    @search_view = true if params[:keyword] || !Session.search.keyword_search.blank? 
-    Session.set_features(search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value})
+    @search_view = true if params[:keyword] || !Session.search.keyword_search.blank?
+    selected_product_type = search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value}
+    selected_product_type = Session.effective_product_type if selected_product_type.empty?
+    selected_product_type ||= []
+    Session.initialize_product_type(selected_product_type.first) unless selected_product_type.empty?
+    Session.set_features(selected_product_type)
     @t = Translation.cache_product_translations
   end
   

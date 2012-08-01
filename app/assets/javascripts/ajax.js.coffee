@@ -28,7 +28,7 @@
       if(k.match(/superfluous/)) 
         delete selections[k]
     )
-    if $("#product_name").val() == "" || $("#product_name").val() == "Keyword or Web Code"
+    if $("#product_name").val() == "" || $("#product_name").val() == "Search terms"
       optemo_module.ajaxcall("/compare/create", selections)
     else
       optemo_module.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections) )
@@ -259,7 +259,7 @@
   $('.pagination a').live "click", ->
     if (optemo_module.loading_indicator_state.disable) 
       return false
-    if $("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= ""
+    if $("#product_name").val()!= "Search terms" && $("#product_name").val()!= ""
       optemo_module.ajaxcall($(this).attr('href'), {"keyword": $("#product_name").val()})
     else
       optemo_module.ajaxcall($(this).attr('href'))
@@ -274,7 +274,7 @@
   $('.sortby').live 'click', ->
     if (optemo_module.loading_indicator_state.disable)
       return false
-    if $("#product_name").val()!= "Keyword or Web Code" && $("#product_name").val()!= ""
+    if $("#product_name").val()!= "Search terms" && $("#product_name").val()!= ""
       optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat'), "keyword": $("#product_name").val()})
     else
       optemo_module.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})

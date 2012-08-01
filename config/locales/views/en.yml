@@ -20,8 +20,10 @@ en:
         compare:
             more:             "More"
             less:             "Less"
+            filters:          "Filters"
             powered:          "Powered by "
             available:        "Available"
+            product:          "Product"
             outof:            "Out of"
             rembrandfilter:   "Remove brand filter"
             onsale:           "On Sale"      

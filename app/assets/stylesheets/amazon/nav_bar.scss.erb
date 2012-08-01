@@ -28,12 +28,17 @@
   }
   #navigator_bar {
   	border: 1px solid #d0d0d0;
-    background-image:-moz-linear-gradient(center bottom, #FEE719, #FFF200);
-    background-image:-o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
+    background-image:-moz-linear-gradient(center bottom, #98fb98, #98fb98);
+    background-image:-o-linear-gradient(bottom, rgb(152,251,152), rgb(152,251,152));
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#98fb98), to(#98fb98));
+    width: 739px;
     overflow: hidden;
     position: relative;
     margin-bottom: 1px;
+  }
+  .nav_search_bar{
+    height: 80px;
+    left: 4px;
   }
   #IE #navigator_bar {
     background: url(<%= asset_path "IE/navigator_bar_bg.gif" %>) repeat-x;
@@ -60,7 +65,23 @@
     margin-top: 9px;
     margin-right: 5px;
     font-weight: bold;
-    width: 388px;
+    width: 250px;
+  }
+  
+  .nav-search-bar .available-text {
+    font-weight: bold;
+  }
+  
+  .search_bar {
+    margin-top: 10px;
+    margin-left: 10px;
+    float: left;
+  }
+  
+  .nav_search_bar #navtitle {
+    float: left;
+    margin-top: 15px;
+    margin-left: 5px;
   }
   
   #navigator_bar_bottom #navtitle {
@@ -72,9 +93,9 @@
   	padding: 0;
   	position: relative;
   	border: 1px solid #d2d2d2;
-    background-image: -moz-linear-gradient(center bottom, #FEE719, #FFF200);
-    background-image: -o-linear-gradient(bottom, rgb(254,231,25), rgb(255,242,0));
-    background-image: -webkit-gradient(linear, left bottom, left top, from(#FEE719), to(#FFF200));
+    background-image: -moz-linear-gradient(center bottom, #98fb98, #98fb98);
+    background-image: -o-linear-gradient(bottom, rgb(152,251,152), rgb(152,251,152));
+    background-image: -webkit-gradient(linear, left bottom, left top, from(#98fb98), to(#98fb98));
     margin-bottom: 5px;
   }
   #IE.ie7 #navigator_bar_top, #IE.ie6 #navigator_bar_top {
@@ -195,11 +216,13 @@
     text-decoration: underline;
   }
   #spellcheck_suggestion_box{
-  	color: red;
-	font-size: 12px;
-	height: 27px;
-	padding: 0 0 0 15px;
-	margin: 0;
+    color: red;
+    font-size: 12px;
+    height: 27px;
+    padding: 0 0 0 15px;
+    margin: 0;
+    float: left;
+    margin-left: 10px;
   }
   #spellcheck_suggestion_box b{
   	color: black;

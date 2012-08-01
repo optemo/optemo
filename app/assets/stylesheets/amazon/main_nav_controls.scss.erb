@@ -1,0 +1,54 @@
+/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
+
+/*--------------------------------------//
+//    Main Nav Controls (Left Side)     //
+//--------------------------------------*/
+
+.optemo {
+  font-size: 1.3em;
+  a { color: #0000EE; }
+  a:visited { color: #0000AB;}
+  
+  #inside_filter {
+  	margin: 0 0 5px 4px;
+  	border: 1px solid #ccc;
+  	color: #4d4d4f;
+  }
+  
+  #IE.ie7 #ajaxfilter, #IE.ie6 #ajaxfilter {
+    display:inline-block;
+  }
+  #IE.ie6 #ajaxfilter {
+    padding-bottom: 7px;
+  }
+  .brand {
+    overflow: auto;
+  	max-height: 150px;
+  }
+  .categorical .feature, .list_item {
+    padding-bottom: 1px;
+  }
+  #IE .brand {
+    height: expression( this.scrollHeight > 150 ? "150px" : "auto" ); /* sets max-height for IE */
+  }
+  a.checkbox_text{
+  	color: #4d4d4f;
+  }
+  a.checkbox_text:visited{
+  	color: #4d4d4f;
+  }
+  .disabled a.checkbox_text{
+  	color: #ccc;
+  }
+  .av_count{
+  	font-size: 0.85em;
+  }
+  .hanging_indent {
+    text-indent: -18px;
+    margin: 3px 0 3px 18px;
+  }
+  .hanging_margin {
+    text-indent: -10px;
+    margin: 3px 0 3px 18px;
+  }
+}

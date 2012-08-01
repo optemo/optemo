@@ -34,20 +34,20 @@ function opt_insert(d,name) {
 
 function opt_insert_all_data(data) {
   // This avoids code duplication in the JSONP call below
-  IEwrapper_pre = "<!--[if lte IE 6]>
-  <div id='IE' class='ie6 ie67 ie678'>
-  <![endif]-->
-  <!--[if IE 7]>
-  <div id='IE' class='ie7 ie67 ie678'>
-  <![endif]-->
-  <!--[if IE 8]>
-  <div id='IE' class='ie8 ie678'>
-  <![endif]-->
-  <!--[if gte IE 9]>
-  <div id='IE'>
+  IEwrapper_pre = "<!--[if lte IE 6]>\
+  <div id='IE' class='ie6 ie67 ie678'>\
+  <![endif]-->\
+  <!--[if IE 7]>\
+  <div id='IE' class='ie7 ie67 ie678'>\
+  <![endif]-->\
+  <!--[if IE 8]>\
+  <div id='IE' class='ie8 ie678'>\
+  <![endif]-->\
+  <!--[if gte IE 9]>\
+  <div id='IE'>\
   <![endif]-->"
-  IEwrapper_post = "<!--[if IE]>
-  </div>
+  IEwrapper_post = "<!--[if IE]>\
+  </div>\
   <![endif]-->"  
   parts = data.split("[BRK]");
   opt_insert(IEwrapper_pre + parts[0] + IEwrapper_post,"optemo_topbar"); // navigator_bar

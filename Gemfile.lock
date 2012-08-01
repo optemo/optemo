@@ -19,6 +19,8 @@ GIT
     sunspot_rails (2.0.0.pre.111215)
       nokogiri
       sunspot (= 2.0.0.pre.111215)
+    sunspot_solr (2.0.0.pre.111215)
+      escape (~> 0.0.4)
 
 GEM
   remote: http://rubygems.org/
@@ -224,6 +226,7 @@ DEPENDENCIES
   spork (> 0.9.0.rc)
   spork-testunit
   sunspot_rails!
+  sunspot_solr!
   therubyracer
   uglifier
   will_paginate (= 3.0.0)

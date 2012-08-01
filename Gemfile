@@ -54,6 +54,11 @@ group :production, :profile do
   gem "dalli", "1.0.2"
 end
 
+group :development do
+   gem 'sunspot_solr', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo", :ref=>"e522dc5aec" # optional pre-packaged Solr distribution for use in development
+   #gem 'sunspot_solr', '2.0.0.optemo', :path => 'vendor/plugins/sunspot' # optional pre-packaged Solr distribution for use in development
+end
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

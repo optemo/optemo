@@ -1,0 +1,182 @@
+/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
+
+/*--------------------------------------//
+//         Global Declarations          //
+//--------------------------------------*/
+
+/*body {
+  padding: 0;
+}
+html {
+  height: 100%;
+}*/
+
+.optemo {
+  .ie6 *, .ie7 * {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+  }
+}  
+
+/*--------------------------------------//
+//            Color Picker              //
+//--------------------------------------*/
+.optemo {
+  .swatch {
+  	width: 13px;
+  	height: 13px;
+  	background-color: red;
+  	/*-moz-border-radius: 4px; 
+  	-webkit-border-radius: 4px;
+  	border-radius: 4px;
+  	-moz-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+  	-webkit-box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+  	box-shadow: 0 1px 3px rgba(50,50,50,0.5);
+  	border: 1px solid #ccc;*/
+  	float: left;
+  	margin: 0 2px 2px 0;
+  	cursor: pointer;
+  }
+
+  .white_swatch {
+    width: 11px;
+    height: 11px;
+    border: 1px solid #ccc;
+  }
+
+  .selected_swatch_dark {
+  	background-image: url(data:image/gif;base64,R0lGODlhDQANAIABAP///////yH5BAEAAAEALAAAAAANAA0AAAIVjI+py43gAphtwnds0lpZynRVRDoFADs=);
+  }
+
+  .selected_swatch_light {
+  	background-image: url(data:image/gif;base64,R0lGODlhDQANAIABAAAAAP///yH5BAEAAAEALAAAAAANAA0AAAIVjI+py43gAphtwnds0lpZynRVRDoFADs=);
+  }
+
+  #IE .selected_swatch_dark {
+  	background: url(<%= asset_path 'IE/checkmark-white.gif' %>) repeat-x;
+  }
+  #IE .selected_swatch_light {
+  	background: url(<%= asset_path 'IE/checkmark.gif' %>) repeat-x;
+  }
+  
+  .invisible {
+  	display: none;
+  }
+  
+  .disabled {
+  	color: #aaa;
+  }
+
+  .y_bottom {
+    margin: 12px 0 0px;
+    padding-right: 6px;
+    padding-bottom: 3px;
+    background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e8e8e8);
+    background-image:-o-linear-gradient(bottom, rgb(209,209,209), rgb(232,232,232));;
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e8e8e8));
+    height: 25px;
+    font-weight: bold;
+  }
+
+  #IE .y_bottom {
+    background: url(<%= asset_path 'IE/y_bottom_bg.gif' %>) repeat-x;
+    height: 28px;
+    padding-bottom: 0;
+  }
+
+  .pagination-container{
+    position: relative;
+    background: #e7e7e7;
+    text-align: center;
+    padding-top: 10px;
+    font-size: 12px;
+    height: 23px;
+    border: 1px #cecece solid;
+  }
+  #IE.ie7 .pagination-container, #IE.ie6 .pagination-container{
+    height: 25px;
+  }
+  #back-to-top-bottom {
+    margin-right: 14px;
+  }
+  .pagination {
+    text-align: center;
+    padding: 0px 5px;
+    display: inline;
+  }
+  #IE.ie67 .pagination {
+    background: #e7e7e7;
+  }
+  .pagination .current{
+    font-style: normal;
+    font-weight: bold;
+  }
+  .pagination a img{
+    vertical-align: top;
+    padding: 1px 0 0;
+  }
+  #IE .pagination a img{
+    vertical-align: sub; /* For ie9 */
+  }
+  #IE.ie8 .pagination a img{
+    vertical-align: top;
+    margin-top: 1px;
+  }
+  #IE.ie7 .pagination a img, #IE.ie6 .pagination a img{
+    vertical-align: middle;
+    margin-top: 0;
+  }
+  .pagination-container a, .pagination-container a:hover, .pagination-container a:visited {
+    color: #003399;
+  }
+  .pagination a, .pagination strong {
+    padding: 3px 1px;
+    line-height: 12px;
+  }
+  .pagination span.gap {
+    display: none;
+  }
+  .pagination .disabled {
+    display: none;
+  }
+  .pagination-prev {
+    background: url(<%= asset_data_uri 'prev-page.gif' %>) no-repeat;
+    width: 8px;
+    height: 11px;
+    display: inline-block;
+  }
+  .ie67 .pagination-prev {
+    background: url(<%= asset_path 'prev-page.gif' %>) no-repeat center;
+  }
+  .pagination-next {
+    background: url(<%= asset_data_uri 'next-page.gif' %>) no-repeat;
+    width: 8px;
+    height: 11px;
+    display: inline-block;
+  }
+  .ie67 .pagination-next {
+    background: url(<%= asset_path 'next-page.gif' %>) no-repeat center;
+  }
+  #IE.ie7 .pagination-next, #IE.ie7 .pagination-prev {
+    margin-bottom: 3px;
+  }
+  .pagi-info {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 10px 0;
+    margin-left: 14px;
+  }
+
+  #back-to-top-bottom, #back-to-top-bottom:visited {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: url(<%= asset_data_uri 'back-to-top-small.gif' %>) no-repeat right center;
+    padding: 10px 20px 5px 5px;
+  }
+
+  .ie67 #back-to-top-bottom, .ie67 #back-to-top-bottom:visited {
+    background: url(<%= asset_path 'back-to-top-small.gif' %>) no-repeat right center;
+  }
+}

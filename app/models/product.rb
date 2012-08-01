@@ -13,15 +13,13 @@ class Product < ActiveRecord::Base
   has_many :product_bundles
   has_one :equivalence
 
-  attr_writer :product_name
   self.per_page = 18 #for will_paginate
   
   searchable do
-    #text :title do
     text :title do
-      cat_specs.find_by_name("title").try(:value)
+      text_specs.find_by_name("title").try(:value)
     end
-     
+    
     text :description do
       text_specs.find_by_name("longDescription").try(:value)
     end
@@ -34,11 +32,19 @@ class Product < ActiveRecord::Base
     string :product_type do
       cat_specs.find_by_name(:product_type).try(:value)
     end
-    
+    string :product_category do
+      cat_specs.find_by_name(:product_type).try(:value)
+    end
+    text :category_of_product do # needed for keyword search to match category
+      category = cat_specs.find_by_name(:product_type).try(:value)
+      unless category.nil?  
+        I18n.t "#{category}.name"
+      end
+    end    
     string :first_ancestors
     string :second_ancestors
     
-   (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
+    (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
     if (s.feature_type == "Continuous")
       float s.name.to_sym, trie: true do
         cont_specs.find_by_name(s.name).try(:value)
@@ -52,11 +58,15 @@ class Product < ActiveRecord::Base
         bin_specs.find_by_name(s.name).try(:value)
       end
     end
-   end
+    end
     float :lr_utility, trie: true do
       cont_specs.find_by_name(:lr_utility).try(:value)
     end
-    autosuggest :product_name, :using => :instock?                  
+    autosuggest :all_searchable_data do
+      if (instock)
+        text_specs.find_by_name("title").try(:value)
+      end
+    end
   end
   
   def first_ancestors
@@ -76,10 +86,10 @@ class Product < ActiveRecord::Base
   def eq_id_str
     Equivalence.find_by_product_id(id).try(:eq_id).to_s
   end
-  
+
   def instock?
     if (instock)
-      cat_specs.find_by_name("title").try(:value)
+      text_specs.find_by_name("title").try(:value)
     else
       false
     end
@@ -114,8 +124,14 @@ class Product < ActiveRecord::Base
   scope :instock, :conditions => {:instock => true}
   scope :current_type, lambda{ joins(:cat_specs).where(cat_specs: {name: "product_type", value: Session.product_type_leaves})}
   
-  
   def image_url(imgSize) #creates the url to a product's image given and sku and image size (thumbnail, small, medium, large -> predetermined sizes)
+    if Session.retailer == "B"
+      baseUrl = "http://www.bestbuy.ca/multimedia/Products/"
+    elsif Session.retailer == "F"
+      baseUrl = "http://www.futureshop.ca/multimedia/Products/"
+    else
+      raise 'Invalid call to image_url with other retailer'
+    end
     case imgSize
     when :thumbnail
       sizeUrl = "55x55/"

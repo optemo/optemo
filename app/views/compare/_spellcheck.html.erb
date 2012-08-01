@@ -1,14 +1,13 @@
-<ul id="spellcheck_suggestion_box">
-  <a class= "last_page" style="font-size:8pt" href="#">Home</a>
+<div id="spellcheck_suggestion_box">
   <%unless (Session.search.collation.nil? || Session.search.col_emp_result) %>
     <%if (Session.search.num_result==0)%>
-      / Showing results for <b><%=Session.search.collation%></b> as there were no results for <b><%=Session.search.keyword_search%></b>
+      Showing results for <b><%=Session.search.collation%></b> as there were no results for <b><%=Session.search.keyword_search%></b>
     <%else%>
       <span style="color:black;">/ Did you mean</span> <a class="suggestion" href="#"> <%=Session.search.collation%></a><span style="color:black;">?</span>
     <%end%>
   <%else%>
 	 <%if (Session.search.num_result == 0 && (Session.search.col_emp_result || Session.search.collation==nil))%>
- 	/ Your search, <b><%=Session.search.keyword_search%></b>, did not match any products. 	
+    Your search, <b><%=Session.search.keyword_search%></b>, did not match any products. 	
   <%end%>
   <%end%>
-</ul>	
+</div>
