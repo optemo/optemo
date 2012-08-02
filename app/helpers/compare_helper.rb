@@ -232,7 +232,7 @@ module CompareHelper
   
 	def getDist(feat)
     num_buckets = 24
-    discretized = Session.search.solr_cached.facet(feat.to_sym).rows
+    discretized = Session.search.solr_search(mycats: [], mybins: [], myconts: []).facet(feat.to_sym).rows
     if (!discretized.empty?)
       min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.first.value}
       max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.last.value}
