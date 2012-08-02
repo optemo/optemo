@@ -112,7 +112,8 @@ module CompareHelper
   end
   
   def getDisplayedRanges(f, chosen_conts)
-    ranges = Ranges.cache[f.name.to_sym]
+    fname = Session.quebec && f.name == "saleprice" ? "pricePlusEHF" : f.name #Substitude EHF price for regular price
+    ranges = Ranges.cache[fname.to_sym]
     chosen_conts.each{|c| ranges << c unless ranges.include?(c)}
     displayed_ranges = displayRanges(f.name, ranges)
     no_display = !displayed_ranges.inject(false){|res,e| res || e[:count]>0}
@@ -374,7 +375,7 @@ module CompareHelper
     emptystars.times do
       ret += '<div class="ratingEmptyStar"><!-- --></div>'
     end
-    ret += "&nbsp;" + numstars.to_s + " /5" if Session.futureshop?
+    ret += "&nbsp;" + numstars.to_s + " / 5" if Session.futureshop?
     return ret
   end
   
@@ -494,6 +495,14 @@ module CompareHelper
   
   def only_if_not_onsale(product)
     'style="display:none;"' if BinSpec.cache_all(product.id)["onsale"]
+  end
+  
+  def dollars(p)
+    number_with_precision(p.to_i, :precision => 0)
+  end
+  
+  def cents(p)
+    (number_with_precision(p - p.to_i, :precision => 2, :locale => :en).to_f * 100).to_i
   end
   
   def calcInterval(min,max)

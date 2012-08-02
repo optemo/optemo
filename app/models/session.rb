@@ -3,6 +3,7 @@ class Session
   cattr_accessor :product_type # The product type which is an integer hash of the current category_id plus retailer
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :features # Gets the feature customizations which allow the site to be configured
+  cattr_accessor :quebec
 
   def initialize (product_type = nil)
     self.product_type = product_type || ProductCategory.first.product_type
@@ -30,7 +31,8 @@ class Session
   end
   
   def self.range_filters
-    features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact
+    #Hard-coding EHF price lookup
+    features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact << "pricePlusEHF"
   end
   
   def self.set_features(categories = [])

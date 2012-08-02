@@ -1,7 +1,9 @@
 <% ss = Session.search %>
 <% unless siblings.empty? or siblings.map{ |s| s.name.nil? }.inject{|res,ele| res & ele} %>
-  <div class="navboxcolours">
-    <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
+  <div class="navboxcolours" style="padding-top: 5px">
+    <% unless local_assigns.has_key? :nolabel %>
+      <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
+    <% end %>
     <% siblings.each do |sibling| -%>
       <% sibling_id = sibling.sibling_id -%>
       <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
