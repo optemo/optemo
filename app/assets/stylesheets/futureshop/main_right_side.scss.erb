@@ -57,7 +57,13 @@
   	padding-left: 20px;
   	text-align: left;
   }
-  
+  .easylink {
+    outline: medium none;
+    font-weight: bold;
+    margin: 7px 7px 0 0;
+    display: block;
+    font-size: 11px;
+  }
   .easylink:hover {
   	text-decoration: none;
 	}
@@ -142,7 +148,7 @@
   	margin-top: 1px;
   	margin-bottom: 6px;
   	background-position:0px 10px;
-  	background-image:url(<%= asset_path("fs-pricepill.png") %>);
+  	background-image:url(<%= asset_data_uri("fs-pricepill.png") %>);
   	padding-left: 25px;
   	background-repeat: no-repeat;
   	font-family: arial;

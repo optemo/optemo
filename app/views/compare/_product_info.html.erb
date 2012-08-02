@@ -7,7 +7,7 @@
     <% else %>
       <div style="height: 11px"><!-- --></div>
     <% end %>
-    <div class="price" style="background-position:0px 10px; background-image:url(<%= asset_path("fs-pricepill.png") %>); padding-left: 25px; background-repeat: no-repeat; font-family: arial;">
+    <div class="price" style="background-position:0px 10px; background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAPCAYAAADgbT9oAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAOZJREFUeNpi3Meg7sDAwFAPxIlA%2FIABOwCpmQ9VcwBZwvH%2FDawamJA0ngfiBgbcQAGI9wNxPxALMBAATEhsAajLQRYY4NFTAFXjQKzBMGBAiuv3M2oIEGswDIBcf5%2BAy0Cuvw80PIAUg5FdVo9HDcjF64GGr0d2PSGDkVMFIRCA7HoWBuoCmOsbmRioDxqBabuBWIMvEKEGlHEUQYYSExSgnFgIxB%2BgkYgNfIC6cgKxqQKk0BCIN%2BBRswHqygnoEiw4XIlRJuDwyQZCZQU84KGuPEChT%2BAuvgB15QUCEVhIwFI4AAgwAFb7PyZ8F%2FBvAAAAAElFTkSuQmCC"); padding-left: 25px; background-repeat: no-repeat; font-family: arial;">
       <span class="dollars" style="font-size: 30px;"><%= dollars(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
       <span class="cents" style="font-size: 18px; position: relative; top: -9px;"><%= cents(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
       <div class="clear"><!-- --></div>
