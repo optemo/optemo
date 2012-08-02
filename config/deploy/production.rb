@@ -4,7 +4,7 @@ set :domains, %w(linode1 linode2 linode3 linode4 linode5 rackspace1 rackspace2 r
 role(:app) { domains }
 role(:web) { domains }
 role :memcached, "linode1", "rackspace1"
-set :branch, "master"
+set :branch, "staging"
 set :user, "#{ `whoami`.chomp }"
 
 # If you aren't deploying to /u/apps/#{application} on the target
