@@ -4,12 +4,20 @@
     <%# French translation still needed for "environmental handling fee" -- please make changes in fr.yml %>
   </div>
 <% end -%>
-<div class="save" style="<%= "color:#BE0027;font-size:1em; padding-bottom: 0px;" if Session.futureshop? %><%=raw "display:none;" if !bin_specs["onsale"] %>">
+<% if Session.futureshop? %>
+	<div class="save" style="color:#BE0027;font-size:1em; padding-bottom: 0px; <%=raw "display:none;" if !bin_specs["onsale"] %>">
+<%else%>
+	<div class="save" style="color:#da1a36; font-size:11px; font-weight=bold; <%=raw "display:none;" if !bin_specs["onsale"] %>">
+<%end -%>		
   <%# <%=raw only_if_onsale(product) %>
   <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
   <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
 </div>
-<div class="saleends" style="<%= "font-size: 1em;" if Session.futureshop? %><%=raw "display:none;" if !bin_specs["onsale"] || (cat_specs["saleEndDate"] && Time.now > Date.parse(cat_specs["saleEndDate"])) %>">
+<% if Session.futureshop? %>
+	<div class="saleends" style="font-size: 1em;<%=raw "display:none;" if !bin_specs["onsale"] || (cat_specs["saleEndDate"] ) && Time.now > Date.parse(cat_specs["saleEndDate"])%>">
+<% else%>
+	<div class="saleends" style="font-size: 11px; color: #2e3337; <%=raw "display:none;" if !bin_specs["onsale"] || (cat_specs["saleEndDate"] ) && Time.now > Date.parse(cat_specs["saleEndDate"])%>">	
+<%end%>		
   <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
   <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
 </div>

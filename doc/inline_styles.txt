@@ -1,3 +1,4 @@
+==changes for both BB and FS==
 _color_swatches line 7 .navboxcolours
 _navbox line 6 .navbox
 _product_info line 59, .finalclearance
@@ -5,3 +6,4 @@ _product_info line 59, .price
 _product_info line 59, .dollars
 _product_info line 59, .cents
 _product_info line 59, .easylink
+==changes for both BB and FS==
