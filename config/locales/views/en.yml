@@ -49,6 +49,7 @@ en:
             futureshop_refineyoursearch1: "Refine Your Search"
             refineyoursearch2: ""
             environmentalfee: "Environmental Handling Fee"
+            finalclearance: "FINAL CLEARANCE"
         show:
             title:          "Product Details"
             noimage:        "No Image Available"

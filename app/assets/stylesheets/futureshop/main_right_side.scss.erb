@@ -7,7 +7,7 @@
 
 .optemo {
   .navbox {
-    font-size: 0.85em;
+    font-size: 11px;
     margin: 2px 0 0 0;
     padding: 0 2px 12px 0;
     width: 169px; /* This is smaller than Best Buy intentionally */
@@ -57,8 +57,15 @@
   	padding-left: 20px;
   	text-align: left;
   }
-  .productinfo a {
-  	color: #333;
+  .easylink {
+    outline: medium none;
+    font-weight: bold;
+    margin: 7px 7px 0 0;
+    display: block;
+    font-size: 11px;
+  }
+  .easylink:hover {
+  	text-decoration: none;
 	}
   .productspecs {
   	font-size:0.8em;
@@ -67,6 +74,7 @@
   .navboxcolours {
     font-size:0.8em;
     padding-bottom:5px;
+    padding-top: 5px;
   }
   .navboxcompare {
   	font-size: 0.8em;
@@ -139,6 +147,14 @@
   	font-size: 1em;
   	margin-top: 1px;
   	margin-bottom: 6px;
+  	background-position:0px 10px;
+  	background-image:url(<%= asset_data_uri("fs-pricepill.png") %>);
+  	padding-left: 25px;
+  	background-repeat: no-repeat;
+  	font-family: arial;
+  }
+  .ie67 .price {
+    background-image: url(<%= asset_path "fs-pricepill.png" %>);
   }
   .futureshop_price {
     background: url(<%= asset_data_uri "futureshop_price_background.gif" %>) no-repeat;    
@@ -165,7 +181,7 @@
     width: 75px;
     height: 10px;
     padding: 3px;
-    color: #333;
+    color: #000;
     margin-left: 27px;
     font-size: 0.75em;
     line-height: 1;
@@ -200,25 +216,25 @@
    /* margin-top: -3px; */
      margin-left: 2px;
   }
-  .price .price_dollars, .saleprice .price_dollars {
-    font-size: 1.6em;
-    margin-left: 33px;
+  .price .dollars {
+    font-size: 30px;
   }
-  .price .price_cents, .saleprice .price_cents {
-    vertical-align: super;
-    font-size: 0.9em;
+  .price .cents {
+    position: relative;
+    top: -9px;
+    font-size: 18px;
   }
-  .saleprice {
-  	/*color: #F5000B;*/
-  	color: #FF0000;
-  	font-size: 1em;
-  	font-weight: bold;
+  .finalclearance {
+    /* Adjust height of spacing div in _product_info.html.erb */
+    background-color: #FFDF00;
+    padding: 2px 6px;
+    font-weight: bold;
+    color: #201D00;
+    font-size: 0.8em;
   }
   .save {
-  	/*color: #F5000B;*/
+  	color: #FF0000;
   	font-weight: bold;
-  	font-size: 0.8em;
-  	padding-bottom: 1px;
   }
   .saleends {
   	/*color: #F5000B;*/
