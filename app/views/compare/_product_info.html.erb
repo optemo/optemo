@@ -7,14 +7,14 @@
     <% else %>
       <div style="height: 11px"><!-- --></div>
     <% end %>
-    <div class="price" style="background-position:0px 10px; color: #000; font: arial; <%= 'background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAPCAYAAADgbT9oAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAOZJREFUeNpi3Meg7sDAwFAPxIlA%2FIABOwCpmQ9VcwBZwvH%2FDawamJA0ngfiBgbcQAGI9wNxPxALMBAATEhsAajLQRYY4NFTAFXjQKzBMGBAiuv3M2oIEGswDIBcf5%2BAy0Cuvw80PIAUg5FdVo9HDcjF64GGr0d2PSGDkVMFIRCA7HoWBuoCmOsbmRioDxqBabuBWIMvEKEGlHEUQYYSExSgnFgIxB%2BgkYgNfIC6cgKxqQKk0BCIN%2BBRswHqygnoEiw4XIlRJuDwyQZCZQU84KGuPEChT%2BAuvgB15QUCEVhIwFI4AAgwAFb7PyZ8F%2FBvAAAAAElFTkSuQmCC");' unless request.env['HTTP_USER_AGENT'].downcase.index('msie') %> padding-left: 25px; background-repeat: no-repeat; font-family: arial;">
+    <div class="price" style="background-position:0px 10px; color: #000; font-family: arial; <%= 'background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAPCAYAAADgbT9oAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAOZJREFUeNpi3Meg7sDAwFAPxIlA%2FIABOwCpmQ9VcwBZwvH%2FDawamJA0ngfiBgbcQAGI9wNxPxALMBAATEhsAajLQRYY4NFTAFXjQKzBMGBAiuv3M2oIEGswDIBcf5%2BAy0Cuvw80PIAUg5FdVo9HDcjF64GGr0d2PSGDkVMFIRCA7HoWBuoCmOsbmRioDxqBabuBWIMvEKEGlHEUQYYSExSgnFgIxB%2BgkYgNfIC6cgKxqQKk0BCIN%2BBRswHqygnoEiw4XIlRJuDwyQZCZQU84KGuPEChT%2BAuvgB15QUCEVhIwFI4AAgwAFb7PyZ8F%2FBvAAAAAElFTkSuQmCC");' unless request.env['HTTP_USER_AGENT'].downcase.index('msie') %> padding-left: 25px; background-repeat: no-repeat; font-family: arial;">
       <span class="dollars" style="font-size: 30px;"><%= dollars(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
-      <span class="cents" style="font-size: 18px; position: relative; top: -9px;"><%= cents(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
+      <span class="cents" style="font-size: 18px; font-family: arial; position: relative; top: -9px;"><%= cents(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
       <div class="clear"><!-- --></div>
     </div>
     <%= render partial: 'product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
   <% end %>
-  <% title_style = "outline: medium none; font-weight: bold; margin: 7px 7px 0 0; display: block;" %>
+  <% title_style = "outline: medium none; font-family:arial; font-weight: bold; margin: 7px 7px 0 0; display: block;" %>
   <% title_style += "font-size: 11px; color: #000;" if Session.futureshop? %>
   <% title_style += "color:#039;" if Session.bestbuy? %>
   <%= link_to (text_specs["title#{fr?}"] || text_specs["title"]), (text_specs["productUrl#{fr?}"] || text_specs["productUrl"]), :class => "easylink", :title => t('products.compare.clickforspecs'), style: title_style %>
