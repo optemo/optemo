@@ -1,16 +1,9 @@
-
 <% if Session.search.products_size > Product.per_page %>
   <% products = Session.search.paginated_products %>
-  <div class='pagination-container<%= " bottom" if local_assigns[:bottom] %>'><span class='pagi-info'><%= page_entries_info(products) %></span>
-    <%= raw "<b>#{t('products.page')}:</b>" unless Session.futureshop? %>
-    <%= will_paginate(products, {:previous_label => (Session.futureshop? ? t("will_paginate.page_entries_info.futureshop_previous") : raw("<span class='pagination-prev'></span>")), :next_label => (Session.futureshop? ? t("will_paginate.page_entries_info.futureshop_next") : raw("<span class='pagination-next'></span>")), :page_links=>true, :outer_window => -4}) %>
-    <%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" if (local_assigns[:bottom] && !Session.futureshop?) %>
-  </div>
-
-<% else %>
-  <% if (local_assigns[:bottom] && !Session.futureshop?) %>
-    <div class='pagination-container<%= " bottom" if local_assigns[:bottom] %>'>
-        <%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" %>
-    </div>
+  <% if Session.bestbuy? %>
+    <span class='pagi-info'><%= page_entries_info(products) %></span>
   <% end %>
+  <%= raw "<b>#{t('products.page')}:</b>" unless Session.futureshop? %>
+  <%= will_paginate(products, {previous_label: raw("<span class='pagination-prev'></span>"), next_label: raw("<span class='pagination-next'></span>"), page_links: true, outer_window: -4}) %>
 <% end %>
+<%= link_to t("products.backtotop"), "#", id: "back-to-top-bottom" if (local_assigns[:bottom] && !Session.futureshop?) %>

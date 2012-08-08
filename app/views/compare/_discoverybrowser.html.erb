@@ -1,13 +1,26 @@
-<%= render "pagination" %>
-<ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
-  <%=raw sortby %>
-</ul>
+<% if Session.bestbuy? || Session.amazon? %>
+  <div class='pagination-container'>
+    <%= render "pagination" %>
+    <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
+      <%=raw sortby %>
+    </ul>
+  </div>
+<% else %>
+  <%= render 'comparison_and_sort' %>
+<% end %>
+<%= render "spellcheck" if @search_view %>
 <div id="product_content">
     <div class='border-content'>	
     <%= raw main_boxes %>
     <span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span>
     </div>
     <%= render partial: "navigator_bar", locals: {bottom: true} %>
-    <%= render partial: "pagination", locals: {bottom: true} %>
+    <% if Session.futureshop? -%>
+      <%= render 'comparison_and_sort' %>
+    <% else %>
+      <div class='pagination-container bottom'>
+        <%= render partial: "pagination", locals: {bottom: true} %>
+      </div>
+    <% end %>
 </div>
 <div style="clear:both;"></div>

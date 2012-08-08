@@ -109,19 +109,7 @@ class Search < ActiveRecord::Base
     end
   end
   
-  def solr_all
-    CachingMemcached.cache_lookup("AllCount-#{Session.product_type}") do
-      Product.search do
-        with :instock, 1
-        group :eq_id_str do 
-          ngroups  # includes the number of groups that have matched the query
-        end
-        with :product_type, Session.product_type_leaves
-      end.group(:eq_id_str).ngroups
-    end
-  end
-  
-  def solr_products_count()
+  def solr_products_count
     mybins = userdatabins
     mycats = userdatacats
     myconts = userdataconts

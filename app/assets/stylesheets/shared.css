@@ -24,28 +24,6 @@
 //            Navigator Bar             //
 //--------------------------------------*/
 
-.optemo #navtitle .nav-number{
-  font-size: 39pt;
-  float: left;
-  margin-right: 7px;
-  font-weight: bold;
-  color: #333;
-  height: 75px;
-}
-.optemo #navtitle .sub-title{
-  margin-top: 7px;
-}
-.optemo #navtitle .sub-title .outof{
-  font-size: 11pt;
-  color: #333;
-  margin-left: 3px;
-}
-.optemo #navtitle .nav-available-text{
-  color: #333;
-  font-size: 15pt;
-  font-weight: bold;
-}
-
 .optemo #IE #navtitle{
   display: inline-block;
   border: none;

@@ -1,0 +1,20 @@
+<div class="comparison_and_sort">
+  <div class="sortby-container">
+    <%= t("products.sortby") %>:
+    <div class="dropdown sorting-menu">
+      <a class="dropdown-toggle" data-toggle="dropdown">
+        <%= @t[Session.product_type+".sortby."+(Session.search.sortby || "utility_desc")+".name"] %>
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu">
+        <%= current_sorting_option = Session.search.sortby || "utility_desc"
+            raw((Session.features["sortby"] || []).map do |f|
+            suffix = f.style.length > 0 ? '_' + f.style : ''
+            content_tag :li, link_to(@t[Session.product_type+".sortby."+f.name+suffix+".name"], "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"}) unless current_sorting_option == (f.name+suffix)
+        end.compact.join) %>
+      </ul>
+    </div>
+  </div>
+  <%= link_to(t("products.compare.futureshop_compare")+' (0) ', "#", {:class=>'nav-compare-btn btn', :id=>"nav_compare_btn"})  %>
+  <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :rel => "nofollow", :title => t('products.compare.cleardesc') %>
+</div>

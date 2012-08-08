@@ -12,7 +12,7 @@
   <%# "product details" %>
   <%# then featurename, data, data %>
 
-  <div class="compare_row" style="border: none;">
+  <div class="clear">
     <div class="columntitle leftmostcolumn leftmostcolumntitle"></div>
     <% @products.each_with_index do |product, i| %>
       <div class="columntitle spec_column_<%= i %>">
@@ -20,7 +20,7 @@
       </div>
     <% end %>
   </div>
-  <div class="compare_row" style="border: none;">
+  <div class="clear">
     <div class="thumbnailcell leftmostcolumn tabletitle" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
       &nbsp;
     </div>
@@ -29,7 +29,7 @@
     <% end %>
   </div>
 
-  <div class="compare_row" style="border: none;">
+  <div class="clear">
     <div class="cell whitebg leftmostcolumn leftcolumntext">
       &nbsp;
     </div>
@@ -38,7 +38,7 @@
     <% end %>
   </div>
 
-  <div class="compare_row" style="border: none;">
+  <div class="clear">
     <div class="columntitle leftmostcolumntitle spec-capt">
       <%=t 'compare.index.proddetails'%>
     </div>

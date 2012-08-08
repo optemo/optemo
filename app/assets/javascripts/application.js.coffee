@@ -18,6 +18,7 @@
 #= require solr-autocomplete/ajax-solr/core/Parameter
 #= require solr-autocomplete/ajax-solr/core/ParameterStore
 #= require solr-autocomplete/jquery-autocomplete/jquery.autocomplete
+#= require bootstrap-dropdown.js
 
 # These global variables must be declared explicitly for proper scope (the spinner is because setTimeout has its own scope and needs to set the spinner)
 @module "optemo_module", ->

@@ -25,7 +25,7 @@
   .divider {
     height:1px;
     width: 520px;
-    border-top:1px #ccc solid;
+    border-top:1px #efefef solid;
     margin: 10px auto 4px;
   }
 
@@ -44,6 +44,13 @@
   	width: 150px;
   	height: 150px;
   }
+  
+  img.productimg_s {
+    cursor: pointer;
+    width: 100px;
+    height: 100px;
+  }
+  
   .imageholder {
     width: 150px;
     height: 150px;
@@ -64,9 +71,7 @@
     display: block;
     font-size: 11px;
   }
-  .easylink:hover {
-  	text-decoration: none;
-	}
+  .e
   .productspecs {
   	font-size:0.8em;
   	padding-bottom:6px;
@@ -77,10 +82,7 @@
     padding-top: 5px;
   }
   .navboxcompare {
-  	font-size: 0.8em;
   	text-align: left;
-  	padding-left: 15px;
-  	line-height: 20px;
   }
   
   .poptitle {
@@ -233,13 +235,17 @@
     font-size: 0.8em;
   }
   .save {
-  	color: #FF0000;
-  	font-weight: bold;
+    background-color: #FFDF00;
+    padding: 2px 6px;
+    font-weight: bold;
+    color: #201D00;
+    font-size: 0.8em;
   }
   .saleends {
   	/*color: #F5000B;*/
-  	font-size: 0.8em;
+  	font-size: 1em;
   	margin-bottom: 4px;
+  	margin-top: 3px;
   }
   .stars {
   	padding-top: 3px;
@@ -251,24 +257,24 @@
   }
   .ratingStar {
     background: url(<%= asset_data_uri "futureshopStar.gif"%>);
-    width: 13px;
-    height: 12px;
+    width: 15px;
+    height: 15px;
   }
   .ie67 .ratingStar {
     background: url(<%= asset_path "futureshopStar.gif"%>);
   }
   .ratingHalfStar {
     background: url(<%= asset_data_uri "futureshophalfstar.gif"%>);
-    width: 13px;
-    height: 12px;
+    width: 15px;
+    height: 15px;
   }
   .ie67 .ratingHalfStar {
     background: url(<%= asset_path "futureshophalfstar.gif"%>);
   }
   .ratingEmptyStar {
     background: url(<%= asset_data_uri "futureshopemptystar.gif"%>);
-    width: 13px;
-    height: 12px;
+    width: 15px;
+    height: 15px;
   }
   .ie67 .ratingEmptyStar {
     background: url(<%= asset_path "futureshopemptystar.gif"%>);

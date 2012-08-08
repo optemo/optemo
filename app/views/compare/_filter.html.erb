@@ -3,11 +3,7 @@
     <% if Session.futureshop? -%>
       <div class="refine_text">
         <!-- -->
-        <%= t('products.compare.futureshop_refineyoursearch1') %>
-      </div>
-      <div class="french_refine_text">
-        <!-- -->
-        <%= t('products.compare.refineyoursearch2') %>
+        <%= t('products.compare.futureshop_refineyoursearch') %>
       </div>
     <% elsif Session.bestbuy? %>
       <h1><%= t('products.compare.shoph1') + product_title %></h1>
@@ -102,10 +98,10 @@
       </div>
     <% end # End iterating over features %>
   </form>
-  <div class="y_bottom">
-    <% if Session.futureshop? %>» <% end %>
-    <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
-  </div>
+  <% unless local_assigns[:landing] -%>
+    <div class="y_bottom">
+      <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
+    </div>
+  <% end -%>
 </div>
-<div class="ie_bottom_curve"><!-- --></div>
 <div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>

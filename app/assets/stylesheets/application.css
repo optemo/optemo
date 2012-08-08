@@ -16,6 +16,7 @@
 *= require jslider
 *= require bestbuy/slider
 *= require bestbuy/buttons
+*= require bootstrap-dropdown
 */
 
 /* Global Declarations are in colour_and_buttons.scss.erb */

@@ -9,9 +9,9 @@
     font-size: 0.8em;
     padding: 8px 0 5px 37px;
     float: left;
-  }
-  #product_content .border-content {
-    border: 1px solid #d0d0d0;
+    a {
+      color: black;
+    }
   }
   #filterbar {
   	padding-bottom: 12px;
@@ -26,107 +26,19 @@
   	height: 100%;
   	min-height: 744px; /* Empirically determined; used for embedded LPH layout */
   }
-  #navigator_bar {
-    background-image: -moz-linear-gradient(center bottom, #FFFFFF, #CCCCCC);
-    background-image: -o-linear-gradient(bottom, rgb(255,255,255), rgb(204,204,204));
-    background-image: -webkit-gradient(linear, left bottom, left top, from(#FFFFFF), to(#CCCCCC));
-    overflow: hidden;
-    position: relative;
-    margin-bottom: 1px;
-  }
-  #IE #navigator_bar {
-    background: url(<%= asset_path "IE/futureshop_navigator_bar_bg.gif" %>) repeat-x;
-  }
-  #navigator_bar_bottom {
-  	padding: 0;
-  	position: relative;
-    border: 1px solid #b1b1b1;
-    background: #e7e7e7;
-    margin-top: 5px;
-  }
-  #IE.ie7 #navigator_bar_bottom, #IE.ie6 #navigator_bar_bottom {
-    height: 51px;
-  }
   
   #navtitle {
     display: inline-block;
-    margin-left: 17px;
     margin-top: 9px;
     margin-right: 5px;
-    font-weight: bold;
     width: 350px;
-  }
-  
-  #navigator_bar_bottom #navtitle {
-    margin: 15px 16px;
+    font-size: 1.2em;
   }
 
-  #navigator_bar_top {
-  	padding: 0;
-  	position: relative;
-    background-image: -moz-linear-gradient(center bottom, #FFFFFF, #CCCCCC);
-    background-image: -o-linear-gradient(bottom, rgb(255,255,255), rgb(204,204,204));
-    background-image: -webkit-gradient(linear, left bottom, left top, from(#FFFFFF), to(#CCCCCC));
-    margin-bottom: 5px;
-  }
-  #IE.ie7 #navigator_bar_top, #IE.ie6 #navigator_bar_top {
-    height: 50px;
-  }
-  #navigator_bar_top #navtitle {
-    margin: 15px 17px;
-  }
-  #navigator_bar a#nav_compare_btn {
-    position: absolute;
-    top: 19px;
-    right: 21px;
-    font-size: 10pt;
-    width: 122px;
-    height: 20px;
-    padding: 8px 0 8px;
-    text-align: center;
-    font-weight: bold;
-    font-family: Verdana, sans-serif;     
-  }
-  #IE #navigator_bar a#nav_compare_btn {
-    top: 21px;
-  }
-  #navigator_bar a.nav-compare-btn:hover, #navigator_bar a.nav-compare-btn:visited, #nav_compare_btn_bottom:hover {
-    color: #fff;
-  }
-  #navigator_bar_bottom a#nav_compare_btn_bottom {
-    float: right;
-    font-size: 0.8em;
-    font-weight: bold;
-    margin-top: 11px;
-    margin-right: 5px;
-  }
-  #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
-    margin-top: 8px;
-  }
   .seeall, .seeall:visited {
     float: right;
-    font-size: 0.8em;
-    font-weight: bold;
-    margin: 10px;
-    color: white;
-    width: 115px;
-    height: 22px;
-    padding: 6px 0 0 0;
-    text-align: center;
-    -moz-border-radius: 4px; 
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    background-image:-moz-linear-gradient(center bottom, #8B0D1A, #BF1623);
-    background-image:-o-linear-gradient(bottom, rgb(139,13,26), rgb(192,22,37));
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#8B0D1A), to(#BF1623));
-  }
-  #IE .seeall {
-    background: url(<%= asset_path 'IE/red_seeall_button.gif' %>) no-repeat;
-    border: 0;
-    margin-right: 0;
-  }
-  #IE .seeall:focus {
-    outline: none;
+    color: black;
+    margin-top: 5px;
   }
   .seeall div {
     display: inline-block;
@@ -139,53 +51,40 @@
     display: inline;
     zoom: 1;
   }
-  #navigator_bar_bottom a#nav_compare_btn_bottom {
-    margin-right: 12px;
-    width: 120px;
-    height: 16px;
-    padding: 6px 0;
-    text-align: center;
+  #nav_compare_btn {
+    color: black;
   }
-  #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
-    width: 120px;
+  #navigator_bar {
+    padding-bottom: 10px;
+    border-top: solid 1px #ebebeb;
+    border-bottom: solid 1px #ebebeb;
   }
-  #IE #navigator_bar_bottom a#nav_compare_btn_bottom, #IE .seeall {
-    float: none;
-  }
-  #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
-    position: absolute;
-    right: 10px;
-    padding: 8px 0;
-    top: 0;
-  }
-  #IE .seeall {
-    position: absolute;
-    right: 15px;
-    top: 2px;
-  }
-  #IE #navigator_bar_top {
-    background: url(<%= asset_path "IE/futureshop_nav_top_bg.gif" %>) repeat;    
-  }
-  ul#sorting_method_box {
-    list-style-type: none;
-    font-size: 10px;
-    padding: 10px 0 10px 15px;
-    margin: 0 0 10px;
-    position: relative;
-    background: #e7e7e7;
-    text-align: left;
-    border: 1px #b1b1b1 solid;
-  }
-  ul#sorting_method_box li {
+  
+  .sorting-menu {
     display: inline;
-    padding: 0;
+    border: solid 1px #ebebeb;
+    padding: 5px 8px;
   }
-  ul#sorting_method_box li a, ul#sorting_method_box li a:visited{
-    text-decoration: underline;
-    color: #000;
+  .sorting-menu a:hover {
+    text-decoration: none;
   }
-  ul#sorting_method_box li a:hover{
-    text-decoration: underline;
+  .sorting-menu.open {
+    background-color: #ebebeb;
+  }
+  .caret {
+    background-image: url(<%= asset_data_uri "carat_down.gif" %>);
+    width: 12px;
+    height: 8px;
+    display: inline-block;
+  }
+  .sortby-container {
+    float: right;
+    margin-top: 6px;
+  }
+  .comparison_and_sort {
+    padding: 10px 0;
+    font-size: 11px;
+    border-bottom: 1px solid #EBEBEB;
   }
   #spellcheck_suggestion_box{
   	color: red;

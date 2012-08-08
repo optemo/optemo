@@ -1,48 +1,25 @@
-<% keyword_search = (Session.retailer == 'A') %>
-<% if keyword_search %>
-  <div id="navigator_bar<%= '_bottom' if local_assigns[:bottom] %>" <%= "class='nav_search_bar'" if (local_assigns[:bottom].nil?) %>>
-    <% if local_assigns[:bottom].nil? %>
-      <%= render 'pagination_search' %>	
-    <% end %>
-    <div id="navtitle">
-      <% if local_assigns[:bottom] %>
-        <%= Session.search.products_size %> <%= raw(number_results) %>
-      <% else %>
-        <div class='available-text'>
-          <%= Session.search.products_size %>
-          <%= raw(number_results) %>
-        </div>
-      <% end %>
-    </div>
-      <%= render "spellcheck" if @search_view and local_assigns[:bottom].nil? %>
-    </div>
-  </div>
-<% else %>
-  <div id="navigator_bar<%= '_bottom' if local_assigns[:bottom] %><%= '_top' if local_assigns[:landing] %>">
-    <div id="navtitle">
-      <% if local_assigns[:bottom] || local_assigns[:landing] %>
-        <%= Session.search.products_size %> <%= raw(product_title) + " " + t("products.compare.available") %>
-      <% else %>
-        <div class='nav-number'>
-          <%= Session.search.products_size %>
-        </div>
-        <div class='sub-title'>
-         	<span class='nav-available-text'><%= raw(product_title) + " " + t("products.compare.available")%></span> 
-          <div class='outof'>
-           	<% total = Session.search.solr_all -%>
-  			<%= t("products.compare.outof")+" #{total} "+(I18n.locale == :fr ? product_title.downcase : product_title) if (Session.search.products_size < total) %>
-      		</div>
-    	  </div>
-    	<% end %>
-    </div>
+<div id="navigator_bar" <%= "style='height:99px'" if (request.host == "keyword" && local_assigns[:bottom].nil?) %><%= "style='height:80px'" if request.host == "keyword" %>>
+  <div id="navtitle">
     <% if local_assigns[:landing] %>
-      <%= link_to(root_path, {:class=>'seeall'}) do %>
-        <%=t 'products.seeall' %> <div><!-- --></div>
-      <% end %>
+      <%=t "products.compare.available", count: Session.search.products_size %>
     <% else %>
-      <%= link_to(t(Session.futureshop? ? "products.compare.futureshop_compare" : "products.compare.compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>"nav_compare_btn#{'_bottom' if local_assigns[:bottom]}"})  %>
-      <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :id => (local_assigns[:bottom] ? "bottom" : "top"), :rel => "nofollow", :title => t('products.compare.cleardesc') unless local_assigns[:bottom] && Session.futureshop? %>
+      <%= "Displaying #{page_entries_info(Session.search.paginated_products)} of " %> <%= Session.search.products_size %>
     <% end %>
   </div>
-<% end %>
-
+  <% if local_assigns[:landing] %>
+    <%= link_to root_path, class: 'seeall btn' do %>
+      <%=t "products.seeall#{"_fs" if Session.futureshop?}" %> <div><!-- --></div>
+    <% end %>
+    <%= render "spellcheck" if @search_view and local_assigns[:bottom].nil? %>
+  <% else %>
+    <% if Session.futureshop? %>
+      <%= render "pagination" %>
+    <% else %>
+      <%= link_to(t("products.compare.compare")+' (0) ', "#", {:class=>'awesome_reset_grey global_btn_grey nav-compare-btn', :id=>"nav_compare_btn#{'_bottom' if local_assigns[:bottom]}"})  %>
+      <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :id => (local_assigns[:bottom] ? "bottom" : "top"), :rel => "nofollow", :title => t('products.compare.cleardesc') %>
+    <% end %>
+    <% if request.host == "keyword" && local_assigns[:bottom].nil? %>
+    	<%= render 'pagination_search' %>	
+    <% end %>	
+  <% end %>
+</div>

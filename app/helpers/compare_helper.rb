@@ -363,7 +363,7 @@ module CompareHelper
     (Session.features["sortby"] || []).map do |f|
         suffix = f.style.length > 0 ? '_' + f.style : ''
         content_tag :li, (current_sorting_option == (f.name+suffix)) ? @t[Session.product_type+".sortby."+f.name+suffix+".name"] : link_to(@t[Session.product_type+".sortby."+f.name+suffix+".name"], "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
-    end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))    
+    end.join#.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))    
   end
   
   def stars(numstars)
@@ -380,7 +380,7 @@ module CompareHelper
     emptystars.times do
       ret += '<div class="ratingEmptyStar"><!-- --></div>'
     end
-    ret += "&nbsp;" + numstars.to_s + " / 5" if Session.futureshop?
+    ret += "&nbsp;" + numstars.to_s if Session.futureshop?
     return ret
   end
   
@@ -511,12 +511,12 @@ module CompareHelper
   end
   
   def product_image(product,size)
-    imageUrl = Session.retailer == 'A' ? TextSpec.find_by_product_id_and_name(product.id, 'image_url_m').try(:value) : product.image_url(size)
+    imageUrl = Session.amazon? ? TextSpec.find_by_product_id_and_name(product.id, 'image_url_m').try(:value) : product.image_url(size)
     # TODO: test without imageUrl.nil? - was for Amazon when missing image was not created
     if BinSpec.cache_all(product.id)["missingImage"] or imageUrl.nil?      #Load missing image placeholder
       content_tag(:div, "", :class => "imageholder", :'data-sku' => product.sku, :'data-id' => product.id)      
     else
-      image_tag imageUrl, :class => size == :medium ? "productimg" : "", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.onerror='';this.src='#{imageUrl}';return true;"
+      image_tag imageUrl, :class => size == :medium ? "productimg" : "productimg_s", alt: "", :'data-id' => product.id, :'data-sku' => product.sku, :onerror => "javascript:this.onerror='';this.src='#{imageUrl}';return true;"
     end
   end
 end
@@ -528,7 +528,7 @@ module WillPaginate
         (collection.empty? ? 'entry' :
           collection.first.class.name.underscore.sub('_', ' '))
       if Session.futureshop?
-        t('will_paginate.page_entries_info.futureshop_multi_page_html', :current_page => collection.current_page, :total_pages => collection.total_pages)
+        "#{collection.offset + 1} - #{collection.offset + collection.length}"
       else # Best Buy
         t('will_paginate.page_entries_info.multi_page_html', :from => collection.offset + 1, :to => collection.offset + collection.length, :count => collection.total_entries)
       end

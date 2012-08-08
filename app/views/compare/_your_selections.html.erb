@@ -1,5 +1,5 @@
 <div id='your_selections' class='feature'>
-  <div class="selection_label"><%= t('products.compare.selections') %></div>
+  <div class="selection_label hanging_margin"><%= t('products.compare.selections') %></div>
   <div id="selections_text" class='categorical'>
     <% grouped_filters.each do |f| -%>
       <% values = f[1] %>
@@ -8,7 +8,7 @@
         <% if values.count > 0 %>
           <% unless spec_type(values.first) == 'facet' or spec_type(values.first) == 'binary' %>
             <div class='label list_item hanging_margin'>
-              <%= @t["#{Session.product_type}.filter.#{fname}.name"] || fname.capitalize -%>
+              <%= @t["#{Session.product_type}.filter.#{fname}.name"] || fname.capitalize %><%= ":" if Session.futureshop? %>
             </div>
           <% end %>
           <% rangesShow = showSelectedRanges(values, fname) %>
@@ -28,7 +28,7 @@
                 <% str = displaySelectedString(spec, rangesShow.empty? ? nil : rangesShow[index]) %>
                 <%= t("#{Session.product_type}.filter.#{str}.name", :default => str) -%>
                 <% unless spec.name == 'keyword' %>
-                  <a class='remove_filter' href='#'><div><!-- --></div> <%= Session.futureshop? ? '' : t('products.compare.undo') %> </a>
+                  <a class='remove_filter' href='#'><div><!-- --></div> <%= Session.futureshop? ? t('products.compare.remove') : t('products.compare.undo') %> </a>
                 <% end %>
               </div>
             <% end -%>
@@ -38,8 +38,8 @@
     <% end -%> <%# grouped.filters.each %>
   </div>
   <% if Session.futureshop? %>
-    <span>
-      » <%= link_to t('products.compare.futureshop_reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
-    </span>
+    <div class="hanging_margin" style="margin-top: 7px;">
+      <%= link_to t('products.compare.futureshop_reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
+    </div>
   <% end %>
 </div>

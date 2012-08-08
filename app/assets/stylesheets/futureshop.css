@@ -4,7 +4,7 @@
 * the top of the compiled file, but it's generally better to create a new file per style scope.
 *= require futureshop/development
 *= require shared
-*= require futureshop/awesome_buttons
+* do not require futureshop/awesome_buttons
 *= require futureshop/colour_and_buttons
 *= require futureshop/direct_comparison
 *= require futureshop/filter_boxes
@@ -16,6 +16,7 @@
 *= require jslider
 *= require futureshop/slider
 *= require futureshop/buttons
+*= require bootstrap-dropdown
 */
 
 /* Global Declarations are in colour_and_buttons.scss.erb */
