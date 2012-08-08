@@ -14,19 +14,18 @@
     </div>
     <%= render partial: 'product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
   <% end %>
-  <% title_style = "outline: medium none; font-family:arial; font-weight: bold; margin: 7px 7px 0 0; display: block;" %>
-  <% title_style += "font-size: 11px; color: #000;" if Session.futureshop? %>
-  <% title_style += "color:#039;" if Session.bestbuy? %>
+  <% title_style = "outline: medium none; font-weight: bold; margin: 7px 7px 0 0; display: block;" %>
+  <% title_style += "font-size: 11px; font-family:verdana; color: #333;" if Session.futureshop? %>
   <%= link_to (text_specs["title#{fr?}"] || text_specs["title"]), (text_specs["productUrl#{fr?}"] || text_specs["productUrl"]), :class => "easylink", :title => t('products.compare.clickforspecs'), style: title_style %>
   <div class="productspecs"><!--&--></div>
   <% if Session.bestbuy? -%>
     <%if !bin_specs["onsale"]%>
     	<div class="price"> 
-      		<span style= "font-size:20px; color: #2e3337; font-family: arial black;"><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
+      		<span style= "font-size:20px; color: #2e3337; font-family: Arial Black, Arial, Helvetica, Sans-serif; font-weight: 900;"><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
     	</div>
     <%else%>	
     	<div class="saleprice" <%=raw only_if_onsale(product) %>>
-      		<span style= "font-size:20px; font-color:#da1a36; font-family: arial black;"><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : 	"saleprice"]) %></span>
+      		<span style= "font-size:20px; font-color:#da1a36; font-family: Arial Black, Arial, Helvetica, Sans-serif; font-weight: 900;"><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : 	"saleprice"]) %></span>
     	</div>
     <%end%>	
     <%= render partial: 'product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
