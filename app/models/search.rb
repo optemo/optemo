@@ -246,7 +246,6 @@ class Search < ActiveRecord::Base
       if (@collation)
         things_col= solr_search(searchterm: @collation)
         res_col = grouping(things_col)
-        debugger
         if (res_col.empty?)
           @col_emp_result = true
         end
