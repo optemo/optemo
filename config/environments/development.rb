@@ -17,7 +17,7 @@ Site::Application.configure do
   config.action_controller.perform_caching = false
   
   # In production, Apache or nginx will already do this
-  config.serve_static_assets = false # false by default
+  config.serve_static_assets = true # false by default
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # This used to be "assets.optemo.com" but that requires an entry in /etc/hosts
@@ -31,13 +31,6 @@ Site::Application.configure do
 
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
-  
-  #I18n database fallback
-  #This is not enabled for the time being due to lookuptimes
-  #simple_backend = I18n::Backend::Simple.new
-  #db_backend = I18n::Backend::ActiveRecord.new
-  #
-  #config.i18n.backend = I18n::Backend::Chain.new(simple_backend,db_backend)
   
   if File.exists?(File.join(Rails.root.to_s,'tmp', 'debug.txt'))
      require 'ruby-debug'

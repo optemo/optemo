@@ -29,8 +29,13 @@ Site::Application.configure do
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
   # 86400 = 1.day
-  config.cache_store = :dalli_store, '127.0.0.1:11211',
-      { :namespace => "OPTEMO_DISCOVERY", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }
+  memcache_server = case `hostname`
+    when /linode\d+/ then "mysqll"
+    when /rackspace\d+/ then "mysqlr"
+    else "localhost"
+  end
+  config.cache_store = :dalli_store, memcache_server+":11211",
+      { :namespace => "OPT", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }
   
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
@@ -50,7 +55,7 @@ Site::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
   #Add our custom BB files
-  config.assets.precompile += ['loader.js']
+  config.assets.precompile += ['loader.js','bestbuy.css','futureshop.css']
 
   # Defaults to Rails.root.join("public/assets")
   # config.assets.manifest = YOUR_PATH

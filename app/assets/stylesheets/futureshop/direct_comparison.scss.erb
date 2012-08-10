@@ -1,0 +1,183 @@
+/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
+
+/*--------------------------------------//
+//          Direct Comparison           //
+//--------------------------------------*/
+
+.optemo {
+  .column {
+  	float: left;
+  }
+  .comparisonmatrix {
+  	position: relative;
+  	width:100%;
+  	margin-top: 1px;
+  	clear: left;
+  }
+  #hideable_matrix {
+  	display: none;
+  }
+  .cell {
+  	width: 159px;
+  	height: 100%;
+  	font-size: 0.92em;
+  	padding: 0 0 0 35px;
+  	float: left;
+  	position: relative;
+  }
+  .cell img {
+    top: 3px;
+    position: absolute;
+  }
+  .thumbnailcell {
+  	padding: 15px 10px 20px 0;
+  	width: 189px;
+  	float: left;
+  }
+  .columntitle {
+  	width: 189px;
+  	height: 27px;
+  	font-size: 0.92em;
+  	padding-top: 3px;
+  	padding-right: 5px;
+  	z-index: 1000;
+  	position: relative;
+  	float: left;
+    text-align: center;
+  }
+
+  .graybg {
+  	background: white;
+  }
+
+  .whitebg {
+  	background: white;
+  }
+  .leftmostcolumn {
+  	width: 128px;
+  	padding-left: 0px;
+  }
+  .leftcolumntext {
+  	width: 124px;
+  	padding-left: 0px;
+  	font-weight: bold;
+  	padding-right: 7px;
+  	text-align: right;
+  }
+  .leftmostcolumntitle {
+  	width: 123px;
+  /*	border-left: solid 1px #ccc; */
+  	padding-left: 0px;
+  	font-weight: bold;
+  	padding-right: 7px;
+  	text-align: right;
+  }
+  .tabletitle {
+  	font-size:0.85em;
+  	font-weight: normal;
+  }
+  .remove {
+  	font-size: 0.8em;
+  	padding-left: 10px;
+  }
+  a.remove {
+    color: #333;
+    text-decoration: underline;
+  }
+  .thumbnail_container {
+  	height: 100px;
+  	text-align: center;
+  	img {
+  	  height: 100%;
+	  }
+  }
+  .thumbnaillabel {
+  	text-align:center;
+  	padding-top: 7px;
+  	color:#0A2088;
+  	height: 120px;
+  	line-height: 20px;
+  	margin-bottom: 20px;
+  }
+  .thumbnaillabel a {
+    color: #333;
+  }
+  .thumbnail_productinfo {
+    padding: 10px 0 0 20px;
+    text-align: left;
+  }
+  .thumbnaildetails {
+  	color: black;
+  	padding-bottom:5px;
+  }
+  .thumbnaildetailssale {
+  	color: #F5000B;
+  	padding-bottom:5px;
+  }
+  .thumbnaildetails {
+  	color: #000000;
+  	padding-bottom:5px;
+  }
+  .compare_row {
+    clear: both;
+    line-height: 16px;
+    height:auto;
+    border-top: 1px solid #ccc;
+  }
+  .double_height_compare_row {
+    clear: both;
+    line-height: 16px;
+    height: 32px;
+  }
+  .double_height_compare_row .cell {
+    height: 32px;
+  }
+  .triple_height_compare_row {
+    clear: both;
+    line-height: 16px;
+    height: 48px;
+  }
+  .triple_height_compare_row .cell {
+    height: 48px;
+  }
+  .quadruple_height_compare_row {
+    clear: both;
+    line-height: 16px;
+    height: 64px;
+  }
+  .quadruple_height_compare_row .cell {
+    height: 64px;
+  }
+  .closed {
+  	background: url(<%= asset_data_uri "demo-spindown-closed.gif" %>) no-repeat left center;
+  	padding-left: 10px;
+  	padding-right: 7px;
+  	display: block;
+  	width: 100px;
+  }
+  .ie67 .closed {
+    background-image: url(<%= asset_path "demo-spindown-closed.gif" %>);
+  }
+  .open {
+  	background: url(<%= asset_path "demo-spindown-open.gif" %>) no-repeat left center;
+  	padding-left: 0;
+  	padding-right: 7px;
+  	display: block;
+  	width: 110px;
+  }
+  .ie67 .open {
+    background-image: url(<%= asset_path "demo-spindown-open.gif" %>);
+  }
+  a.title_link, a.title_link:visited {
+    color: #000;
+  }
+  div.togglespecs {
+    margin: 10px auto 0;
+  }
+  #IE.ie67 div.togglespecs {
+    padding: 0;
+    margin: 10px 200px 0;
+  }
+  div.spec-capt {
+  }
+}  

@@ -1,0 +1,94 @@
+/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
+
+/*--------------------------------------//
+//             Filter Boxes             //
+//--------------------------------------*/
+.optemo {
+  #filter_form {
+    background: url(<%= asset_data_uri "leftnav_list.gif" %>);
+    padding-bottom: 5px;
+  }
+  .ie67 #filter_form {
+    background: url(<%= asset_path "leftnav_list.gif" %>);
+  }
+  #filter_form, #your_selections {
+  	font-size: 0.85em;
+  }
+  #your_selections {
+    background-color: #DFDED5;
+    border-top: 5px #ccc solid;
+    padding-bottom: 10px;
+    margin-bottom: -8px;
+  }
+  #your_selections span {
+    padding-left: 10px;  
+  }
+  .selection_label {
+    margin: 7px 0 5px 8px;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  .remove_filter {
+    font-size: 10px;
+    div {
+      width: 12px;
+      height: 12px;
+      vertical-align: text-top;
+      display: inline-block;
+      background-image: url(<%= asset_data_uri "futureshop_remove_facet.gif" %>);
+    }
+  }
+  #IE .label{
+    padding-top: 12px;
+  }
+  .ie67 .remove_filter div {
+    background: url(<%= asset_path "futureshop_remove_facet.gif" %>) no-repeat top left;
+    display: inline;
+  }
+  .label {
+  	font-weight: bold;
+  	text-align: left;
+  	clear: left;
+  	padding: 8px 0;
+  }
+  .unitdisp {      /* Display units of features in filters */
+  	font-size: 0.8em;
+  	font-weight: normal;
+  }
+  .feature {
+    padding: 0 0 0 6px;
+  }
+  .ie6 .feature {
+    position: relative;
+  }
+  .desc {
+  	display: none;
+  	position: absolute;
+  	bottom: 1.5em;
+  	left: 0;
+  	padding: 4px;
+  	border: solid thin black;
+  	background-color: #fff;
+  	z-index: 1001;
+  }
+  .hist {
+  	position: absolute;
+  	left: 4px;
+  	top: 3px;
+  	text-align: left;
+  }
+  #IE.ie6 .hist {
+    left: 0;
+  }
+  .boldlabel {
+  	font-weight: bold;
+  	text-align: center;
+  	clear: left;
+    padding: 6px 0 0;
+    background-color: #DFDED5;
+    margin: 8px 0 2px -6px;
+    border-top: 1px #ccc solid;
+    border-bottom: 1px #ccc solid;
+    height: 23px;
+  }
+}

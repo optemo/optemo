@@ -1,88 +1,111 @@
-<div class="y_heading">
-  <div class="narrow_text">
-    <div class="<%= isfr? ? :fr : :en %>"><!-- --></div>
-    <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
+<div id="inside_filter">
+  <div class="y_heading">
+    <% if Session.futureshop? -%>
+      <div class="refine_text">
+        <!-- -->
+        <%= t('products.compare.futureshop_refineyoursearch1') %>
+      </div>
+      <div class="french_refine_text">
+        <!-- -->
+        <%= t('products.compare.refineyoursearch2') %>
+      </div>
+    <% elsif Session.bestbuy? %>
+      <h1><%= t('products.compare.shoph1') + product_title %></h1>
+    <% elsif Session.amazon? %>
+      <h1><%= t('products.compare.filters') %></h1>
+    <% end %>
+    <% if Session.bestbuy? -%>
+      <div>
+        <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc')%>
+      </div>
+    <% end -%>
   </div>
-</div>
-<form id="filter_form" method="get" action="/compare">
-<% Session.features["filter"].each do |f| %>
-  <div class="feature">
-  <% case f.feature_type -%>
-  <% when "Heading" -%>
-    <%= render partial: 'filter_label', locals: {f: f} %>
-    <div style="height: 7px"><!-- --></div>
-  <% when "Spacer" -%>
-    <div style="height: 17px"><!-- --></div>
-  <% when "Categorical" -%>
-    <%= render partial: 'filter_label', locals: {f: f} %>
-    <% chosen_cats = chosencats(f.name) %>
-    <% if f.name == "color" # TODO: should not be hard code here%>
-      <div style="margin-right: -4px;margin-top: 4px;">
-        <% color_counts = CatSpec.count_feat("color") %>
-        <% %w(Red Orange Yellow Green Blue Purple Pink White Silver Brown Black).zip(
-           %w(l   l       l       d   d     d     l     l     l     d     d    )).each do |color,brightness| %>
-          <% next if color_counts[color].nil? && !chosen_cats.include?(color) %>
-          <div class="swatch_button swatch<%= " white_swatch" if color == "White" %><%= " selected_swatch" if chosen_cats.include?(color) %><%= brightness == "l" ? " light" : " dark" %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>
-        <% end %>
-        <div style="clear: left;">
-          <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
-        </div>
-      </div>
-    <% else %>
-      <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-      <% optionlist = CatSpec.count_feat(f.name,true).to_a.sort{|a,b| (chosen_cats.include?(a[0]) ? -a[1]-1000000 : -a[1]) <=> (chosen_cats.include?(b[0]) ? -b[1]-1000000 : -b[1])} %>
-      <div class="categorical<%= " brand" if f.name == "brand" %>">
-        <% optionlist.each do |k,available_count| %>
-          <% checked = chosen_cats.include?(k) %>
-          <div class="list_item hanging_indent <%=raw ' disabled' if available_count == 0 %>" <%=raw "style='font-weight:bold;'" if checked %> >
-            <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
-            <%= (available_count == 0) ?  t("#{Session.product_type}.specs.#{k}.name",:default=>k) : link_to(t("#{Session.product_type}.specs.#{k}.name", :default=>k), "#", :class => "checkbox_text") %>
-            <span class="av_count"><%= "(#{available_count})" unless checked %></span>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
-  <% when "Continuous" %>
-    <%= render partial: 'filter_label', locals: {f: f} %>
-    <%# Check continuous features for data, instead of graying them, we just don't show them %>
-    <% distribution_data = getDist(f.name) -%>
-    <% if distribution_data.blank? -%>
-      <div class="disabled" style="margin: 4px 0 0 5px">(<%= t('specs.notapplicable') %>)</div>
-    <% elsif distribution_data.first[2] == distribution_data.first[3] %>
-      <div class="disabled" style="margin: 4px 0 0 5px"><%= distribution_data.first[2] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
-    <% else %>
-      <div style="position:relative">
-        <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
-        <% current = Maybe(Session.search.userdataconts.select{|m|m.name == f.name}.first) -%>
-        <%= hidden_field_tag "continuous[#{f.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
-        <span style="display: inline-block; width: 155px; padding: 20px 0px;" class="sliderspan">
-          <input 
-            class="slider" 
-            type="slider" 
-            name="superfluous[<%= f.name %>]"
-            value="<%= [(current.min.nil? ? distribution_data.first[2].floor : current.min),(current.max.nil? ? distribution_data.first[3].ceil : current.max)].join(";") %>"
-            data-min= '<%= distribution_data.first[2].floor %>'
-            data-max= '<%= distribution_data.first[3].ceil %>'
-            data-distmin=<%= distribution_data.first[0] %>
-            data-distmax=<%= distribution_data.first[1] %>
-            data-unit = "<%= t("#{Session.product_type}.specs.#{f.name}.unit", :default => '') %>" 
-            disabled="disabled"/>
-        </span>
-      </div>
-    <% end %>
-  <% when "Binary" %>
-    <% dobj = @s.search.userdatabins.select{|udb| udb.name == f.name}.first %>
-    <% unchecked = dobj.nil? || dobj.value == false %>
-    <% available_count = BinSpec.count_feat(f.name) %>
-    <div class="hanging_indent<%= ' disabled' if available_count == 0 %>" <%=raw 'style="font-weight:bold;"' unless unchecked %>>
-      <%= check_box_tag "binary[#{f.name}]", "1", !unchecked ,:disabled => (available_count == 0) ? true : false, :class => 'binary_filter' %>
-      <%= (available_count == 0) ? t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym) : link_to( t("#{Session.product_type}.specs.#{f.name}.name", :default => "specs.#{f.name}".to_sym), "#", :class => "checkbox_text") %>
-      <span class="av_count"><%= "(#{available_count})" if unchecked %></span>
-    </div>
+  <% grouped_filters = getSearchFilters() %>
+  <% unless grouped_filters.empty? %>
+    <%= render partial: 'your_selections', locals: {grouped_filters: grouped_filters} %>
   <% end %>
+  <form id="filter_form" method="get" action="/compare">
+    <%# Function that determines which facets to display and pulls up the values needed to display %>
+    <% get_active_features().each do |display_feature| -%>
+      <% f = display_feature[:f] -%>
+      <div class="feature">
+        <% case f.feature_type -%>
+        <% when "Heading" -%>
+          <%= render partial: 'filter_label', object: f %>
+        <% when "Categorical" -%>
+          <% chosen_cats = chosencats(f.name) %>
+          <% if f.name == "color" -%>           
+            <% unless display_feature[:no_display] %>
+              <%= render partial: 'filter_label', object: f %>
+            <%end%>
+            <%= render partial: 'colour_filter', collection: display_feature[:display_colours], locals: {chosen_cats: chosen_cats} %>
+            <div style="clear: left;">
+              <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
+            </div>
+          <% else %>
+            <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
+            <% unless display_feature[:all_options].empty? %>
+              <% unless display_feature[:no_display] %>
+                <%= render partial: 'filter_label', object: f %>
+                <div class="categorical">
+                  <%= render partial: "cat_option", collection: display_feature[:all_options].to_a, locals: {chosen_cats: chosen_cats, f: f, expanded: display_feature[:expanded], toplist: display_feature[:top_options]} %>
+                  <%= link_to t('products.compare.more'), "#", {class: "moreless", style: display_feature[:expanded] ? 'display:none;' : ''} unless display_feature[:top_options].empty? %>
+                  <%= link_to t('products.compare.less'), "#", {class: "moreless", style: display_feature[:expanded] ? '' : 'display:none;'} unless display_feature[:top_options].empty? %>
+                </div>
+                <%= hidden_field_tag "expanded[#{f.name}]", display_feature[:expanded] %>
+              <% end %>
+            <% else %>
+              <!-- -->
+            <% end %>
+          <% end %> <%# Color If %>
+        <% when "Continuous" -%>	
+          <% if f.ui == "ranges" -%>
+            <% chosen_conts = chosenconts(f.name) -%>
+            <% unless display_feature[:no_display] -%>
+              <%= render partial: 'filter_label', object: f %>
+            <% else -%>
+              <!-- -->
+            <% end -%>
+            <% display_feature[:displayed_ranges].each do |dr| -%>
+              <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) -%>
+              <% available_count = dr[:count] -%>
+              <% show_range = (available_count > 0 or checked) %>
+              <% if show_range -%>
+                <div class="hanging_indent<%= ' disabled' unless show_range %>" <%=raw 'style="font-weight:bold;"' if checked %>>
+                  <%= check_box_tag "continuous[#{f.name}]", "#{dr[:min]};#{dr[:max]}", checked ,:disabled => (available_count == 0 and !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => show_range ? 'true' : 'false', :"data-min" => dr[:min], :"data-max" => dr[:max] %>
+                  <%= (available_count <= 0) ? dr[:display] : link_to(dr[:display], "#", :class => "checkbox_text") %>
+                  <span class="av_count"><%= "(#{available_count})" unless checked %></span>
+                </div>
+              <% end -%>	
+            <% end -%> <%# ranges.each %>
+          <% else -%> <%# Use sliders still, not ranges %>
+            <% unless display_feature[:no_display] %>
+              <%= render partial: 'filter_label', object: f %>
+              <% if display_feature[:single_value] %>
+                <div class="disabled" style="margin: 4px 0 0 5px"><%= display_feature[:single_value] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
+              <% else %>
+                <% distribution_data = display_feature[:distribution_data] -%>
+                <% current, step, datamin, datamax, unit = getSliderSettings(f, distribution_data) -%>
+                <%= render partial: 'slider', object: f, :locals => {:distribution_data => distribution_data, :current => current, :step => step, :datamin => datamin, :datamax => datamax, :unit => unit} %>
+              <% end %><%# end distribution of more than one %>
+            <% else %>
+              <!-- -->
+            <% end %><%# end checking for non-blank distribution %>
+          <% end -%><%# end ranges %>
+        <% when "Binary" -%>
+          <div class="hanging_indent<%= ' invisible' if display_feature[:no_display] %>" <%=raw 'style="font-weight:bold;"' unless display_feature[:unchecked] %>>
+            <%= check_box_tag "binary[#{f.name}]", "1", !display_feature[:unchecked] ,:disabled => display_feature[:no_display], :class => 'binary_filter' %>
+            <%= display_feature[:no_display] ? (@t["#{Session.product_type}.filter.#{f.name}.name"] || f.name.capitalize) : link_to( @t["#{Session.product_type}.filter.#{f.name}.name"] || f.name.capitalize, "#", :class => "checkbox_text") %>
+            <span class="av_count"><%= "(#{display_feature[:available_count]})" if display_feature[:unchecked] %></span>
+          </div>
+        <% end # End case -%>
+      </div>
+    <% end # End iterating over features %>
+  </form>
+  <div class="y_bottom">
+    <% if Session.futureshop? %>» <% end %>
+    <%= link_to t(Session.futureshop? ? 'products.compare.futureshop_reset' : 'products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :title => t('products.compare.resetdesc') %>
   </div>
-<% end %>
-</form>
-<div class="y_bottom">
-  <%= link_to t('products.compare.reset'), "/", :class => "reset regular_reset", :rel => "nofollow", :style => "float:right;", :title => t('products.compare.resetdesc') %>
 </div>
+<div class="ie_bottom_curve"><!-- --></div>
+<div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>

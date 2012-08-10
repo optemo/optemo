@@ -1,10 +1,10 @@
 <div class="bb_poptitle">
-	<label class="comp-title"><%=t "compare.index.title"%></label>
-	<div class="bb_quickview_close"></div>
+  <label class="comp-title"><%=t "compare.index.title"%></label>
+  <div class="bb_quickview_close"></div>
 <div class="clear">&nbsp;</div>
 </div>
 
-<div id="basic_matrix" class="comparisonmatrix" style="width: <%= box_width %>px" data-skus="<%= @products.map(&:sku).join(",") %>">
+<div id="basic_matrix" class="comparisonmatrix" style="width: <%= box_width %>px" data-skus="<%= @products.map{|x|x.sku}.join(",") %>">
 
   <%# Rows are like this: %>
   <%# remove buttons %>
@@ -12,68 +12,78 @@
   <%# "product details" %>
   <%# then featurename, data, data %>
 
-  <div class="compare_row">
+  <div class="compare_row" style="border: none;">
     <div class="columntitle leftmostcolumn leftmostcolumntitle"></div>
     <% @products.each_with_index do |product, i| %>
       <div class="columntitle spec_column_<%= i %>">
-    		<%= link_to image_tag('remove.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-sku" => product.sku, :class => 'remove spec_column_' + i.to_s %>
-    	</div>
-		<% end %>
+        <%= link_to image_tag('remove'+(Session.futureshop? ? "_fs" : "")+'.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-sku" => product.sku, :class => 'remove spec_column_' + i.to_s %>
+      </div>
+    <% end %>
   </div>
-  <div class="compare_row">
+  <div class="compare_row" style="border: none;">
     <div class="thumbnailcell leftmostcolumn tabletitle" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
-			&nbsp;
-		</div>
-		<% @products.each_with_index do |product,i| %>
-    	<%= render :partial => 'thumbnails', :object => product, :locals => {:column_number => i} %>
+      &nbsp;
+    </div>
+    <% @products.each_with_index do |product,i| %>
+      <%= render :partial => 'thumbnails', :object => product, :locals => {:column_number => i} %>
     <% end %>
   </div>
 
-  <div class="compare_row">
+  <div class="compare_row" style="border: none;">
+    <div class="cell whitebg leftmostcolumn leftcolumntext">
+      &nbsp;
+    </div>
+    <% @products.each_with_index do |product,i| %>
+      <%= render :partial => 'add_to_cart', :object => product, :locals => {:column_number => i} %>
+    <% end %>
+  </div>
+
+  <div class="compare_row" style="border: none;">
     <div class="columntitle leftmostcolumntitle spec-capt">
       <%=t 'compare.index.proddetails'%>
     </div>
 
-		<% @products.size.times do |i| %>
+    <% @products.size.times do |i| %>
       <div class="columntitle spec_column_<%= i %> spec-capt">&nbsp;</div>
     <% end %>
   </div>
-	<% gray = false %>
+  <% gray = false %>
   <% Session.features['show'].each do |feature| %>
-		<%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
-		<% if feature.feature_type != "Binary" && !@products.map{|product| @sp[feature.feature_type][product.id][feature.name]}.compact.empty? %> 
-			<div class="<%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name).length < 20 ? "compare_row" : "double_height_compare_row" %>">
-		    <div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
-		      <%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name) %>:
-		    </div>
+    <%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
+    <% if feature.feature_type != "Binary" && !@products.map{|product| @sp[feature.feature_type][product.id][feature.name]}.compact.empty? %> 
+      <div class="<%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name).length < 20 ? "compare_row" : "double_height_compare_row" %>">
+        <div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
+          <%= t("#{Session.product_type}.show.#{feature.name}.name", :default=>feature.name) %>:
+        </div>
         <% @products.each_with_index do |product, i| %>
-					<%# Some features have a french version and others don't %>
-					<%= feature_value(product.id, @sp[feature.feature_type][product.id][feature.name + fr?] || @sp[feature.feature_type][product.id][feature.name], gray, feature, i) %>
+          <%# Some features have a french version and others don't %>
+          <%= feature_value(product.id, @sp[feature.feature_type][product.id][feature.name + fr?] || @sp[feature.feature_type][product.id][feature.name], gray, feature, i) %>
         <% end %>
         <% gray = !gray %>
-			</div>
+      </div>
     <% end %>
   <% end %>
 </div>
+<div style="clear:both"><!-- --></div>
 
-<div class="spacer togglespecs yellowbtn">
+<div class="spacer togglespecs morespecs">
   <div class="left">
     <div class="right" style="width: 150px">
       <a href="#" class="toggle_specs">
         <span class="moretext">
-          <%=t "products.compare.morespecs" %>
+          <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"morespecs" %>
         </span>
         <span class="lesstext" style="display:none;">
-          <%=t "products.compare.lessspecs" %>
+          <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"lessspecs" %>
         </span>
-        <div class="gt_sym"><!-- --></div>
+        <div class=<%= Session.futureshop? ? "" : "gt_sym" %>><!-- --></div>
       </a>
     </div>
   </div>
 </div>
 
 <div class="comparisonmatrix" id="hideable_matrix" style="width: <%= box_width %>px">
-	<div class="compare_row"><div class="columntitle
-	                                     leftmostcolumntitle spec-capt"><%=t('compare.index.allspecifications')%></div></div>
+  <div class="compare_row"><div class="columntitle
+                                        leftmostcolumntitle spec-capt"><%=t('compare.index.allspecifications')%></div></div>
 </div>
 <div class="spacer"><!-- --></div>

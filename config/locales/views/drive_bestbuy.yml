@@ -1,16 +1,6 @@
 en:
     drive_bestbuy: &drives
         # All language-dependent definitions in models
-        sitetitle:                  "Best Buy Drive & Storage"
-        title:                      "Drive & Storage"
-        title-plural:               "Drive & Storage"
-        defaultdesc:                "With an external hard drive, flash drive or disc drive you can backup your files and take them virtually anywhere. Shop for reliable, high-quality hard drives at BestBuy.ca and find the perfect way to keep your files safe."
-        keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
-        classification:             "Drive & Storage"
-        navtitle:                   "Drive"
-        navtitle2:                  "Available"
-        outof:                      "Out of %{count} Drives"
-        compare:                    "Compare"
         
         specs:
             saleprice:

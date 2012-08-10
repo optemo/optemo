@@ -1,7 +1,7 @@
 ##Create our 16 products
-#Factory.define :product do |p|
-#    p.sequence(:id) {|n| n}
-#end
+Factory.define :product do |p|
+   p.sequence(:id) {|n| n}
+end
 #
 #Factory.define :cluster do |c|
 #  c.product_type 'printer_lph'

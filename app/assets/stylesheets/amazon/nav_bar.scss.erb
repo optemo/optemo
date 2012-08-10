@@ -1,0 +1,238 @@
+/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
+ 
+/*--------------------------------------//
+//            Navigator Bar             //
+//--------------------------------------*/
+
+.optemo {
+  .watermark {
+    font-size: 0.8em;
+    padding: 4px 0 5px 37px;
+    float: left;
+  }
+  #product_content .border-content {
+    border: 1px solid #d0d0d0;
+  }
+  #filterbar {
+  	padding-bottom: 12px;
+  }
+  #IE #filterbar {
+  	padding-bottom: 0px;
+  }
+  .bd {
+  	position: relative;
+  	padding-top: 5px;
+  	width: 100%;
+  	height: 100%;
+  	min-height: 744px; /* Empirically determined; used for embedded LPH layout */
+  }
+  #navigator_bar {
+  	border: 1px solid #d0d0d0;
+    background-image:-moz-linear-gradient(center bottom, #98fb98, #98fb98);
+    background-image:-o-linear-gradient(bottom, rgb(152,251,152), rgb(152,251,152));
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#98fb98), to(#98fb98));
+    width: 739px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 1px;
+  }
+  .nav_search_bar{
+    height: 80px;
+    left: 4px;
+  }
+  #IE #navigator_bar {
+    background: url(<%= asset_path "IE/navigator_bar_bg.gif" %>) repeat-x;
+  }
+  .ie67 #navigator_bar {
+    height: 84px;
+  }
+  #navigator_bar_bottom {
+  	padding: 0;
+  	position: relative;
+    border: 1px solid #d2d2d2;
+    background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e9e9e9);
+    background-image:-o-linear-gradient(bottom, rgb(209,209,209), rgb(233,233,233));
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e9e9e9));
+    margin-top: 5px;
+    text-align: right;
+  }
+  #IE.ie7 #navigator_bar_bottom, #IE.ie6 #navigator_bar_bottom {
+    height: 51px;
+  }
+  #navtitle {
+    display: inline-block;
+    margin-left: 17px;
+    margin-top: 9px;
+    margin-right: 5px;
+    font-weight: bold;
+    width: 250px;
+  }
+  
+  .nav-search-bar .available-text {
+    font-weight: bold;
+  }
+  
+  .search_bar {
+    margin-top: 10px;
+    margin-left: 10px;
+    float: left;
+  }
+  
+  .nav_search_bar #navtitle {
+    float: left;
+    margin-top: 15px;
+    margin-left: 5px;
+  }
+  
+  #navigator_bar_bottom #navtitle {
+    margin: 15px 16px;
+    width: 388px;
+    text-align: left;
+  }
+  #navigator_bar_top {
+  	padding: 0;
+  	position: relative;
+  	border: 1px solid #d2d2d2;
+    background-image: -moz-linear-gradient(center bottom, #98fb98, #98fb98);
+    background-image: -o-linear-gradient(bottom, rgb(152,251,152), rgb(152,251,152));
+    background-image: -webkit-gradient(linear, left bottom, left top, from(#98fb98), to(#98fb98));
+    margin-bottom: 5px;
+  }
+  #IE.ie7 #navigator_bar_top, #IE.ie6 #navigator_bar_top {
+    height: 51px;
+  }
+  #navigator_bar_top #navtitle {
+    margin: 15px 17px;
+    width: 385px;
+  }
+  #navigator_bar a#nav_compare_btn {
+    position: absolute;
+    top: 19px;
+    right: 10px;
+    font-size: 12pt;
+    width: 149px;
+    height: 20px;
+    padding: 8px 0 8px;
+    text-align: center;
+    font-weight: bold; 
+  }
+  #navigator_bar a.nav-compare-btn:hover, #navigator_bar a.nav-compare-btn:visited {
+    color: #fff;
+  }
+  #navigator_bar_bottom a#nav_compare_btn_bottom {
+    float: right;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-top: 11px;
+    margin-right: 5px;
+  }
+  #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
+    margin-top: 8px;
+  }
+  .seeall, .seeall:visited {
+    float: right;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin: 10px;
+    color: white;
+    width: 115px;
+    height: 22px;
+    padding: 6px 0 0 0;
+    text-align: center;
+    -moz-border-radius: 4px; 
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    background-image:-moz-linear-gradient(center bottom, #2387cc, #085185);
+    background-image:-o-linear-gradient(bottom, rgb(35,135,204), rgb(8,81,133));
+    background-image:-webkit-gradient(linear, left bottom, left top, from(#2387cc), to(#085185));
+  }
+  #IE .seeall {
+    background: url(<%= asset_path 'blue_button.jpg' %>) no-repeat;
+    border: 0;
+    margin-right: 0;
+  }
+  #IE .seeall:focus {
+    outline: none;
+  }
+  .seeall div {
+    display: inline-block;
+    background: url(<%= asset_data_uri 'gt_blue.gif' %>);
+    width: 8px; 
+    height: 13px;
+    position: relative;
+    top: 2px;
+  }
+  #IE .seeall div {
+    display: inline;
+    zoom: 1;
+  }
+  .ie67 .seeall div {
+    background: url(<%= asset_path 'gt_blue.gif' %>);
+    zoom: 1;
+  }
+  #navigator_bar_bottom a#nav_compare_btn_bottom {
+    margin-right: 12px;
+    width: 120px;
+    height: 16px;
+    padding: 6px 0;
+    text-align: center;
+  }
+  #IE #navigator_bar_bottom a#nav_compare_btn_bottom, #IE .seeall {
+    float: none;
+  }
+  #IE #navigator_bar_bottom a#nav_compare_btn_bottom {
+    position: absolute;
+    right: 10px;
+    padding: 8px 0;
+    top: 0;
+  }
+  #IE .seeall {
+    position: absolute;
+    right: 15px;
+    top: 2px;
+  }
+  #IE #navigator_bar_top {
+    background: url(<%= asset_path "IE/nav_top_bg.gif" %>) repeat;    
+  }
+  ul#sorting_method_box {
+    list-style-type: none;
+    font-size: 11px;
+    height: 27px;
+    padding: 13px 0 0 15px;
+    margin: 0;
+  }
+  #IE.ie7 ul#sorting_method_box, #IE.ie6 ul#sorting_method_box{
+    height: 30px;
+  }
+  ul#sorting_method_box li {
+    display: inline;
+    padding: 0;
+  }
+  ul#sorting_method_box li a, ul#sorting_method_box li a:visited{
+    text-decoration: none;
+    color: #0A3498;
+  }
+  ul#sorting_method_box li a:hover{
+    text-decoration: underline;
+  }
+  #spellcheck_suggestion_box{
+    color: red;
+    font-size: 12px;
+    height: 27px;
+    padding: 0 0 0 15px;
+    margin: 0;
+    float: left;
+    margin-left: 10px;
+  }
+  #spellcheck_suggestion_box b{
+  	color: black;
+  }
+}
+
+.optemo_embedder {
+  float: right;
+  padding-right: 10px;
+  margin-top: 3px;
+  font-size: 0.8em;
+  font-weight: bold;
+}

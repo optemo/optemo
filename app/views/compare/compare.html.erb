@@ -1,24 +1,24 @@
-<% self.title = "#{@s.product_type.capitalize}" unless @indexload %>
-<% main_window = render :partial => (Session.search.initial ? 'landing' : 'discoverybrowser') unless @indexload %>
-<div class="left-right-wrapper">
-<div id="leftbar">
-	<!-- The Filters section -->
-	<div id="filterbar" class="leftboxes">
-		<div id="ajaxfilter">
-			<% unless @indexload %>
-				<%= render :partial => 'filter', :locals => {:s => Session, :current_search => Session.search} %>
-			<% end  %>
-		</div>
-	</div>
-	<div class="watermark"><%=t('products.compare.powered')%><%= link_to 'Optemo', 'http://optemo.com', :class => "popup" %></div>
-</div>
-<div id="main" data-product_type='<%= Session.product_type %>'>
-	<% if @indexload %>
-		<div id="opt_discovery"></div>
-	<% else %>
-		<%= main_window %>
-	<% end %>
-</div>
+<%= render 'category_links' %>
+<div id="opt_discovery">
+  <div id="leftbar">
+  	<!-- The Filters section -->
+  	<div id="optemo_filter" class="optemo">
+  	</div>
+  </div>
+  <div id="main">
+    <div id="optemo_topbar" class="optemo">
+    </div>
+    <div id="optemo_content" class="optemo">
+      <div>
+      </div>
+      <div>
+        <!--Static Content-->
+        <div id="opt_silkscreen">&nbsp;</div>
+        <div id="opt_loading"><%#=t('products.show.loading')%></div>
+        <div id="opt_outsidecontainer" data-layout=<%= Session.futureshop? ? 'fs' : 'bb' %>><div id="info">&nbsp;</div></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 

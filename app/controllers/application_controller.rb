@@ -3,8 +3,6 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  helper_method :title=, :full_title=, :describe=
-  @description
   
   #
   # See ActionController::RequestForgeryProtection for details
@@ -45,24 +43,8 @@ class ApplicationController < ActionController::Base
     # request.env["REMOTE_HOST"] is necessary when doing embedding
     # request.domain(4) || request.env["REMOTE_HOST"]
     # As of July 11, we are using the category id that gets passed in instead
-    s = Session.new(params[:category_id], request.url) 
+    s = Session.new(params[:category_id]) 
     #s.id = mysession_id
     #s.ab_testing_type = ab_testing_type
-    # We are passing in the category id from javascript
-    $d = Distribution.new unless defined? $d
-    #$k = Kmeans.new unless defined? $k    
-  end
-  
-  def title=(title)
-    @title_prefix = title
-    @template.instance_variable_set("@title_prefix", @title_prefix)  # Necessary if set from view
-  end
-  def full_title=(title)
-    @title_full = title % $SITE_TITLE
-    @template.instance_variable_set("@title_full", @title_full)  # Necessary if set from view
-  end
-  def describe=(mydescription)
-    @description = mydescription
-    @template.instance_variable_set("@description", @description)  # Necessary if set from view
   end
 end

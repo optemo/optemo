@@ -1,68 +1,60 @@
+<% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id); text_specs = TextSpec.cache_all(product.id); bin_specs = BinSpec.cache_all(product.id) %>
+<%# Real-time price checking should now also take $("div.price_breakdown") into account and change its value based on the feed. This is not done yet and depends on whether the feed has the recycling fee integrated or not. %>
 <div class="productinfo" data-sku=<%= product.sku %>>
-  <%= link_to (cat_specs["title#{fr?}"] || cat_specs["title"]), (TextSpec.cacheone(product.id, "productUrl#{fr?}") || TextSpec.cacheone(product.id, "productUrl")), :class => "easylink", :title => t('products.compare.clickforspecs') %>
-	<div class="productspecs"><!--&--></div>
-	
-	<div class="price" <%=raw only_if_not_onsale(product) %>>
-		<%= t('products.show.ourprice')+(fr?.empty? ? "" : " ")+": "%>
-		<span><%= number_to_currency(cont_specs["price"]) %></span>
-	</div>
-	<div class="saleprice" <%=raw only_if_onsale(product) %>>
-	  <%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": " %>
-	  <span><%= number_to_currency(cont_specs["saleprice"]) %></span>
-	</div>	
-	<div class="save" <%=raw only_if_onsale(product) %>>
-	  <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
-	  <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
-	</div>
-	<div class="saleends" <%=raw only_if_onsale(product) %>>
-	  <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
-	  <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
-	</div>
-	
-  <% siblings = product.product_siblings -%>
-	<!-- Colour swatches -->
-  <% unless siblings.empty? %>
-    <div class="navboxcolours">
-      <div class="colorslabel"> <%= t('products.show.othercolors') %></div>
-      <% siblings.each do |sibling| -%>
-        <% sibling_id = sibling.sibling_id -%>
-        <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
-        <% color = sibling_cat_specs["color"] %>
-        <%= link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
-          <div class="swatch<%= " white_swatch" if color == "White" %>" style="background-color:<%= color %>; float:left"><!-- --></div>
-        <% end %>
-      <% end %>
-      &nbsp;
+  <% if Session.futureshop? -%>
+    <% if bin_specs['isClearance'] %>
+      <span class="finalclearance" style="background-color: #FFDF00; padding: 2px 6px; font-weight: bold; color: #201D00; font-size: 0.8em;"><%=t 'products.compare.finalclearance' %></span>
+    <% else %>
+      <div style="height: 11px"><!-- --></div>
+    <% end %>
+    <div class="price" style="background-position:0px 10px; color: #000; font-family: arial; <%= 'background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAPCAYAAADgbT9oAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAOZJREFUeNpi3Meg7sDAwFAPxIlA%2FIABOwCpmQ9VcwBZwvH%2FDawamJA0ngfiBgbcQAGI9wNxPxALMBAATEhsAajLQRYY4NFTAFXjQKzBMGBAiuv3M2oIEGswDIBcf5%2BAy0Cuvw80PIAUg5FdVo9HDcjF64GGr0d2PSGDkVMFIRCA7HoWBuoCmOsbmRioDxqBabuBWIMvEKEGlHEUQYYSExSgnFgIxB%2BgkYgNfIC6cgKxqQKk0BCIN%2BBRswHqygnoEiw4XIlRJuDwyQZCZQU84KGuPEChT%2BAuvgB15QUCEVhIwFI4AAgwAFb7PyZ8F%2FBvAAAAAElFTkSuQmCC");' unless request.env['HTTP_USER_AGENT'].downcase.index('msie') %> padding-left: 25px; background-repeat: no-repeat; font-family: arial;">
+      <span class="dollars" style="font-size: 30px;"><%= dollars(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
+      <span class="cents" style="font-size: 18px; font-family: arial; position: relative; top: -9px;"><%= cents(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
+      <div class="clear"><!-- --></div>
     </div>
+    <%= render partial: 'product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
   <% end %>
-	
-	<% if cont_specs["customerRating"] > 0 %>
-		<div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
-	<% end %>
+  <% title_style = "outline: medium none; font-weight: bold; margin: 7px 7px 0 0; display: block;" %>
+  <% title_style += "font-size: 11px; font-family:verdana; color: #333;" if Session.futureshop? %>
+  <%= link_to (text_specs["title#{fr?}"] || text_specs["title"]), (text_specs["productUrl#{fr?}"] || text_specs["productUrl"]), :class => "easylink", :title => t('products.compare.clickforspecs'), style: title_style %>
+  <div class="productspecs"><!--&--></div>
+  <% if Session.bestbuy? -%>
+    <%if !bin_specs["onsale"]%>
+    	<div class="price"> 
+      		<span style= "font-size:20px; color: #2e3337; font-family: Arial Black, Arial, Helvetica, Sans-serif; font-weight: 900;"><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
+    	</div>
+    <%else%>	
+    	<div class="saleprice" <%=raw only_if_onsale(product) %>>
+      		<span style= "font-size:20px; font-color:#da1a36; font-family: Arial Black, Arial, Helvetica, Sans-serif; font-weight: 900;"><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : 	"saleprice"]) %></span>
+    	</div>
+    <%end%>	
+    <%= render partial: 'product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
+  <% end -%>
+  
+  <% if Session.amazon? -%>
+    <div class="price" <%=raw only_if_not_onsale(product) %>>
+      <%= t('products.show.ourprice')+(fr?.empty? ? "" : " ")+": "%>     
+      <span><%= number_to_currency(cont_specs["price"]) %></span>
+    </div>
+    <div class="saleprice" <%=raw only_if_onsale(product) %>>
+      <%= t('products.compare.onsale')+(fr?.empty? ? "" : " ")+": " %>
+      <span><%= number_to_currency(cont_specs["saleprice"]) %></span>
+    </div>
+    <div class="save" <%=raw only_if_onsale(product) %>>
+      <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
+      <% debugger if cont_specs["price"].nil? or cont_specs["saleprice"].nil? %>
+      <span><%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %></span>
+    </div>
+  <% end -%>
+  
+
+  <% siblings = product.siblings_cached.map{|s| s if Product.cached(s.sibling_id).instock}.compact -%>
+  <!-- Colour swatches -->
+  <%# Colour swatches go after customer rating in Future Shop design %>
+  <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>
+ 
+  <% if cont_specs["customerRating"] && cont_specs["customerRating"] > 0 %>
+    <div class="stars"><%=raw stars(cont_specs["customerRating"]) %></div>
+  <% end %>
+  <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings, nolabel: true} if Session.futureshop? %>
 </div>
-<!-- For each bundle of this product, show price and images for products it's bundled with -->
-<!-- Bundles are not shown right now>
-<% bundles = []#product.product_bundles -%>
-<% unless no_variations || (bundles.empty?) %>
-<div class="bundlesbox">
-  <div class="bundleslabel"> <%= t('products.show.bundledwith') %>: </div>
-	<% bundles.each do |bundle| -%> 
-	  <% bundle_id = bundle.bundle_id -%>
-		<% bundle_cat_specs = CatSpec.cache_all(bundle_id) -%>
-		<% bundle_cont_specs = ContSpec.cache_all(bundle_id) -%>
-		  <div class="bundlediv" data-url="<%= TextSpec.cacheone(bundle_id, "productUrl#{fr?}") %>">
-		    <%= link_to TextSpec.cacheone(bundle_id, "productUrl#{fr?}"), :'data-id' => bundle_id, :'data-sku' => bundle_id, :class => "nolinelink", :title => bundle_cat_specs["title#{fr?}"] do %>
-  		    <% bundledesc = JSON.parse(TextSpec.cacheone(bundle_id, 'bundle').gsub("=>",":")) %>
-		      <div class="sibling">
-			      <% bundledesc[1..-1].each do |item| -%>
-			        <%= image_tag( "http://www.bestbuy.ca" + item["thumbnailImage"], :alt => item["name"] ) %>
-			      <% end %>
-		      	<%= number_to_currency(bundle_cont_specs["saleprice"], precision: 2) %>
-		      </div>
-		    <% end %>
-		  </div>
-	<% end %>
-	<div style="clear:left"><!-- -/-></div>
-</div>
-<% end %>
-End of bundles-->

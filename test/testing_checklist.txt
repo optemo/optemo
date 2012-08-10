@@ -1,118 +1,408 @@
-testing check list:
-
-Landing page:
-
-	- There is a hero product at the top
-	- Click both SHOP NOW button and product title 
-		- should link directly to the Best Buy product detail page (PDP)
-		- Click these, then click back - check if you go back to the landing page
-	- If other variations of the hero product are shown (siblings or bundles):
-	 	- Hover over to check the displayed alternative text
-		- Click on one variation to test linking to the proper variation
-	- There are featured products listed below the hero
-		- Click on the first featured product: check if it successfully loads the PDP
-		- Click on the back button and check if you get the initial page
-	- Click the "See All" button above the hero
-
+Testing check list:
+  Test in : Chrome, Firefox, Safari, IE 9/8/7/6 (Virtual Box), Opera
 
 Filter Page:
 
-	- Sort options:
-		- Check that Best Match is not a link but text (should be already loaded)
-		- Click Price(Low to High) link: check sorting
-		- Click Price (High to Low) link: check sorting
-		- Click Bestseller link: check sorting
-		- Click Newest Model link: check sorting 
-	- Page Changes:
-		- Click on the next page link; Go back by clicking the previous page link
-		- Click on the number 2; make sure this is the same page as before
-	- Click the 'Back to Top' button at the bottom. Check that it works.
-	- Find a product with other available colours or bundles displayed underneath. 
-		- Hover over a sibling / bundle picture to check the alt text
-		- Click one to see if it leads to the right product page
-	- Click on sale and then undo it to see if it works
-	- Filter brands by clicking on one, then multiple brand check boxes
-	 	- check that both the checkboxes and link text function
-		- check that the right products are displayed
-		- check that the numbers associated with checkboxes are adjusted
-	-Colours:
-		- Click on red colour swatch and check if only red cameras are displayed
-		- Repeat the previous step for a couple of other colours
-	- Sliders:
-		- Check that there are distribution graphs on top of sliders
-		- Filter by price: check that number of products / slider distributions change
-		- Repeat the previous step for other sliders
-	- Check two brands, then click on a binary filter with a small number
-	 	- Undo the filter. Test the cases where the filter matched:
-		- Both brands: undoing it will preserve the two brands.
-		- One brand: only the matched brand stays selected
-	- Check a couple of binary filters then uncheck them
-		- Click on both the link and the box
-		- Check that the proper products are shown
-	- Click Reset All, then See all
-	- Click on the Add to Cart link and see if it works
-
+  - Sort options:
+    - Check that Best Match is not a link but text (should be already loaded)
+    - Click Price (Low to High) link: check sorting
+    - Click Price (High to Low) link: check sorting
+    - Click Bestseller link: check sorting
+    - Click Newest Model link: check sorting 
+  - Page Changes:
+    - Click on the next page link (arrow); Go back by clicking the previous page link
+    - Click on the number 2; make sure this is the same page you switched to before
+  - Find a product with other available colours or bundles displayed underneath. 
+    - Hover over a sibling / bundle picture to check the alt text
+    - Click one to see if it leads to the right product page
+  - Click 'on sale' and then undo it to see if it works
+  - Filter brands by clicking on one, then multiple brand check boxes
+    - check that both the checkboxes and link text function
+    - check that the right products are displayed
+    - check that the numbers associated with checkboxes are adjusted
+    - click the more/less button to see more/less brands
+  - Colours:
+    - Click on a colour swatch and check if only products of that colour are displayed
+    - Repeat the previous step for a couple of other colours
+  - Sliders:
+    - Check that there are distribution graphs on top of the sliders
+    - Check that the default setting is the entire range
+    - For each slider, check that the number of products / slider distributions change when the sliders are set to different values
+    - Check the behaviour at the slider extremities
+      - Do all the products show up if you manually reset the slider after having used it, eg: move the one end of the slider, let the new page load, then move it back to its original position
+  - Categories:
+    - Click a couple and see if they update the products available
+    - Check that brand filters are sorted alphabetically
+    - Check that no more than 10 filters appear; if there are more than 10, then the link "More" should appear instead
+  - Check two brands, then click on a binary filter with a small number
+    - Undo the filter. Test the cases where the filter matched:
+      - Both brands: undoing it will preserve the two brands.
+      - One brand: only the matched brand stays selected
+  - Check a couple of binary filters then uncheck them (both in status and advanced search)
+    - Click on both the link and the box
+    - Check that the proper products are shown
+  - Click Clear Selections, then See all
+    - Clear Selections should not appear if no filters are selected
+  - Click on the Add to Cart link and see if it works
+  - Check layout:
+    - "Your Selections" area:
+      - if no filters are selected the area should not appear at all
+      - check that selected filters appear in this area in the same order as the facets appear, and in the same categories
+        - check several different facets and make sure they appear properly
+        - colour should be a word, not a coloured box like in the facets
+        - each should have an "undo" button. Check that this works
+  - Check headers:
+    - Select filters that have a small number of results so that as many filters as possible disappear. Check that the filters and the headers for these sections are not shown (i.e. Advanced Search, etc.) when there are 0 results
 
 Product Comparison:
 
-	- Check the Compare box for one product
-		- Comparison number on the Compare button should increase to 1
-	- Click the compare link on another product
-		- Should see the comparison popover with two products displayed
-		- Check if product title and price are displayed.
-		- Click the remove link: The product should be removed
-		- Click close to exit
-	- Check the boxes of 3 more products
-		- Click the Compare button at the bottom of the page
-		- Click the More specs link and see that the tables works 
-			- Check that collapsable headings work (if available)
-		- Add to cart in the compare page, then return
-	- Add products to compare up to the 6th product
-		-use both the checkboxes and product compare links
-		- An error message should come up
-	- Click on Clear Selected Products
-		- Check that checked boxes and compare button are updated for zero selection
-	- Click the compare box of another product
-		- Reload the page and see if the item remains selected 
-			-Note: IE6 sometimes doesn't remember, which is OK
+  - Check the Compare box for one product
+    - Comparison number on the Compare button should increase to 1
+  - Click the compare button at the top
+    - Exit the popup by clicking the remove link
+  - Click the compare link of a product
+    - Exit out this time by clicking outside of the popup area
+  - Scroll to the bottom, then click the compare button there
+    - Exit out by clicking the close button
+  - Check that there are buttons to change pages at the bottom, then click the 
+      back to top button
+  - Check the compare boxes for 5 more products
+    - The compare button should show the appropriate number of products
+    - You should only be able to compare 5 products
+      - Make sure a message comes up when you try to add the 6th
+      - Try adding it by the check box and the link
+  - Click the Compare button
+    - Check if product title and price are displayed.
+    - Remove a few products with the remove link
+      - The popup should shrink to fit the number of products
+    - Click the More specs link and see that the hidden table shows up
+      - Check that collapsable headings work (if available)
+    - Click the add to cart button in the compare page, then return
+      - Check that it linked to the appropriate store
+  - Click on Clear Selected Products
+    - Check that checked boxes and compare button are updated for zero selection
+  - Click the compare box of another product
+    - Reload the page and see if the item remains selected 
+      -Note: IE6 sometimes doesn't remember, which is OK
 
+Filters:
+  - Digital Cameras
+    - Product Category
+      - Point and Shoot (Best Buy)
+      - Waterproof (Best Buy)
+      - Ultra Zoom (Best Buy)
+      - Advanced Compact (Best Buy)
+      - Compact Cameras (Future Shop)
+      - Pro Compact Cameras (Future Shop)
+      - Extended Zoom Cameras (Future Shop)
+      - Mirrorless Cameras (Future Shop)
+    - Status
+      - On Sale
+      - Best Sellers (Future Shop)
+      - Future Shop Exclusive (Future Shop)
+      - On Clearance
+      - Online Only (Best Buy)
+      - Web Only (Future Shop)
+      - Top-Rated
+      - Top Viewed (Future Shop)
+      - Package Deals
+      - Pre-order
+      - In-stock (Future Shop)
+      - What's New (Best Buy)
+      - New Release (Future Shop)
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Camera Features (on the Future Shop site some of these features may appear in other filter categories)
+      - Full Manual Controls (Future Shop)
+      - High Dynamic Range (Future Shop)
+      - High Sensitivity Sensor (Future Shop)
+      - High Speed Burst (Future Shop)
+      - RAW Image Capture (Future Shop)
+      - Wide Angle Lens (Future Shop)
+      - HDMI Output
+      - Touchscreen
+      - Image Stabilization
+      - Waterproof/Shockproof
+      - OLED Screen (Best Buy)
+      - GPS
+      - Projector Camera
+      - Sweep Panorama (Best Buy)
+      - Panoramic Mode (Future Shop)
+      - Front and Back LCD (Best Buy)
+    - Latest Features (Future Shop)
+      - Some of the 'Camera Features' above may be here instead
+      - WiFi
+      - Built-in Projector
+      - 3D
+    - Megapixels
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Optical Zoom
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Colour
+      - Check that colours aren't duplicated
+    - Max Video Resolution
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Screen Type (Future Shop)
+      - Some of the 'Camera Features' may be here instead
+      - Articulating Screen
+      - Optical Viewfinder
+    - LCD Screen Size
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Minimum Focal Length (Future Shop)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+  - Digital SLR
+    - Product Category
+      - DSLR Cameras (Best Buy)
+      - DSLR Packages (Best Buy)
+      - DSLR Bodies (Best Buy)
+      - Cameras (Future Shop)
+      - Body Only (Future Shop)
+      - Digital SLR Packages (Future Shop)
+    - Status
+      - On Sale
+      - New Release (Future Shop)
+      - Future Shop Exclusive (Future Shop)
+      - Web Only (Future Shop)
+      - On Clearance
+      - Online Only (Best Buy)
+      - Top-Rated
+      - Package Deals
+      - Pre-order
+      - What's New (Best Buy)
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Megapixels
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Lens Focal Length
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Features
+      - Guided Shooting Mode
+      - HDMI Output
+      - Live Preview
+      - Stabilized Lens
+    - Sensor Size Format
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Max Video Resolution
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - LCD Screen Size
+      - Check consistency, i.e. units, spacing, formatting, etc.
+  - Hard Drives
+    - Product Category
+      - External Hard Drives
+      - Internal Hard Drives
+      - Solid State Drives
+      - USB Flash Drives
+      - Optical Drives
+      - Network-Attached Storage (NAS)
+      - Blank Media
+      - Storage Accessories
+      - Floppy Drives
+    - Status
+      - On Sale
+      - On Clearance
+      - Online Only
+      - Top-Rated
+      - Package Deals
+      - Pre-order
+      - What's New
+    - Storage Capacity
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Interface (all but Blank Media/Storage Accessories/Floppy)
+      - USB 3.0
+      - USB 2.0
+      - USB
+      - FireWire 800
+      - FireWire 400
+      - SATA III
+      - SATA II
+      - SATA
+      - PATA
+      - eSATA
+      - Ethernet
+      - WiFi
+    - Rotation Speed (Internal/External only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Data Buffer (Internal/External only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Drive Size (Internal/External only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Internal/External (Optical only)
+      - External
+      - Internal
+  - Hard Drive Accessories (Future Shop only)
+    - Product Category
+      - Enclosures
+      - Cables
+      - Docks
+      - Carrying Cases
+      - Interface Cards
+      - Other
+    - Status
+      - Best Sellers
+      - Top Viewed
+      - In-store
+      - Web Only
+      - New Release
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+  - Laptops and NetBooks
+    - Product Category
+      - Macbooks (Future Shop)
+      - Netbooks
+      - Ultrabooks
+      - various screen sizes
+      - Refurbished Laptops (Best Buy)
+    - Status
+      - On Sale
+      - On Clearance
+      - Online Only (Best Buy)
+      - Web Only (Future Shop)
+      - FutureShop Exclusive (Future Shop)
+      - In-Store (Future Shop)
+      - Top-Rated
+      - Package Deals
+      - Preorder
+      - What's New (Best Buy)
+      - New Release (Future Shop)
+      - Refurbished
+    - Usage Type (Future Shop)
+      - Ultrabook
+      - Thin and Light
+      - On the Go
+      - Everyday
+      - Entertainment
+      - Gaming
+      - Microsoft Premium Collection PC
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Type
+      - Check for typos
+    - Cores
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Laptop Features
+      - Blu-ray Player (Future Shop)
+      - 3D Capable Display
+      - Dedicated Graphics (Future Shop)
+      - Bluetooth
+      - Energy Star Qualified
+      - HDMI Output
+      - LED Backlit Display
+      - Touchscreen
+      - USB 3.0 Port
+      - Wireless Display (WiDi) Capable
+      - Wireless N
+    - Optical Drive (Best Buy only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - System Memory
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Screen Size (Best Buy only)
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Hard Drive Type (Best Buy)
+      - Mechanical
+      - SSD
+    - Hard Drive Capacity
+      - Check consistency, i.e. spacing, formatting, etc.
+    - Colour
+      - Check that colours aren't duplicated
+    - Operating System (Best Buy)
+      - Check consistency, i.e. spacing, formatting, etc.
+    - Video Card Configuration (Best Buy)
+      - Check consistency, i.e. spacing, formatting, etc.
+  - USB (Future Shop only)
+    - Product Category
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Status
+      - On Sale
+      - On Clearance
+      - Best Sellers
+      - Top Viewed
+      - Top-rated
+      - In-store
+      - Web Only
+      - New Release
+    - Storage Capacity
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Colour
+      - Check that colours aren't duplicated
+  - Optical Drives (Future Shop)
+    - Product Category
+      - Blu-ray Disc Drives
+      - External DVD Writers
+      - Internal DVD Writers
+    - Status
+      - Best Sellers
+      - In-Store
+      - Web Only
+      - Top Viewed
+      - New Release
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
+    - Internal/External
+      - External
+      - Internal
+  - Blank Discs and Cases (Future Shop)
+    - Product Category
+      - Dual Layer DVD
+      - DVD+R
+      - DVD-R
+      - Lightscribe
+      - Printable Discs
+      - Blu-ray
+      - Blank CDs
+      - CD & DVD Storage
+      - CD Wallets
+      - Jewel Cases
+      - Disc Cleaning & Repair
+    - Status
+      - On Sale
+      - Best Sellers
+      - Top Viewed
+      - In-Store
+      - Web Only
+    - Brands
+      - Check for typos
+    - Price
+      - Check consistency, i.e. units, spacing, formatting, etc.
 
-Dynamic Filters (Harddrives):
-
-	- only common filters should be displayed on first page
-		- Common filters are the following: 
-		   - Categories:   
-		       - External Hard Drives
-		       - Internal Hard Drives
-		       - Solid State Drives
-		       - USB Flash Drives
-		       - Optical Drives (this used to be DVD & CD drives)
-		       - Network-Attached Storage (NAS)
-		       - Storage Accessories
-		   - Status:
-		       - On Sale
-		       - Clearance
-		       - Online Only
-		       - Top-Rated
-		       - Featured Products
-		   - Brands
-		   - Price
-		   - Storage Capacity
-	- Check that additional facets displayed for the following categories:
-		- Additional facets:
-		   - Internal and External drives:
-		       - Rotation Speed (multi-selection checkbox)
-		       - Data Buffer (slider)
-		       - Drive Size (multi-selection checkbox)
-		   - Solid State Drive:
-			   - Internal or External (multi-selection checkbox)
-		   - Optical Drives:
-			   - Internal or External (multi-selection checkbox)
-
-
-French: 
-
-	- Check french links for all departments. 
-	- Check that titles are french. 
-	- Check that links go to french PDPs
-	- Check that the copy and units are all french 
+French:
+  - Check French links for all departments. 
+  - Check that titles are French. 
+  - Check that links go to French PDPs
+  - Check that the copy and units are all French
+  - Check that the numbers are formatted in French ($ after the amount, ',' as a decimal separator)
+  
+After changes to the update task:  
+  - Compare live site to sandbox once the update task has been run on Jaguar for production
+  - Things that break easily and should be checked:
+    - Product numbers
+      - Confirm that the total products for each department match
+      - Confirm that the filter product numbers (i.e. Waterproof (7)) match
+      - If products are missing, check the database for them and their specs
+        - If they are missing from the database, it's probably a scraping error
+        - If they appear in the database but not on the site, it's probably a Solr error
+    - Sorting
+      - Try one of the price sorting options and confirm it works
+        - If not, this is probably due to an error in the Solr index process
+    - In stock/Out of stock products
+      - Look for products whose images aren't clickable and whose text fields aren't links
+        - These appear when a product is indexed in Solr but is listed as out of stock in the database, so there may be a problem with the index process
+  - Check the first page of each department on sandbox against the live site with the same options set (the easiest is to set no filters and to choose a price-sorting option)
+    - Make sure products appear in the same order, with the same names, same images, same prices, etc.

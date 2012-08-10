@@ -58,16 +58,10 @@ Site::Application.routes.draw do
 
   resources :compare, :only => [:index, :create], :as => "searches"
   match "compare/create" => "compare#create"
-  #resources :surveys, :only => :new
-  #match "surveys/create" => "surveys#create", :as => "surveys" #This should be cleaned up to a POST instead of a GET in JS
   match "comparison/:id" => "direct_comparison#index" #This should be cleaned up to a POST instead of a GET in JS
-  match "product/:name/:id" => "compare#show", :as => "product"
-  match "similar/:id" => "compare#sim", :id => /(\d|-)+/, :as => "cluster"
-  match "extended" => "compare#extended"
-  match "filtering" => "compare#filtering"
-  match "groupby/:feat" => "compare#groupby"
   match "sitemap" => "compare#sitemap"
   match "bbiframe"  => "bbiframe#index"
   match "fr-ca-bbiframe" => "bbiframe#index"
+  match "search" => "compare#create"
   root :to => "compare#index"
 end

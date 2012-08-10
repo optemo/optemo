@@ -44,14 +44,14 @@ module Site
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
-    CLUSTER_CACHE = {}
-    EXTENDED_CACHE = {}
     
     # Enable the asset pipeline  
     config.assets.enabled = true  
 
     # Version of your assets, change this if you want to expire all your assets  
     config.assets.version = '2.0'
+    
+    
     
   end
 end

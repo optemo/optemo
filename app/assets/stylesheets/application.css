@@ -2,11 +2,20 @@
 * This is a manifest file that'll automatically include all the stylesheets available in this directory
 * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
 * the top of the compiled file, but it's generally better to create a new file per style scope.
+*= require bestbuy/development
 *= require shared
-*= require awesome_buttons
-*= require assist_and_direct
-*= require assist
+*= require bestbuy/awesome_buttons
+*= require bestbuy/colour_and_buttons
+*= require bestbuy/direct_comparison
+*= require bestbuy/filter_boxes
+*= require bestbuy/main_nav_controls
+*= require bestbuy/main_right_side
+*= require bestbuy/nav_bar
+*= require bestbuy/show_page_and_related
+*= require jquery.autocomplete
 *= require jslider
-*= require slider
-*= require navbox
+*= require bestbuy/slider
+*= require bestbuy/buttons
 */
+
+/* Global Declarations are in colour_and_buttons.scss.erb */

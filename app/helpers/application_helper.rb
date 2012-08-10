@@ -1,13 +1,5 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
-  def title
-    h(@title_full ? @title_full : [@title_prefix, t("#{Session.product_type}.sitetitle")].compact.join(' - '))
-  end
-  
-  def describe
-    h(@description ? @description : t("#{Session.product_type}.defaultdesc"))
-  end
-  
   def url_for_intl(region)
     case region
     when "com"

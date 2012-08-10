@@ -1,0 +1,21 @@
+/* 
+* This is a manifest file that'll automatically include all the stylesheets available in this directory
+* and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
+* the top of the compiled file, but it's generally better to create a new file per style scope.
+*= require futureshop/development
+*= require shared
+*= require futureshop/awesome_buttons
+*= require futureshop/colour_and_buttons
+*= require futureshop/direct_comparison
+*= require futureshop/filter_boxes
+*= require futureshop/main_nav_controls
+*= require futureshop/main_right_side
+*= require futureshop/nav_bar
+*= require futureshop/show_page_and_related
+*= require jquery.autocomplete
+*= require jslider
+*= require futureshop/slider
+*= require futureshop/buttons
+*/
+
+/* Global Declarations are in colour_and_buttons.scss.erb */

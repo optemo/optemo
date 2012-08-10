@@ -1,15 +1,14 @@
 # encoding: utf-8
 module AmazonScraper
-  
-  require 'amazon/aws'
   require 'amazon/aws/search'
-
-  # We don't want to have to fully qualify identifiers.
-
+  
   include Amazon::AWS
   include Amazon::AWS::Search
   
   @nokocaches
+  @@retailer = {}
+  @@retailer['region'] = 'ca'
+  @@retailer['name'] = 'Amazon'
   
   # Detail page url from local_id and region
   def id_to_details_url local_id, region
@@ -29,13 +28,16 @@ module AmazonScraper
   
   # All local ids from region
   def scrape_all_local_ids region
-    announce "[#{Time.now}] Getting a list of all Amazon IDs associated with #{Session.product_type}. This may take a while"
+    puts "[#{Time.now}] Getting a list of all Amazon IDs associated with #{Session.product_type}. This may take a while"
+    
+    #puts ItemSearch.new( $search_index, {'BrowseNode' => '172282', 'MerchantID' => 'Amazon', 'ItemPage' => 1, :service => 'AWSECommerceService' } )
     
     #cachefile = open_cache(curr_retailer(region))
     #nokocache = Nokogiri::HTML(cachefile)
     nokocache = open_nokocache(curr_retailer(region))
     added = nokocache.css('itemsearchresponse/items/item/asin').collect{|x| x.content}
-    announce "[#{Time.now}] Done getting Amazon IDs!"
+    puts "added: #{added}"
+    puts "[#{Time.now}] Done getting Amazon IDs!"
     
     return added.reject{|x| x.nil? or x == ''}
   end
@@ -83,7 +85,7 @@ module AmazonScraper
   
   # Scrape product specs and offering info (prices, availability) by local_id and region
   def scrape_specs_and_offering_info(local_id, region)
-    log ("Scraping ASIN #{local_id} from #{region}" )
+    puts ("Scraping ASIN #{local_id} from #{region}" )
     specs = scrape_specs(local_id)
     specs = scrape_specs(local_id) if specs.empty? # In case of one-off errors, just try once more.
     prices = rescrape_prices(local_id, region)
@@ -102,16 +104,16 @@ module AmazonScraper
        # res = Amazon::AWS.item_lookup(local_id, :response_group => 'ItemAttributes,Images', :review_page => 1)
        il = ItemLookup.new( 'ASIN', { 'ItemId' => local_id, 'MerchantId' => 'Amazon'} )
        il.response_group = ResponseGroup.new( 'Medium', 'Images', 'ItemAttributes') # OfferSummary maybe?
-       req = Request.new
-       resp = req.search( il, 1, true ) # first page, make Amazon::AWS.search return raw data with third argument
+       req = Request.new($KEY_ID,$ASSOCIATES_CA_ID)
+       resp = req.search( il ) # first page, make Amazon::AWS.search return raw data with third argument
        #be_nice_to_amazon
      rescue Exception => exc
-       report_error "Could not scrape #{local_id} data"
-       report_error "#{exc.class.name} #{exc.message}"
+       puts "Could not scrape #{local_id} data"
+       puts "#{exc.class.name} #{exc.message}"
        log_snore(60) 
        return {}
      else
-       nokodoc = Nokogiri::HTML(resp[1])
+       nokodoc = Nokogiri::HTML(resp)
        #nokodoc = Nokogiri::HTML(resp.doc.to_html)
        item = nokodoc.css('item').first
        if item
@@ -135,9 +137,9 @@ module AmazonScraper
            temp = (dim.attributes['units'] || '').to_s.strip
            case temp
            when 'inches'
-             atts["item#{dim.name}"] =( dim.text.to_f*100).to_i
+             atts["item#{dim.name}"] = (dim.text.to_f*100).to_i
            when 'cm'
-             report_error "WARNING: dimensions in cm! Don't know how to handle"
+             puts "WARNING: dimensions in cm! Don't know how to handle"
            else # assume it's in hundreths of inches
              atts["item#{dim.name}"] = dim.text.to_i
            end
@@ -219,11 +221,15 @@ module AmazonScraper
     end
     return nil
   end
+  
   # Returns retailer name by region.
   # precondition -- $retailers should only
   # contain one retailer per region
   def curr_retailer(region)
-    return $retailers.reject{|x| x.region != region}.first
+    # Must return something that has a name variable that can be accessed as xxx.name
+    
+    # This does not work
+    return @@retailer#$retailers.reject{|x| x.region != region}.first
   end
 
   # Gets a hash of attributes for the best-priced offer for a given ASIN in the given region
@@ -237,7 +243,7 @@ module AmazonScraper
       offer_atts = offer_to_atthash( best, asin, region)
     end
 
-    clean_prices!(offer_atts)
+    # clean_prices!(offer_atts)
     return offer_atts
   end
   
@@ -301,10 +307,10 @@ module AmazonScraper
   def scrape_review asin
     reviews = {}
     begin
-        res = Amazon::AWS.item_lookup(asin, :response_group => 'Reviews', :review_page => 1)
+        res = Amazon::AWS.item_lookup('ASIN', :ItemID => asin, :response_group => 'Reviews', :review_page => 1)
         be_nice_to_amazon
     rescue Exception => exc
-        report_error " --  #{exc.message}. Couldn't download reviews for product #{asin}"
+        puts " --  #{exc.message}. Couldn't download reviews for product #{asin}"
     else
         result = res.first_item
         if result
@@ -328,8 +334,8 @@ module AmazonScraper
         res = Amazon::AWS.item_lookup(asin, :response_group => 'Reviews', :review_page => current_page)
         be_nice_to_amazon
       rescue Exception => exc
-        report_error "Couldn't download reviews for product #{asin}"
-        report_error "#{exc.class.name} #{exc.message}"
+        puts "Couldn't download reviews for product #{asin}"
+        puts "#{exc.class.name} #{exc.message}"
       else
         nokodoc = Nokogiri::HTML(res.doc.to_html)
         result =  nokodoc.css('item').first
@@ -359,7 +365,7 @@ module AmazonScraper
           }
           reviews = reviews + named_array_of_hashes
         else
-          report_error "Reviews result nil for product #{asin}"
+          puts "Reviews result nil for product #{asin}"
           return reviews
         end
       end
@@ -473,7 +479,7 @@ module AmazonScraper
   end
   
   def cachefile_name(retailer)
-    "./cache/#{retailer.name.gsub(/(\s|\.)/,'_').downcase}_#{Session.product_type}.html"
+    "./cache/#{@@retailer['name'].gsub(/(\s|\.)/,'_').downcase}_#{Session.product_type}.html"
   end
   
   def open_cache(retailer)
@@ -494,9 +500,10 @@ module AmazonScraper
     unless @nokocaches[cfname]
       @nokocaches[cfname] = Nokogiri::HTML(open_cache(retailer))
     end
+    puts "@nokocache: #{@nokocaches[cfname]}"
     return @nokocaches[cfname]
   end
-  
+
   def nodecache(nokocache, asin)
     unless @nodecache
       @nodecache = {}
@@ -513,9 +520,9 @@ module AmazonScraper
     Dir.mkdir('cache') unless File.directory?('cache')
     cachefile = File.open(cachefile_name(retailer), 'w')
     # Set up the parameters for the request.
-    merch = get_merchant_str(retailer.name) || 'All'
+    merch = get_merchant_str(@@retailer['name']) || 'All'
     bnode = browse_node_id()
-    place = retailer.region.intern
+    place = @@retailer['region'].intern
     current_page = totalpages = 1
     while not (current_page > totalpages)
       begin 
@@ -526,11 +533,11 @@ module AmazonScraper
         response = request.search( is, current_page, "true" ) # The third parameter says "return raw XML"
         # be_nice_to_amazon
       rescue Amazon::AWS::Error => exc
-        report_error "Amazon Error. Couldn't download Offers for page #{current_page}"
-        report_error "#{exc.class.name} #{exc.message}"        
+        puts "Amazon Error. Couldn't download Offers for page #{current_page}"
+        puts "#{exc.class.name} #{exc.message}"        
       rescue Exception => exc
-        report_error "Couldn't download Offers for page #{current_page}"
-        report_error "#{exc.class.name} #{exc.message}"
+        puts "Couldn't download Offers for page #{current_page}"
+        puts "#{exc.class.name} #{exc.message}"
       else
         if(response)
           totalpages = response[0] if totalpages == 1 #response.item_search_response[0].items[0].total_pages[0].to_s.to_i
@@ -541,7 +548,7 @@ module AmazonScraper
         end      
       end
       totalpages = 1 if totalpages.nil?
-      timed_announce "Done #{current_page} of #{totalpages} pages"
+      puts "Done #{current_page} of #{totalpages} pages"
       current_page += 1
     end
     cachefile.close

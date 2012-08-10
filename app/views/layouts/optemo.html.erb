@@ -1,61 +1,21 @@
-<% s = Session %>	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<title>Site - Optemo <%= Rails.env %></title>
+<meta name="fragment" content="!">
+<%= stylesheet_link_tag (Session.futureshop? ? :futureshop : :application) %>
+</head>
 
-<%= render :partial => "html_and_head", :locals => {:s => s} %>
-<body style="font-size:0.75em;font-family: arial, helvetica, sans-serif;margin:0;">
-<script type="text/javascript">optemo_french = <%= fr? == "_fr" %></script>
-<div id="optemo_embedder">
-    <!--[if lte IE 6]>
-    <div id="IE" class="ie6 ie67">
-    <![endif]-->
-    <!--[if IE 7]>
-    <div id="IE" class="ie7 ie67">
-    <![endif]-->
-    <!--[if IE 8]>
-    <div id="IE" class="ie8">
-    <![endif]-->
-    <!--[if gte IE 9]>
-    <div id="IE">
-    <![endif]-->
-<div id="mycenter">
-	<%= case Session.product_type 
-	  when "printer_lph" then render :partial => "lph_header" 
-	  when /demo|_us$/ then render :partial => "demo_header"
-	  end
-	%>
-<% if Session.product_type == "printer_lph" %>
-	<div id="bottomlinks">
-	   <%= link_to 'Home', '/' %> |
-	   <%= link_to 'Terms of Use', '/termsofuse', {:title => 'Legal'}  %> |
-	   <%= link_to 'Site Map', '/sitemap', {:title => 'Link to all products'} %> |
-	   <%= link_to 'About Us', '/about', {:title => 'LaserPrinterHub'} %> |
-	   <%= link_to 'Contact Us', "znvygb:grnz\100ynfrecevagreuho\056pbz", {:class => 'decrypt', :title => 'Email Us'}%>
-	</div>
-<% end %>
-   <div class="bd">
-    <%= yield %>
-   </div>
-</div>
-<div id="silkscreen">&nbsp;</div>
-<div id="loading"><%#=t('products.show.loading')%></div>
-<div id="outsidecontainer"><div id="info">&nbsp;</div></div>
-
-<!--[if IE]>
-</div>
-<![endif]-->
-</div>
-
-
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<%= javascript_include_tag :application %>
-
-<!-- The jquery-ui script is being included locally due to the custom jquery-ui being about 45k instead of 200kb from Google's CDN -->
-
-<!-- Piwik -->
-<noscript><p><img src="http://analytics.optemo.com/piwik.php?idsite=<%= s.piwikSiteId %>" style="border:0" alt="" /></p></noscript>
-<!-- End Piwik Tag -->
-
-<% if @indexload %>
-<noscript><div id="noJavascript" style="position:absolute; top: 40px; left:30px; width:250px; background: #FFFFFF; opacity:0.8"><b>Javascript is disabled.</b>For full functionality, please enable javascript.</div></noscript>
-<% end %>
+<body style="font-size:0.75em;font-family: <%= Session.futureshop? ? "Verdana,​Arial,​Helvetica,​sans-serif" : "arial, helvetica, sans-serif" %>;margin:0;">
+  <script type="text/javascript">optemo_french = <%= fr? == "_fr" ? "true" : "null" %></script>
+  
+  <%= yield %>
+  
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <%= javascript_include_tag :application %>
+  
+  <script type="text/javascript">window.opt_category_id = "<%= Session.product_type %>";optemo_module.whenDOMready();</script>
 </body>
 </html>

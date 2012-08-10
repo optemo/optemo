@@ -9,32 +9,50 @@ class CatSpec < ActiveRecord::Base
   end
 
   def self.cachemany(p_ids, feat) # Returns different values 
-    CachingMemcached.cache_lookup("CatSpecs#{feat}#{p_ids.join(',').hash}") do
-      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
+    CachingMemcached.cache_lookup("CatSpecs#{feat}#{p_ids.join(',')}") do
+      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map{|x|x.value}
     end
   end
   def self.all(feat)
     CachingMemcached.cache_lookup("#{Session.product_type}Cats-#{feat}") do
-      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map(&:value)
+      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map{|x|x.value}
+    end
+  end
+  def self.cache_group(p_ids) # Returns specs for every product in the list
+    CachingMemcached.cache_lookup("CatSpecsGroup#{p_ids.join(',')}") do
+      select("product_id, name, value").where(["product_id IN (?)", p_ids]).all
     end
   end
   def self.alloptions(feat)
     CachingMemcached.cache_lookup("#{Session.product_type}Cats-#{feat}-options") do
-      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map(&:value).uniq
+      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map{|x|x.value}.uniq
     end
   end
   
-  def self.count_feat(feat,includezeros = false,s = Session.search)
-    mycats = s.userdatacats.group_by{|x|x.name}.reject{|id|feat == id}.values
-    mybins = s.userdatabins
-    myconts = s.userdataconts
-    q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false).joins("INNER JOIN cat_specs cat_count ON cat_count.product_id = `equivalences`.product_id").where(["cat_count.name = ?", feat]).group("cat_count.value").order("count(*) DESC")
-    CachingMemcached.cache_lookup("CatsCount(#{includezeros.to_s})-#{q.to_sql.hash}") do
-      if includezeros
-        q.count.merge(Hash[CatSpec.alloptions(feat).map {|x| [x, 0]}]){|k,oldv,newv|oldv}
-      else
-        q.count
-      end
+  def self.count_feat(feat,level=nil)
+    if feat == "product_type" && level == 1
+      feat= "first_ancestors"
+    elsif feat=="product_type" && level == 2
+      feat= "second_ancestors"
+    end
+    Session.search.solr_cached.facet(feat.to_sym).rows.inject({}) do |q,r|
+      q[r.value] = r.count
+      q
+    end
+  end
+  
+  def self.count_current(feat)
+    # uses a small fresh solr search for the purpose of getting counts needed before the longer search gets executed
+    Session.search.solr_products_count.facet(feat.to_sym).rows.inject({}) do |q,r|
+      q[r.value] = r.count
+      q
+    end
+  end
+  
+  def self.order(feat)
+    q = Facet.where(used_for: "ordering", product_type: Session.product_type, feature_type: feat)
+    CachingMemcached.cache_lookup("CatOrder#{q.to_sql}") do
+      q.inject({}){|h,f| h[f.name] = f.value; h}
     end
   end
 end

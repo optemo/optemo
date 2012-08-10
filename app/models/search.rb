@@ -1,177 +1,292 @@
-# -*- coding: utf-8 -*-
+  # -*- coding: utf-8 -*-
+require 'sunspot_spellcheck'
 require 'will_paginate/array'
+
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
+  attr_reader :expanded
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size, :filters_cats, :filters_conts, :filters_bins
+  attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :old_keyword, :specs, :siblings, :sibling_assocs, :bundles, :bundle_assocs
+  
+  self.per_page = 18 #for will_paginate
+  
+  def solr_cached(opt = nil)
+    @solr_cached = nil if opt #Clear cache
+    @solr_cached ||= solr_search(opt || {})
+  end
+  
+  def solr_search(opt = {})
+    mybins = opt[:mybins] || userdatabins
+    mycats = opt[:mycats] || userdatacats
+    myconts = opt[:myconts] || userdataconts
+    search_term = opt[:searchterm] || @validated_keyword
+    
+    filtering = Product.search do
+      if search_term
+        phrase = search_term.downcase.gsub(/\s-/,'').to_s
+        fulltext phrase do
+          #boost() 
+          #  function do
+          #    for i in (0..size-1)
+          #      a = sum(filters_bins[i].name.to_sym, a)
+          #    end
+          #  end
+          # )
+          filters_bins.each do |b|
+            boost(30) {with(b.name.to_sym, b.value)}
+          end
+          
+          filters_cats.each do |ca|
+            boost(20) {with ca.name, ca.value}
+          end
+          
+          filters_conts.each do |c|
+            boost(10) { with (c.name.to_sym), c.min||0..c.max||100000}   
+          end
+        end
+      end  
+
+      type, direction = sortby.try(:split, "_") || ["utility", "desc"] #Default is utility
+      type = "lr_utility" if type == "utility" #Use logistic regression first if possible
+      order_by(type.to_sym, direction.to_sym)
+      order_by(:utility, :desc) #Break ties with heuristic utility (used as utility if lr_utility is nil)
+          
+      cat_filters = {} #Used for faceting exclude so that the counts are right
+      mycats.group_by{|x|x.name}.each_pair do |name, group|
+        cat_filters[name] = any_of do  #disjunction inside the category part
+          group.each do |cats|
+            if cats.name == "product_type"
+              leaves = ProductCategory.get_leaves(cats.value)
+              with :product_type, leaves  
+            else
+              with cats.name.to_sym, cats.value
+            end
+          end
+        end
+      end
+      
+      #The default is a conjunction for all the items
+      mybins.each do |bins|
+        with bins.name.to_sym, bins.value
+      end
+      cont_filters = {}
+      myconts.group_by{|x|x.name}.each_pair do |name, group|
+        cont_filters[name] = any_of do  #disjunction inside the category part
+          group.each do |conts|
+            with conts.name.to_sym, conts.min||0..conts.max||1000000
+          end
+        end
+      end
+      
+      spellcheck :count => 4
+      with :instock, 1
+      paginate :page=> page, :per_page => Search.per_page
+      group :eq_id_str do 
+        ngroups  # includes the number of groups that have matched the query
+        facet #Solr patch 2898, allows only one count per group
+        #truncate # facet counts are based on the most relevant document of each group matching the query
+        order_by(:isBundleCont, :asc)
+      end
+      if (!search_term)
+        with :product_type, Session.product_type_leaves
+      end
+      (Session.features["filter"] || []).each do |f|
+        #puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
+    
+          if f.feature_type == "Continuous"
+            facet f.name.to_sym, sort: :index, exclude: cont_filters[f.name], limit: -1
+          elsif f.feature_type == "Binary"
+            facet f.name.to_sym
+          elsif f.feature_type == "Categorical" 
+            if f.name == "product_type"
+              facet :product_type, exclude: cat_filters[f.name]
+              facet :first_ancestors, exclude: cat_filters[f.name]
+              facet :second_ancestors, exclude: cat_filters[f.name]
+            else
+              facet f.name.to_sym, exclude: cat_filters[f.name]
+            end
+          end
+      end
+    end
+  end
+  
+  def solr_all
+    CachingMemcached.cache_lookup("AllCount-#{Session.product_type}") do
+      Product.search do
+        with :instock, 1
+        group :eq_id_str do 
+          ngroups  # includes the number of groups that have matched the query
+        end
+        with :product_type, Session.product_type_leaves
+      end.group(:eq_id_str).ngroups
+    end
+  end
+  
+  def solr_products_count()
+    mybins = userdatabins
+    mycats = userdatacats
+    myconts = userdataconts
+    search_term = keyword_search
+    #puts "\nmybins: #{mybins}\nmycats: #{mycats}\nmyconts: #{myconts}\n"
+    filtering = Product.search do
+      if search_term
+        phrase = search_term.downcase.gsub(/\s-/,'').to_s
+        fulltext phrase
+      end
+      
+      cat_filters = {} #Used for faceting exclude so that the counts are right
+      mycats.group_by(&:name).each_pair do |name, group|
+        cat_filters[name] = any_of do  #disjunction inside the category part
+          group.each do |cats|
+            if cats.name == "product_type"
+              leaves = ProductCategory.get_leaves(cats.value)
+              with :product_type, leaves  
+            else
+              with cats.name.to_sym, cats.value
+            end
+          end
+        end
+      end
+      
+      #The default is a conjunction for all the items
+      mybins.each do |bins|
+        with bins.name.to_sym, bins.value
+      end
+      cont_filters = {}
+      myconts.group_by(&:name).each_pair do |name, group|
+        cont_filters[name] = any_of do  #disjunction inside the category part
+          group.each do |conts|
+            with conts.name.to_sym, conts.min||0..conts.max||1000000
+          end
+        end
+      end
+      #myconts.each do |conts|
+      #  with (conts.name.to_sym), conts.min||0..conts.max||1000000
+      #end
+      
+      with :instock, 1
+      group :eq_id_str do 
+        ngroups  # includes the number of groups that have matched the query
+        facet #Solr patch 2898, allows only one count per group
+        #truncate # facet counts are based on the most relevant document of each group matching the query
+      end
+      if (!search_term)
+        with :product_type, Session.product_type_leaves
+      end
+      # Counting product type results
+      f_name = "product_type"
+      facet :product_type, exclude: cat_filters[f_name]
+      facet :first_ancestors, exclude: cat_filters[f_name]
+      facet :second_ancestors, exclude: cat_filters[f_name]
+    end
+  end
   
   def userdataconts
-      @userdataconts ||= Userdatacont.find_all_by_search_id(id)
+    @userdataconts ||= Userdatacont.find_all_by_search_id(id)
   end
   
   def userdatacats
-      @userdatacats ||= Userdatacat.find_all_by_search_id(id)
+    @userdatacats ||= Userdatacat.find_all_by_search_id(id)
   end
   
   def userdatabins
-      @userdatabins ||= Userdatabin.find_all_by_search_id(id)
+    @userdatabins ||= Userdatabin.find_all_by_search_id(id)
+  end
+  def parentcats
+    @parentcats ||=[]
   end
   
+  def parentconts
+    @parentconts ||=[]
+  end  
   
-  #Range of product offerings
-  def ranges(featureName)
-     @sRange ||= {}
-     if @sRange[featureName].nil?
-       min = clusters.map{|c|c.ranges(featureName)[0]}.compact.sort[0]
-       max = clusters.map{|c|c.ranges(featureName)[1]}.compact.sort[-1] 
-       @sRange[featureName] = [min, max]
-     end
-     @sRange[featureName]  
+  def filters_cats
+    @filters_cats ||= []
   end
   
-  def indicator(featureName)
-    indic = false
-    values = clusters.map{|c| c.indicator(featureName)}
-    if values.index(false).nil?
-      indic = true
-    end  
-    indic
-  end
-    
-  def minimum(feature)
-    feature = feature + "_min"
-    min = clusters[0].send(feature)
-    for i in 1..cluster_count-1
-      min = clusters[i].send(feature) if clusters[i].send(feature) < min
-    end
-    min
+  def filters_conts
+    @filters_conts ||= []
   end
   
-  def maximum(feature)
-    feature = feature + "_max"
-    max = clusters[0].send(feature)
-    for i in 1..cluster_count-1
-      max = clusters[i].send(feature) if clusters[i].send(feature) > max
-    end
-    max
+  def filters_bins
+    @filters_bins ||= []
   end
-  
-  #The clusters argument can either be an array of cluster ids or an array of cluster objects if they have already been initialized
-  def cluster
-    @cluster ||= Cluster.new(sim_products, nil)
-  end
-  
-  def paginated_products
+ 
+  def paginated_products #set the paginated_products
     unless @paginated_products
-      #if sortby == "utility" || sortby.nil?
-      #  myproducts = Kmeans.compute(18,products.dup)
-      #else
-      #  myproducts = products
-      #end
-      @paginated_products = products.paginate(:page => page, :per_page => SearchProduct.per_page)
+      products
     end
     @paginated_products
   end
-  
-  def isextended?
-    !@extended.nil?
-  end  
-  
-  def extend_it(extended_obj=nil)
-    @extended = extended_obj unless extended_obj.nil?
-  end  
-  def extended
-      @extended ||= Cluster.new(products)
-  end
-  
+ 
   def products_size
-    @products_size ||= products.size
-  end
-  
-  def products
-    @products ||= ContSpec.fq2
-  end
-  
-  def products_landing
-    @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
-      BinSpec.find_all_by_name_and_product_type("featured",Session.product_type)
-    end
-  end
-  
-  def sim_products
-    if seesim
-      begin
-        @simproducts ||= products & Cluster.cached(seesim)
-      rescue IOError
-        #In case the similar products can't be found, just load the filtered products instead of throwing an error
-        products
-      end
-    else
+    unless @products_size
       products
     end
+    @products_size     
+  end
+
+  def validated_keyword
+    unless @validated_keyword
+      products
+    end
+    @keyword
+  end  
+
+  def products
+    @validated_keyword = keyword_search
+    #puts "hashed_product_type #{Session.product_type}"
+    if (keyword_search)
+      things = solr_cached
+      res = grouping(things)
+      
+      @num_result = things.group(:eq_id_str).ngroups
+      @collation = things.collation if things.collation !=nil
+      #puts "collation_term #{@collation}"
+      res_col=[]
+      if (@collation)
+        things_col= solr_search(searchterm: @collation)
+        res_col = grouping(things_col)
+        if (res_col.empty?)
+          @col_emp_result = true
+        end
+      end
+      if (res.empty?)
+        unless (res_col.empty?)
+          products_list(res_col,things_col.group(:eq_id_str).ngroups)
+          @solr_cached = things_col
+          @validated_keyword = @collation
+        else
+          products_list(res,things.group(:eq_id_str).ngroups) 
+        end
+      else
+        products_list(res,things.group(:eq_id_str).ngroups)  
+      end
+    else
+      things = solr_cached
+      products_list( grouping(things), things.group(:eq_id_str).ngroups)
+    end
   end
   
-  def sim_products_size
-    @sim_products_size ||= sim_products.size
+  def grouping(things)
+    res=[]
+    # By using .hits, we can get just the ids instead of getting the results. See Solr documentation
+    things.group(:eq_id_str).groups.each do |g|
+      res << g.hits.first.primary_key.to_i
+    end
+    Product.cachemany(res)
   end
 
-  def groupings
-    return [] if groupby.nil? 
-    if Session.currrent.features["filter"].select{|f|f.feature_type == "Categorical"}.index(groupby) 
-      # It's in the categorical array
-      specs = products.zip CatSpec.cachemany(products, groupby)
-      grouping = specs.group_by{|spec|spec[1]}.values.sort{|a,b| b.length <=> a.length}
-    elsif Session.currrent.features["filter"].select{|f|f.feature_type == "Continuous"}.index(groupby) 
-      #The chosen feature is continuous
-      specs = products.zip ContSpec.by_feat(groupby).sort
-      # [[id, low], [id, higher], ... [id, highest]]
-      quartile_length = (specs.length / 4.0).ceil
-      quartiles = []
-      3.times do
-        quartiles << specs.slice!(0,[quartile_length,specs.length].min)
-      end
-      quartiles << specs #The last quartile contains any extra products
-      
-      #Break boundry cases in quartiles where the same item is in two quartiles according to the following pattern
-      # 1 ↓
-      # 2
-      # 3 ↑
-      # 4 ↑
+  def products_list(things, total) #paginate products through sunspot pagination
+    @products_size = total    
+    @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
+   # @paginated_products.each do |p|
+   #   puts "p.product_type #{p.id}"
+   # end
+   end
 
-      #Move ties from Q1 to Q2
-      unless quartiles[0].blank? || quartiles[1].blank?
-        threshold_value = quartiles[1].first[1]
-        splitpoint = quartiles[0].index(quartiles[0].find {|spec| spec[1] == threshold_value})
-        quartiles[1] = quartiles[0].slice!(splitpoint..-1) + quartiles[1] unless splitpoint.nil?
-      end
-      
-      #Move ties from Q4 to Q3
-      unless quartiles[2].blank? || quartiles[3].blank?
-        threshold_value = quartiles[2].last[1]
-        splitpoint = quartiles[3].index(quartiles[3].reverse.find {|spec| spec[1] == threshold_value})
-        quartiles[2] = quartiles[2] + quartiles[3].slice!(0..splitpoint) unless splitpoint.nil?
-      end
-      
-      #Move ties from Q3 to Q2
-      unless quartiles[1].blank? || quartiles[2].blank?
-        threshold_value = quartiles[1].last[1]
-        splitpoint = quartiles[2].index(quartiles[2].reverse.find {|spec| spec[1] == threshold_value})
-        quartiles[1] = quartiles[1] + quartiles[2].slice!(0..splitpoint) unless splitpoint.nil?
-      end
-      
-      grouping = quartiles.reject(&:blank?) # For cases like 9 items, where the quartile length ends up being 3.
-
-    else # Binary feature. Do nothing for now.
-    end
-    grouping.map do |q|
-      product_ids = q.map(&:first)
-      prices_list = ContSpec.cachemany(product_ids,"saleprice")
-      utility_list = ContSpec.cachemany(product_ids, "utility")
-      {
-        :min => q.first.last.to_s,
-        :max => q.last.last.to_s,
-        :size => q.count,
-        :cheapest =>  Product.cached(product_ids[prices_list.index(prices_list.max)]),
-        :best => Product.cached(product_ids[utility_list.index(utility_list.max)])
-      }
+  def products_landing
+    @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
+      CatSpec.joins("INNER JOIN `bin_specs` ON `cat_specs`.product_id = `bin_specs`.product_id").where(bin_specs: {name: "featured"}, cat_specs: {name: "product_type", value: Session.product_type_leaves}).map{|x|x.product_id}
     end
   end
   
@@ -184,6 +299,9 @@ class Search < ActiveRecord::Base
     end
     # If there is a sort method to keep from last time, move it across
     self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
+    # save the old_keyword 
+    @old_keyword = old_search.keyword_search if old_search
+    #puts "old_keyword_init #{@old_keyword}"
     case p[:action_type]
     when "allproducts"
       #Initial load of the homepage
@@ -197,26 +315,17 @@ class Search < ActiveRecord::Base
       @userdataconts = []
       @userdatabins = []
       @userdatacats = []
-    when "similar"
-      #Browse similar button
-      self.seesim = p["cluster_hash"] # current products
-      duplicateFeatures(old_search)
-    when "extended"
-      self.seesim = p["extended_hash"] # current products
-      createFeatures(p)
     when "nextpage"
       #the next page button has been clicked
+      self.keyword_search  = p[:keyword] unless p[:keyword].blank?
       self.page = p[:page]
       duplicateFeatures(old_search)
     when "sortby"
+      self.keyword_search  = p[:keyword] unless p[:keyword].blank?
       self.sortby = p[:sortby]
       duplicateFeatures(old_search)
       self.initial = false
-    when "groupby"
-      self.groupby = p[:feat]
-      duplicateFeatures(old_search)
-    when "filter"
-      #product filtering has been done through keyword search of attribute filters
+    when "filter" 
       createFeatures(p[:filters])
       self.initial = false
     else
@@ -247,48 +356,113 @@ class Search < ActiveRecord::Base
       os.userdatabins.each do |d|
         @userdatabins << d.class.new(d.attributes)
       end
+      #Save keyword search
+      #self.keyword_search = os.keyword_search unless os.keyword_search.blank?
     end
   end
    
   def createFeatures(p)
+    #Save keyword search
+    self.keyword_search = p[:keyword] unless p[:keyword].blank?
+    
+    @filters_cats =  []
+    @filters_conts = []
+    @filters_bins =  []
+    
     @userdataconts = []
+    @parentconts=[]
+    
+    unless p[:categorical].nil?
+      product_types = p[:categorical][:product_type]
+    end  
+    current_product_type = Session.product_type
+    
     r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
-      #Split range into min and max
-      if res = r.match(v)
-        @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
+      unless extra_dynamic_facet?(k, product_types, current_product_type)
+        v.split("*").each do |cont|
+          if res = r.match(cont)
+            @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
+          end
+        end
       end
     end
     
     #Binary Features
     @userdatabins = []
     Maybe(p[:binary]).each_pair do |k,v|
-      #Handle false booleans
-      if v != '0'
-        @userdatabins << Userdatabin.new({:name => k, :value => v})
+      unless extra_dynamic_facet?(k, product_types, current_product_type)
+        #Handle false booleans
+        if v != '0'
+          @userdatabins << Userdatabin.new({:name => k, :value => v})
+        end
       end
     end
     
     #Categorical Features
+    #for the category part, the parents and children are separated in order to be able to make the tree and also do a correct search
     @userdatacats = []
+    @parentcats=[]
     Maybe(p[:categorical]).each_pair do |k,v|
-      v.split("*").each do |cat|
-        @userdatacats << Userdatacat.new({:name => k, :value => cat})
-      end
-    end
-    cats = []
-    #Check for cat filters which have been eliminated by other filters
-    @userdatacats.group_by(&:name).each_pair do |k,v|
-      # get all categories
-      if k=='category'
-        v.each { |x| cats << x.value }
-      end
-      if v.size > 1
-        counts = CatSpec.count_feat(k,false,self)
-        v.each do |val|
-          @userdatacats.reject!{|c|c.name == k && c.value == val.value} if counts[val.value].nil? || counts[val.value] == 0
+      unless extra_dynamic_facet?(k, product_types, current_product_type)
+        if k == "product_type"
+           temp=[]
+           v.split("*").each do |cat|
+             nested_cats = cat.split("+")
+             nested_cats.each do |subcat|
+                @parentcats << Userdatacat.new({:name => k , :value => temp.delete(subcat)})  if temp.include?(subcat)
+             end
+             temp << nested_cats.last if nested_cats.last 
+           end
+           temp.each do |t|
+              @userdatacats << Userdatacat.new({:name => k, :value => t})
+           end
+           temp=[]
+        else   
+          v.split("*").each do |cat|
+            @userdatacats << Userdatacat.new({:name => k, :value => cat})
+          end
         end
       end
+    end
+    
+    @expanded = p[:expanded].try(:keys)
+    
+    unless(@old_keyword==keyword_search) 
+      @filters_cats = @userdatacats
+      @filters_conts = @userdataconts
+      @filters_bins = @userdatabins
+      @userdataconts = []
+      @userdatabins = []
+      @userdatacats = []
+      @parentcats= []
+      @parentconts= []
+    end
+
+  end
+  
+  def extra_dynamic_facet?(facet_name, selected_product_types, current_product_type)
+    CachingMemcached.cache_lookup("ExtraFacet#{facet_name}Selected#{selected_product_types}Current#{current_product_type}") do
+      # condition true iff the facet is a dynamic facet but a matching product category is not also selected in the search
+      category_found = false
+      unless facet_name == 'product_type'
+        dynamic_facets = Facet.find_by_name_and_product_type(facet_name, current_product_type).dynamic_facets
+        unless dynamic_facets.empty?
+          unless selected_product_types.nil?
+            selected_product_types.split('*').each do |p_type|
+              category_found = true unless dynamic_facets.where(:category => p_type).empty?
+            end
+          end
+          if category_found == false
+            true
+          else
+            false
+          end
+        else
+          false
+        end
+      end
+      false
     end
   end
   
@@ -337,4 +511,8 @@ class Search < ActiveRecord::Base
     end
     false
   end
+
+  private :products_list, :grouping
+
 end
+

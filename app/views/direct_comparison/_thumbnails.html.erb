@@ -1,31 +1,6 @@
 <div class="thumbnailcell spec_column_<%= column_number.to_s %>">
-	<div class="first">
-		<%= link_to image_tag(@sp["Categorical"][thumbnails.id]["imgmurl"], :"data-id" => thumbnails.id, :class => "compareimg"), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), {:class => 'easylink', :'data-id' => thumbnails.id} %>
+	<div class="thumbnail_container">
+		<%= link_to product_image(thumbnails, :small), TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), {:class => 'easylink'} %>
   </div>
-
-	<div class="thumbnaillabel">
-	<div style="height: 110px;">
-    <%= link_to @sp["Categorical"][thumbnails.id]["title#{fr?}"] || @sp["Categorical"][thumbnails.id]["title"], TextSpec.cacheone(thumbnails.id, "productUrl#{fr?}"), :class => 'easylink', :'data-id' => thumbnails.id %>
-    <% if @sp["Binary"][thumbnails.id]["onsale"] %>
-      <div class="thumbnaildetailssale">
-        <%= t('compare.index.onsale') + (fr?.empty? ? "" : " ")+": " +  number_to_currency(@sp["Continuous"][thumbnails.id]["saleprice"]) %>
-      </div>
-    <% else %>
-      <div class="thumbnaildetails">
-        <%= number_to_currency(@sp["Continuous"][thumbnails.id]["price"]) %>
-      </div>
-    <% end %>
-	</div>
-	<div style="padding-left:26px">
-	  <div class="spacer buttons">
-      <div class="left">
-        <div class="right">
-          <a href="http://www.bestbuy.ca/order/addtocart.ashx?accessories=<%= thumbnails.sku %>" class="addtocart" data-sku="<%= thumbnails.sku %>">
-            <%=t @sp["Binary"][thumbnails.id]["isPreorderable"] ? 'products.preorder' : 'products.addtocart' %>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-	</div>
+  <%= render partial: "compare/product_info", locals: {product: thumbnails} %>
 </div>

@@ -1,16 +1,6 @@
 en:
     camera_bestbuy:
         # All language-dependent definitions in models
-        sitetitle:                  "Best Buy Cameras"
-        title:                      "Camera"
-        title-plural:               "Cameras"
-        defaultdesc:                "Best Selection of digital cameras"
-        keywords:                   "cameras"
-        classification:             "Digital Cameras"
-        navtitle:                  "Camera"
-        navtitle2:                   "Available"
-        outof:                      "Out of %{count} Cameras"
-        compare:                  "Compare"
         
         specs:
             maxresolution:

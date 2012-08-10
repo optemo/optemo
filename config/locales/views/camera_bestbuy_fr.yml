@@ -1,16 +1,6 @@
 fr:
     camera_bestbuy:
         # All language-dependent definitions in models
-        sitetitle:                  "Appareils photo Best Buy"
-        title:                      "Appareil photo"
-        title-plural:               "Appareils photo"
-        defaultdesc:                "Meilleure sélection d'appareils photo numériques"
-        keywords:                   "appareils photo"
-        classification:             "Appareils photo numériques"
-        navtitle:                   "Appareils photo"
-        navtitle2:                  "disponibles"
-        outof:                      "Parmi %{count} appareils photo"
-        compare:                    "Comparer"
         
         specs:
             saleprice:

@@ -1,7 +1,8 @@
 module DirectComparisonHelper
   def feature_value(product_id, spec, gray, feature, column_number)
     feat = feature.name
-    content_tag :div, :class => ["cell", gray ? "graybg" : "whitebg", "spec_column_"+column_number.to_s], :style => Maybe(@bestvalue[feature.name]).include?(product_id) ? "font-weight:bold;" : "" do
+    is_bold = (Maybe(@bestvalue[feature.name]).include?(product_id) == true)
+    content_tag :div, :class => ["cell", gray ? "graybg" : "whitebg", "spec_column_"+column_number.to_s], :style => is_bold ? "font-weight:bold;" : "" do
       if feature.feature_type == "Continuous"
     	  if spec.nil?
     		  "-"
@@ -11,7 +12,8 @@ module DirectComparisonHelper
     	  	number_with_delimiter(spec).to_s + " " + t("#{Session.product_type}.specs.#{feature.name}.unit", :default => "")
     	  end
       elsif feature.feature_type == "Categorical"
-        t("#{Session.product_type}.specs.#{spec}.name", :default => spec.nil? ? "-" : spec.to_s)
+        trans_key = (feature.name == "product_type") ? "#{spec}.name" : "cat_option.#{Session.retailer}.#{feature.name}.#{spec.downcase.strip.gsub('.','-')}" unless spec.nil?
+        t(trans_key, :default => spec.nil? ? "-" : spec.to_s)
       else #Binary -- might need to add another elsif clause for text specs later
       	spec ? t('compare.index.yesoption') : t('compare.index.nooption')
       end

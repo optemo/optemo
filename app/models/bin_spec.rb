@@ -8,22 +8,21 @@ class BinSpec < ActiveRecord::Base
     end
   end
   def self.cachemany(p_ids, feat) # Returns numerical (floating point) values only
-    CachingMemcached.cache_lookup("BinSpecs#{feat}#{p_ids.join(',').hash}") do
-      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map(&:value)
+    CachingMemcached.cache_lookup("BinSpecs#{feat}#{p_ids.join(',')}") do
+      select("value").where(["product_id IN (?) and name = ?", p_ids, feat]).map{|x|x.value}
     end
   end
   def self.all(feat)
     CachingMemcached.cache_lookup("#{Session.product_type}Bins-#{feat}") do
-      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map(&:value)
+      select("value").where("product_id IN (select product_id from search_products where search_id = ?) and name = ?", Session.product_type_id, feat).map{|x|x.value}
+    end
+  end
+  def self.cache_group(p_ids) # Returns specs for every product in the list
+    CachingMemcached.cache_lookup("BinSpecsGroup#{p_ids.join(',')}") do
+      select("product_id, name, value").where(["product_id IN (?)", p_ids]).all
     end
   end
   def self.count_feat(feat)
-    mycats = Session.search.userdatacats.group_by{|x|x.name}.values
-    myconts = Session.search.userdataconts
-    mybins = Session.search.userdatabins.reject{|e|e.name == feat} << BinSpec.new(:name => feat, :value => true)
-    q = Equivalence.no_duplicate_variations(mycats,mybins,myconts,false)
-    CachingMemcached.cache_lookup("BinsCount-#{q.to_sql.hash}") do
-      q.count
-    end
+   Session.search.solr_cached.facet(feat.to_sym).rows.try(:first).try(:count) || 0
   end
 end

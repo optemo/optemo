@@ -1,0 +1,45 @@
+.optemo .sliderspan {
+  display: inline-block;
+  width: 155px;
+  padding: 13px 0px 20px;
+}
+.optemo .slider {
+	margin: 27px 0 0 3px;
+	width: 155px;
+	padding-bottom: 25px;
+	position: relative;
+}
+.slider_dist_fill {
+  background-color: #bad0f2; /* Fill Color for the distribution */
+  color: #039; /* Stroke Color for the distribution */
+}
+.jslider .jslider-value {
+  top: 12px;
+  color: black;
+}
+.jslider .jslider-label {
+  top: 13px;
+}
+.jslider .jslider-pointer {
+  width: 17px;
+  height: 16px;
+  top: -5px;
+  margin-left: -8px;
+  background: url(<%= asset_data_uri 'sliderhandlebox.gif' %>) no-repeat center center;
+}
+.ie6,.ie7 {
+  .jslider .jslider-pointer {
+    background-image: url(<%= asset_path 'sliderhandlebox.gif' %>);
+  }
+}
+#IE .jslider .jslider-pointer {
+  width: 13px;
+  margin-left: -6px;
+}
+.jslider .jslider-bg i {
+  background-color: #003b64;
+  background-image: none;
+}
+.jslider .disabled .jslider-bg i {
+  background-color: white;
+}

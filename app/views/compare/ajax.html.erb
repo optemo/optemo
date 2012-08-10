@@ -1,1 +1,13 @@
-<%= render :partial => 'discoverybrowser' %>[BRK]<%= render :partial => 'filter' %>
+<%= render partial: 'navigator_bar', :locals => {landing: Session.search.initial} %>[BRK]
+<%= render partial: 'filter' %>[BRK]
+<% if Session.search.initial %>
+  <% if Session.retailer == 'A' %>
+    <%= render partial: 'discoverybrowser' %>
+  <% else %>
+    <%= render partial: 'landing' %>
+  <% end %>
+<% else %>  
+  <%= render partial: 'discoverybrowser' %>
+<% end %>
+<%#= render partial: Session.search.initial ? 'landing' : 'discoverybrowser' %>
+<%=raw "[BRK]" + render(partial: 'static') if params[:embedding] %>

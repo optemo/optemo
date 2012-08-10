@@ -1,0 +1,430 @@
+/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
+
+/*--------------------------------------//
+//      Main Content (Right Side)       //
+//--------------------------------------*/
+
+
+.optemo {
+  .navbox {
+    font-size: 11px;
+    margin: 2px 0 0 0;
+    padding: 0 2px 12px 0;
+    width: 169px; /* This is smaller than Best Buy intentionally */
+    overflow: hidden;
+    text-align: center;
+    display: inline-block;
+    vertical-align: top;
+    float: none;
+    height: inherit;
+  }
+  .ie67 .navbox {
+    display: inline !important;
+  }
+  
+  .divider {
+    height:1px;
+    width: 520px;
+    border-top:1px #ccc solid;
+    margin: 10px auto 4px;
+  }
+
+  .title {
+  	text-align: left;
+  	margin: 0 8px;
+  	padding-bottom: 4px;
+  	border-bottom:1px solid #CCCCCC;
+  	height: 28px;
+  	font-weight: bold;
+  	position:relative;
+  }
+
+  img.productimg {
+  	cursor: pointer;
+  	width: 150px;
+  	height: 150px;
+  }
+  .imageholder {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    background-image: url(<%= asset_data_uri("noimage150x150FS.jpg")%>);
+  }
+  .ie67 .imageholder {
+    background-image: url(<%= asset_path("noimage150x150FS.jpg")%>);
+  }
+  .productinfo {
+  	padding-left: 20px;
+  	text-align: left;
+  }
+  .easylink {
+    outline: medium none;
+    font-weight: bold;
+    margin: 7px 7px 0 0;
+    display: block;
+    font-size: 11px;
+  }
+  .easylink:hover {
+  	text-decoration: none;
+	}
+  .productspecs {
+  	font-size:0.8em;
+  	padding-bottom:6px;
+  }
+  .navboxcolours {
+    font-size:0.8em;
+    padding-bottom:5px;
+    padding-top: 5px;
+  }
+  .navboxcompare {
+  	font-size: 0.8em;
+  	text-align: left;
+  	padding-left: 15px;
+  	line-height: 20px;
+  }
+  
+  .poptitle {
+  	font-size: 1.13em;
+  	color: #FFF;
+  }
+  .poptitle a {
+  	height: 100%;
+  	display: block;
+  	padding: 6px 7px;
+  }
+
+  .bb_poptitle {
+  	font-weight: bold;
+  	font-size: 1.13em;
+  	color: #000;
+    height: 22px;
+    margin-left: -2px;
+    margin-top: 5px;
+  	line-height:22px;
+  	margin-bottom:5px;
+    overflow: visible;
+    background-color: #ABABAB;
+    height: 40px;
+  }
+
+  .bb_poptitle .bb_quickview_close {
+  	float: right;
+  	margin: -45px -37px 0 0;
+  	cursor: pointer;
+    background: url(<%= asset_data_uri('closepopup_futureshop.gif') %>) no-repeat bottom right;
+    height: 39px;
+    width: 80px;
+  }
+  .ie67 .bb_poptitle .bb_quickview_close {
+    background-image: url(<%= asset_path('closepopup_futureshop.gif') %>);    
+    position: relative;
+  }
+  .ie6 .bb_poptitle .bb_quickview_close {
+    margin: -38px -48px 0 0;
+    display: inline;
+  }
+  .ie7 .bb_poptitle .bb_quickview_close {
+    margin: -39px -37px 0 0;
+  }
+
+  .comp-title {
+  	display:block;
+  	float:left;
+    margin: 10px 12px;
+  }
+
+  /*.fv {
+  	float: left;
+  	width: 190px;
+  	margin-left: 25px;
+  }*/
+
+  /* Navigator box */
+
+  .price {
+  	/*color: #F5000B;*/
+  	font-weight: bold;
+  	font-size: 1em;
+  	margin-top: 1px;
+  	margin-bottom: 6px;
+  	background-position:0px 10px;
+  	background-image:url(<%= asset_data_uri("fs-pricepill.png") %>);
+  	padding-left: 25px;
+  	background-repeat: no-repeat;
+  	font-family: arial;
+  }
+  .ie67 .price {
+    background-image: url(<%= asset_path "fs-pricepill.png" %>);
+  }
+  .futureshop_price {
+    background: url(<%= asset_data_uri "futureshop_price_background.gif" %>) no-repeat;    
+    width: 112px;
+    height: 36px;
+    padding-top: 6px;
+    color: #FFF;
+    margin-top: -1px;
+    margin-left: 12px;
+    cursor: pointer;
+  }
+  .ie67 .futureshop_price {
+    background: url(<%= asset_path "futureshop_price_background.gif" %>) no-repeat;    
+    position: relative;
+  }
+  .ie7 .futureshop_price {
+    margin-top: -7px;
+  }
+  .ie6 .futureshop_price {
+    margin-top: -6px;
+  }
+  .futureshop_sale_background {
+    background: url(<%= asset_data_uri "futureshop_sale_background.gif" %>) no-repeat;    
+    width: 75px;
+    height: 10px;
+    padding: 3px;
+    color: #000;
+    margin-left: 27px;
+    font-size: 0.75em;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .futureshop_sale_spacer {
+    height: 9px;
+    padding: 3px;
+    line-height: 1;
+    font-size: 0.75em;
+  }
+  #IE .futureshop_sale_spacer {
+    height: 10px;
+  }
+  .superscript {
+    font-size: 8px;
+    vertical-align: top;
+  }
+  .ie67 .futureshop_sale_background {
+    background: url(<%= asset_path "futureshop_sale_background.gif" %>) no-repeat;    
+    position: relative;
+    padding: 0 0 3px;
+    height: 13px;
+  }
+  .ie7 .futureshop_sale_background span {
+    margin-left: 2px;
+    top: 0;
+    left: 2px;
+/*    position: absolute; */
+  }
+  .ie6 .futureshop_sale_background span {
+   /* margin-top: -3px; */
+     margin-left: 2px;
+  }
+  .price .dollars {
+    font-size: 30px;
+  }
+  .price .cents {
+    position: relative;
+    top: -9px;
+    font-size: 18px;
+  }
+  .finalclearance {
+    /* Adjust height of spacing div in _product_info.html.erb */
+    background-color: #FFDF00;
+    padding: 2px 6px;
+    font-weight: bold;
+    color: #201D00;
+    font-size: 0.8em;
+  }
+  .save {
+  	color: #FF0000;
+  	font-weight: bold;
+  }
+  .saleends {
+  	/*color: #F5000B;*/
+  	font-size: 0.8em;
+  	margin-bottom: 4px;
+  }
+  .stars {
+  	padding-top: 3px;
+  	height: 15px;
+  	font-size: 11px;
+  }
+  .ratingStar, .ratingHalfStar, .ratingEmptyStar {
+    float: left;
+  }
+  .ratingStar {
+    background: url(<%= asset_data_uri "futureshopStar.gif"%>);
+    width: 13px;
+    height: 12px;
+  }
+  .ie67 .ratingStar {
+    background: url(<%= asset_path "futureshopStar.gif"%>);
+  }
+  .ratingHalfStar {
+    background: url(<%= asset_data_uri "futureshophalfstar.gif"%>);
+    width: 13px;
+    height: 12px;
+  }
+  .ie67 .ratingHalfStar {
+    background: url(<%= asset_path "futureshophalfstar.gif"%>);
+  }
+  .ratingEmptyStar {
+    background: url(<%= asset_data_uri "futureshopemptystar.gif"%>);
+    width: 13px;
+    height: 12px;
+  }
+  .ie67 .ratingEmptyStar {
+    background: url(<%= asset_path "futureshopemptystar.gif"%>);
+  }
+  .row_bounding_box {
+    position: relative;
+    overflow:hidden;
+    zoom:1;
+  }
+  .navbox_grey_separator_image_left, .navbox_grey_separator_image_right {
+    height: 750px;
+    width: 1px;
+    position: absolute;
+    top: 5px;
+    left: 172px;
+    background: right center url(<%= asset_data_uri "navbox_grey_separator_bar.gif" %>) no-repeat;
+  }
+  .navbox_grey_separator_image_right {
+    left: 349px;
+  }
+  .ie67 .navbox_grey_separator_image_left, .ie67 .navbox_grey_separator_image_right {
+    background-image: url(<%= asset_path "navbox_grey_separator_bar.gif" %>);
+  }
+  .nolinelink {
+    text-decoration: none;
+  }
+  .nolinelink:hover {
+    text-decoration: none;
+  }
+
+  /* Bundle Boxes */
+
+  .bundle_box_border_container {
+    width: 175px;
+    padding-right: 2px;
+    margin: 3px 3px -11px;
+    display: inline-block;
+    vertical-align:top;
+  }
+  .bundlesbox, .bundlesbox_spacer {
+    text-align: left;
+    font-size: 0.8em;
+    margin: 6px 11px 11px 7px;
+    width: 162px;
+    padding-bottom: 5px;
+    -moz-border-radius: 6px; 
+  	-webkit-border-radius: 6px;
+  }
+  .bundlesbox {
+    background: #ebebed;
+  }
+  .bundlesbox a { color: #000000; text-decoration: none; }
+  .bundlesbox a:visited { color: #000000;}
+  .bundlesbox a:hover {	text-decoration: underline; }
+  
+  .ie67 .bundle_box_border_container {
+    display: inline !important;
+  }
+  .ie7 .bundle_box_border_container {
+    width: 178px;
+  }
+  .ie67 .bundlesbox, .ie67 .bundlesbox_spacer {
+    width: 161px;
+  }
+  .bundlediv {
+    padding-bottom: 5px;
+    min-height: 35px;
+    border:1px solid white;
+  }
+
+  .bundlediv:hover {
+    border:1px solid blue;
+  }
+  .bundle_spacer, .bundle_first_spacer {
+    background: #FFF;
+    height: 1px;
+    width: 100%;
+  }
+  .bundle_item, .bundle_first_item {
+    padding: 8px 3px 8px 3px;
+    position: relative;
+    margin: 0 8px 0 8px;
+  }
+  .bundle_item, .bundle_spacer {
+    display: none;
+  }
+  .bundle_image {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 7px;
+    right: 1px;
+    background: url(<%= asset_data_uri('bundle_arrow.gif') %>) no-repeat bottom right;
+  }
+  .ie67 .bundle_image {
+    background-image: url(<%= asset_path('bundle_arrow.gif') %>);    
+  }
+  .more_package_deals_plus {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 1px;
+    left: 12px; 
+    background: url(<%= asset_data_uri('more_package_deals_plus.gif') %>) no-repeat bottom right;
+  }
+  .ie67 .more_package_deals_plus {
+    background-image: url(<%= asset_path('more_package_deals_plus.gif') %>);  
+  } 
+  .ie6 .more_package_deals_plus {
+    left: -18px;
+  }
+  .bundle_package_stub_text {
+    margin: 7px 0 2px 31px;
+    padding: 2px;
+  }
+  .bundle_more_deals_stub {
+    position: relative;
+    cursor: pointer;
+  }
+  .bundle_header {
+    font-size: 1.25em;
+    font-weight: bold;
+  }
+  .bundle_bullet_point {
+    margin-left: 8px;
+    padding-left: 2px;
+    text-indent: -8px;
+  }
+  .bundleslabel {
+    padding-left: 5px;
+    padding-bottom: 5px;
+  }
+
+
+  .colorslabel {
+    margin-bottom: 2px;
+    text-align: left;
+  }
+
+  .sibling img {
+    height: 35px;
+    width: 35px;
+    overflow: left;
+    vertical-align: middle;
+  }
+
+  /*.itemtitle {
+      font-size: 1.4em;
+      line-height: 1.7em;
+      margin-left: 25px;
+  }
+
+  .priceunit {
+    font-size: 0.8em;
+    position:relative;
+    margin-left: 5px;
+    top: 10px;
+  }*/
+}

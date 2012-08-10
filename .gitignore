@@ -3,6 +3,7 @@ log/
 tmp/**/*
 tmp/*
 config/database.yml
+config/sunspot.yml
 .bundle
 db/*.sqlite3
 db/sphinx
@@ -19,6 +20,12 @@ lib/.ruby_inline
 cache/*
 .sass-cache/
 public/assets/
+public/javascripts/
+public/stylesheets/
+
+solr/data
+solr/pids
+
 
 TAGS
 

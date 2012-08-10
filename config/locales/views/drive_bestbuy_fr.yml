@@ -1,16 +1,6 @@
 fr:
     drive_bestbuy:
         # All language-dependent definitions in models
-        sitetitle:                  "Lecteurs et stockage Best Buy"
-        title:                      "Lecteurs et stockage"
-        title-plural:               "Lecteurs et stockage"
-        defaultdesc:                "With an external hard drive, flash drive or disc drive you can backup your files and take them virtually anywhere. Shop for reliable, high-quality hard drives at BestBuy.ca and find the perfect way to keep your files safe."
-        keywords:                   "external hard drive, flash drive, portable hard drive, hard drives"
-        classification:             "Lecteurs et stockage"
-        navtitle:                   "Lecteurs"
-        navtitle2:                  "disponibles"
-        outof:                      "Parmi %{count} lecteurs"
-        compare:                   "Comparer"
 
         specs:
             saleprice:

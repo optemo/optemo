@@ -10,130 +10,46 @@
 /*--------------------------------------//
 //         Global Declarations          //
 //--------------------------------------*/
-#optemo_embedder a img {	border: none; }
-#optemo_embedder a { color: #0000EE; }
-#optemo_embedder a:visited { color: #0000AB;}
+#pagecontentleft2 {
+  width: 180px !important;
+  margin-right: 5px !important;
+  float: left;
+}
 
+.optemo a img {	border: none; }
+.optemo a { text-decoration: none; }
+.optemo a:hover {	text-decoration: underline; }
 
 /*--------------------------------------//
 //            Navigator Bar             //
 //--------------------------------------*/
-#optemo_embedder div#main {
-	padding: 0;
-	text-align: left;
-}
 
-/*#logo {
-	float:left;
-	margin-right: 5px;
-	text-decoration: none;
-}
-#logo span{
-	position: absolute;
-	top: 5px;
-	left: 120px;
-	color: #693;
-	visibility: hidden;
-	font-family: monaco, arial;
-	font-weight: bold;
-}
-
-html {
- margin: 0;
- padding: 0;
-}
-
-body {
- /*font: normal verdana,tahoma,arial; removed because Firefox doesn't like it*/
-/* font-family: arial;
- margin: 0;
- position: relative; /*IE6 Resize bug*/
-/*}*/
-#optemo_embedder {
-	font-size: 1.3em;
-	margin: 0 auto; 
-	width: 745px;
-}
-/* Header */
-
-#optemo_embedder h1 {
-	font-size: 2.1em;
-}
-#optemo_embedder #leftbar h2 {
-	margin: 0;
-	font-size: 0.9em;
-/*	border-bottom: 1px solid #ccc;*/
-	background-color: #E9E9E9;
-}
-#optemo_embedder a {
-	text-decoration: none;
-}
-#optemo_embedder a:hover {
-	text-decoration: underline;
-}
-
-.rounded {
-	-webkit-border-radius: 8px;    /* for Safari */
-  -moz-border-radius: 8px;       /* for Firefox */
-  border-radius: 8px;            /* Opera, KHTML, others */
-}
-/*.rounded_bd {
-    background-color: white;
-    border: 1px solid #ccc;
-}*/
-
-#optemo_embedder #navtitle {
-  display: inline-block;
-  margin-left: 17px;
-  margin-top: 9px;
-  font-weight: bold;
-  
-}
-#optemo_embedder #navtitle .nav-number{
-  font-size: 39pt; float:left; margin-right: 7px; font-weight: bold;color: #333;
-}
-#optemo_embedder #navtitle .sub-title{
+.optemo #navtitle .nav-number{
+  font-size: 39pt;
   float: left;
+  margin-right: 7px;
+  font-weight: bold;
+  color: #333;
+  height: 75px;
+}
+.optemo #navtitle .sub-title{
   margin-top: 7px;
 }
-#optemo_embedder #navtitle .sub-title .outof{
+.optemo #navtitle .sub-title .outof{
   font-size: 11pt;
   color: #333;
   margin-left: 3px;
 }
-#optemo_embedder #navtitle .nav-available-text{
+.optemo #navtitle .nav-available-text{
   color: #333;
   font-size: 15pt;
   font-weight: bold;
 }
 
-
-#optemo_embedder #IE #navtitle{
+.optemo #IE #navtitle{
   display: inline-block;
   border: none;
 }
-
-/*--------------------------------------//
-//      Main Content (Right Side)       //
-//--------------------------------------*/
-
-
-/*.close {
-	position: absolute;
-	top: -25px;
-	right: 13px;
-	color: white;
-}
-.close:visited {
-	color:white;
-}*/
-
-#optemo_embedder div .spacer {
+.optemo div .spacer {
 	clear: both;
 }
-/*.review {
-	font-size: 0.8em;
-	margin:10px;
-	padding:5px;
-	display:inline;
-}*/

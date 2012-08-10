@@ -1,0 +1,5 @@
+<% color, brightness = colour_filter %>
+<% swatch_class = "swatch_button swatch" %>
+<% swatch_class += " white_swatch" if color.try(:downcase) == "white" %>
+<% swatch_class += (brightness == "l" ? " selected_swatch_light" : " selected_swatch_dark") if chosen_cats.include?(color) %>
+<div class="<%= swatch_class %>" style="background-color: <%= color %>" title="<%=t "color.#{color}" %>"></div>

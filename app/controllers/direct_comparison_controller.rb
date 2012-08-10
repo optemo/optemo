@@ -1,4 +1,6 @@
 class DirectComparisonController < ApplicationController
+  LOW_IS_BETTER = ["saleprice","minFocalLength"]
+  
 # Compares products selected for comparison ('saved' products)
   include CachingMemcached
   layout false
@@ -18,14 +20,14 @@ class DirectComparisonController < ApplicationController
       p
     end
     #Sort products by category_id
-    @products.sort!{|a,b|@sp["Categorical"][a.id]["category"] <=> @sp["Categorical"][b.id]["category"]}
+    @products.sort!{|a,b|@sp["Categorical"][a.id]["product_type"] <=> @sp["Categorical"][b.id]["product_type"]}
     # Calculate best value for each feature, to display as bold
     # We need to create a search in order for getFilters to work. This seems like a bit of a hack but I'm not totally
     # sure how the filter splitting code works. There is code left over that uses @s.continuous["filter"]
     # even though it seems deprecated. Ask Ray -ZAT
     Session.set_features([])
     @bestvalue = calculateBestValues
-
+    
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @products }
@@ -41,16 +43,29 @@ private
         # For every feature in ContinuousFeatures
         # For every product in @products
         # Find the min value and assign @bestvalue[feature]=product-id
-        bestval = -1000000000
+        bestval = nil
         bestproducts = []
-        @products.each do |p|
-          next if @sp["Continuous"][p.id][feature.name].nil?
-          featval = @sp["Continuous"][p.id][feature.name]*(feature.value < 0 ? -1 : 1)
-          if featval > bestval
-            bestproducts = [p.id]
-            bestval = featval
-          elsif featval == bestval
-            bestproducts << p.id
+        if LOW_IS_BETTER.include?(feature.name)
+          @products.each do |p|
+            next if @sp["Continuous"][p.id][feature.name].nil?
+            featval = @sp["Continuous"][p.id][feature.name]*(feature.value < 0 ? -1 : 1)
+            if bestval.nil? or featval < bestval
+              bestproducts = [p.id]
+              bestval = featval
+            elsif !featval.nil? and featval == bestval
+              bestproducts << p.id
+            end
+          end
+        else
+          @products.each do |p|
+            next if @sp["Continuous"][p.id][feature.name].nil?
+            featval = @sp["Continuous"][p.id][feature.name]*(feature.value < 0 ? -1 : 1)
+            if bestval.nil? or featval > bestval
+              bestproducts = [p.id]
+              bestval = featval
+            elsif !featval.nil? and featval == bestval
+              bestproducts << p.id
+            end
           end
         end
         bestvalue[feature.name] = bestproducts

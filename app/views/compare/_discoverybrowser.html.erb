@@ -1,13 +1,13 @@
-<% mb = main_boxes #Calculate this before navtitle %>
-<%= render partial: "pagination" %>
+<%= render "pagination" %>
 <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
   <%=raw sortby %>
 </ul>
 <div id="product_content">
     <div class='border-content'>	
-    <%= raw mb %>
+    <%= raw main_boxes %>
     <span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span>
     </div>
+    <%= render partial: "navigator_bar", locals: {bottom: true} %>
     <%= render partial: "pagination", locals: {bottom: true} %>
 </div>
 <div style="clear:both;"></div>

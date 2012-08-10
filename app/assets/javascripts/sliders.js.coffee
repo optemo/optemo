@@ -4,24 +4,37 @@
   @SliderInit = ->
     $('.slider').each ->
       t = $(this)
+      set_handle = $("#optemo_filter").data("which_slider")
       min = parseFloat(t.attr('data-min'))
       max = parseFloat(t.attr('data-max'))
-      mystep = calcInterval(min,max)
-      
+      mystep = parseFloat(t.attr('data-step'))
+      myunit = t.attr('data-unit')
+      myformat = ''
+      if (myunit == '$')
+        myformat = (if optemo_french then '# $' else '$#')
+      else if not myunit.nil? and myunit.length > 0
+        myformat = "# " + myunit
       t.slider
         from: min
         to: max
         step: mystep
         smooth: true
         round: if mystep >= 1 then 0 else if mystep * 10 >= 1 then 1 else 2
-        dimension: " "+t.attr('data-unit')
+        top_handle: if set_handle then set_handle else 0
+        dimension: ''
+        format: myformat
         skin: "plastic"
         callback: (value) ->
-          t.parent().siblings('.range').val(value)
+          #Remove a feature selection that has been undone
+          [curmin,curmax] = (parseFloat(i) for i in value.split(";"))
+          if curmin == min && curmax == max
+            t.parent().siblings('.range').val(";")
+          else
+            t.parent().siblings('.range').val(value)
           optemo_module.submitAJAX() #Auto-submit
         movable: (value) ->
-          [min,max] = (parseFloat(i) for i in value.split(";"))
-          min < parseFloat(t.attr('data-distmax')) and max > parseFloat(t.attr('data-distmin'))
+          [curmin,curmax] = (parseFloat(i) for i in value.split(";"))
+          curmin < parseFloat(t.attr('data-distmax')) and curmax > parseFloat(t.attr('data-distmin'))
         calculate: (value, label) ->
           #GB / TB conversion
           if label?
@@ -38,18 +51,23 @@
             .replace(/,/gi, ".")
             .replace(/\ /gi, "")
           if( Number.prototype.jSliderNice )
-            (new Number(value)).jSliderNice(this.settings.round).replace(/-/gi, "&minus;")
+            return formatN((new Number(value)).jSliderNice(this.settings.round), this.settings.format).replace( /-/gi, "&minus;" );
           else
-            new Number(value)
+            return formatN(new Number(value), this.settings.format)
 
       histogram(t.parent().siblings('.hist')[0])
 
   #Private functions
-  calcInterval = (min,max) ->
-    range = max - min
-    steps = [1000, 500, 100, 50, 10, 5, 1, 0.5, 0.1, 0.05, 0.01]
-    s = steps.shift() until range/s > 30 #30 was selected arbitrarly, so that it looks good in the sliders
-    s
+  formatN = (num, format) ->
+    return num if format == ''
+    prefix = suffix = ''
+    parts = format.split('#')
+    if parts.length == 2
+      if parts[0].length == 0
+        suffix = parts[1]
+      else
+        prefix = parts[0]
+    return prefix + num + suffix
     
   #Draw slider histogram, called for each slider above
   histogram = (element, norange) ->
@@ -64,9 +82,17 @@
     step = 6
     shapelayer = Raphael(element,length,height)
     h = height - 1
+    
+    # Add a temporary element to the DOM so that we can read the CSS properties.
+    # This allows dynamic selection of fill and stroke color based on futureshop/bestbuy layout without more complicated logic
+    temporary_element = $("<p></p>").addClass("slider_dist_fill").hide().appendTo("body");
+    strokeColor = temporary_element.css("color")
+    fillColor = temporary_element.css("background-color")
+    temporary_element.remove();
+    
     t = shapelayer.path
-      fill: "#bad0f2"
-      stroke: "#039"
+      fill: fillColor
+      stroke: strokeColor
       opacity: 0.75
     t.moveTo(0,height);
     pos = 7 #Initial value

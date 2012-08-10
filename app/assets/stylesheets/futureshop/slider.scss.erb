@@ -1,0 +1,58 @@
+.optemo .sliderspan {
+  display: inline-block;
+  width: 155px;
+  padding: 13px 0px 20px;
+}
+.optemo .slider {
+	margin: 27px 0 0 3px;
+	width: 155px;
+	padding-bottom: 25px;
+	position: relative;
+}
+.slider_dist_fill {
+  background-color: rgb(200,200,200);  /* Fill Color for the distribution */
+  color: #000; /* Stroke Color for the distribution */
+}
+.optemo .jslider .jslider-value {
+  top: 12px;
+  color: black;
+  background-color: #F5F5F5;
+}
+.optemo .jslider .jslider-label {
+  top: 13px;
+  color: #F7F7F7;
+}
+.optemo .jslider .jslider-label-to {
+  color: #F7F7F7;
+}
+.jslider .jslider-pointer {
+  width: 17px;
+  height: 16px;
+  top: -5px;
+  margin-left: -8px;
+  background: url(<%= asset_data_uri 'sliderhandlebox_futureshop.gif' %>) no-repeat center center;
+}
+.ie6,.ie7 {
+  .jslider .jslider-pointer {
+    background-image: url(<%= asset_path 'sliderhandlebox_futureshop.gif' %>);
+  }
+}
+.jslider div.jslider-pointer-disabled {
+  background: url(<%= asset_data_uri 'sliderhandlebox_futureshop-disabled.gif' %>) no-repeat center center;
+}
+.ie6,.ie7 {
+  .jslider div.jslider-pointer-disabled {
+    background-image: url(<%= asset_path 'sliderhandlebox_futureshop-disabled.gif' %>);
+  }
+}
+#IE .jslider .jslider-pointer {
+  width: 13px;
+  margin-left: -6px;
+}
+.jslider .jslider-bg i {
+  background-color: #000000;
+  background-image: none;
+}
+.jslider .disabled .jslider-bg i {
+  background-color: #F5F5F5;
+}

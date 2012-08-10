@@ -1,34 +1,18 @@
-<%# Cache specs here at the top of navbox partial to save on SQL calls and instantiations. Don't bother with Bin or Text specs since they are only used once each (though this might change in future, be careful) %>
-<% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id); %>
-<div id="box<%= product.id %>" class="navbox" style="<%= "margin-right:0px;background:none;" if last_in_row %><%= "height:352px;" if no_variations %>">
-	<div class="topbar"<%= "style='height:320px;'" if no_variations %>>
-
-	  <div class="navboxcompare">
-    <% if landing %>
-      &nbsp;
-    <% else %>
-    		  <input type="checkbox"
-		       data-sku="<%= product.sku %>"
-		       class="optemo_compare_checkbox" />
-	        <a class="regular_reset optemo_compare_button" style="" href="#" title="<%=t('products.compare.clickforcompare')%>">
-	    <span><%=t('products.compare.compare')%></span>
-	  </a>
-	  <% end %>
-    </div>
-
-		<%= image_tag(cat_specs["img150url"], :class => "productimg", :alt => cat_specs["title#{fr?}"], :title => t('products.compare.clickforspecs'), :'data-id' => product.id, :'data-sku' => product.sku) %>
-
-    <%= render partial: "product_info", locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, no_variations: no_variations} %>
-  </div>
-  <div style="padding-left:20px">
-    <div class="spacer buttons">
-      <div class="left">
-        <div class="right">
-          <a href="http://www.bestbuy.ca/order/addtocart.ashx?accessories=<%= product.sku %>" class="addtocart" data-sku="<%= product.sku %>">
-            <%=t BinSpec.cache_all(product.id)["isPreorderable"] ? 'products.preorder' : 'products.addtocart' %>
-          </a>
-        </div>
+<%if product && product.id%>
+  <% cache "Navbox#{I18n.locale}#{product.id}" do %>
+    <div id="box<%= product.id %>" class="navbox" style="<%= "font-size: 11px;" if Session.futureshop? %>">
+      <div class="navboxcompare">
+        <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
+        <a class="regular_reset optemo_compare_button" href="#" title="<%=t('products.compare.clickforcompare')%>">
+          <span><%=t('products.compare.compare')%></span>
+        </a>
       </div>
+      <%= product_image(product, :medium) %>
+      <%= render partial: "product_info", locals: {product: product} %>
     </div>
+  <% end %>
+<% else # Render a navbox shell so that the rendering is consistent -%>
+  <div class="navbox" style="height:240px;">
+    &nbsp;
   </div>
-</div>
+<%end%>
