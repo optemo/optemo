@@ -44,12 +44,8 @@ class CompareController < ApplicationController
   
   def classVariables(search)
     Session.search = search
-    @search_view = true if params[:keyword] || !Session.search.keyword_search.blank?
-    selected_product_type = search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value}
-    selected_product_type = Session.effective_product_type if selected_product_type.empty?
-    selected_product_type ||= []
-    Session.initialize_product_type(selected_product_type.first) unless selected_product_type.empty?
-    Session.set_features(selected_product_type)
+    @search_view = true if params[:keyword] || !Session.search.keyword_search.blank? 
+    Session.set_features(search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value})
     @t = Translation.cache_product_translations
   end
   
