@@ -1,6 +1,6 @@
 <%if product && product.id%>
   <% cache "Navbox#{I18n.locale}#{product.id}" do %>
-    <div id="box<%= product.id %>" class="navbox" style="<%= "font-size: 11px;" if Session.futureshop? %>">
+    <div id="box<%= product.id %>" class="navbox">
       <div class="navboxcompare">
         <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
         <a class="regular_reset optemo_compare_button" href="#" title="<%=t('products.compare.clickforcompare')%>">

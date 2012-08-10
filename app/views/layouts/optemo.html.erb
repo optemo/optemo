@@ -8,7 +8,7 @@
 <%= stylesheet_link_tag (Session.futureshop? ? :futureshop : :application) %>
 </head>
 
-<body style="font-size:0.75em;font-family: <%= Session.futureshop? ? "Verdana,​Arial,​Helvetica,​sans-serif" : "arial, helvetica, sans-serif" %>;margin:0;">
+<body style="font-size:0.75em;font-family: <%= Session.futureshop? ? "Helvetica,Arial,Tahoma,sans-serif" : "arial, helvetica, sans-serif" %>;margin:0;">
   <script type="text/javascript">optemo_french = <%= fr? == "_fr" ? "true" : "null" %></script>
   
   <%= yield %>

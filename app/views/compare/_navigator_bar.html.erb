@@ -3,7 +3,7 @@
     <% if local_assigns[:landing] %>
       <%=t "products.compare.available", count: Session.search.products_size %>
     <% else %>
-      <%= "Displaying #{page_entries_info(Session.search.paginated_products)} of " %> <%= Session.search.products_size %>
+      Displaying <span class="strong"><%= page_entries_info(Session.search.paginated_products) %></span> of <span class="strong"><%= Session.search.products_size %></span>
     <% end %>
   </div>
   <% if local_assigns[:landing] %>

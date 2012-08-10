@@ -30,14 +30,30 @@
   .label {
   	text-align: left;
   	clear: left;
+  	padding: 16px 0 4px 16px;
+  }
+  #selections_text .label {
+    padding: 0;
+  }
+  #your_selections {
+    margin-bottom: 8px;
   	padding: 8px 0;
+  	border: 1px solid #DEE8F4;
+  	background: #dee8f4; /* Old browsers */
+  	background: -moz-linear-gradient(top,  #dee8f4 0%, #ffffff 100%); /* FF3.6+ */
+  	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dee8f4), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+  	background: -webkit-linear-gradient(top,  #dee8f4 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
+  	background: -o-linear-gradient(top,  #dee8f4 0%,#ffffff 100%); /* Opera 11.10+ */
+  	background: -ms-linear-gradient(top,  #dee8f4 0%,#ffffff 100%); /* IE10+ */
+  	background: linear-gradient(to bottom,  #dee8f4 0%,#ffffff 100%); /* W3C */
+  	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dee8f4', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
   }
   .unitdisp {      /* Display units of features in filters */
   	font-size: 0.8em;
   	font-weight: normal;
   }
   .feature {
-    padding: 0 0 0 6px;
+    font-size: 12px;
   }
   .ie6 .feature {
     position: relative;
@@ -54,12 +70,12 @@
   }
   .hist {
   	position: absolute;
-  	left: 4px;
-  	top: 3px;
+  	left: 20px;
+  	top: 1px;
   	text-align: left;
   }
   #IE.ie6 .hist {
-    left: 0;
+    left: 16px;
   }
   .boldlabel {
   	font-weight: bold;
