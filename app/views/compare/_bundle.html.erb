@@ -1,5 +1,5 @@
 <%if product && product.id%>
-  <% bundles = product.bundles_cached.map{|b| b if Product.cached(b.bundle_id).instock}.compact -%>
+  <% bundles = product.bundles_cached.map{|b| b if Maybe(Product.cached(b.bundle_id)).instock}.compact -%>
   <% unless bundles.empty? %>
     <% cache "Bundle#{I18n.locale}#{product.id}" do %>
       <% cont_specs = ContSpec.cache_all(product.id); cat_specs = CatSpec.cache_all(product.id) %>

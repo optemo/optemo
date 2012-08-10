@@ -48,7 +48,7 @@
   <% end -%>
   
 
-  <% siblings = product.siblings_cached.map{|s| s if Product.cached(s.sibling_id).instock}.compact -%>
+  <% siblings = product.siblings_cached.map{|s| s if Maybe(Product.cached(s.sibling_id)).instock}.compact -%>
   <!-- Colour swatches -->
   <%# Colour swatches go after customer rating in Future Shop design %>
   <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>
