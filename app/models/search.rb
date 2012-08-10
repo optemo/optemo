@@ -271,8 +271,7 @@ class Search < ActiveRecord::Base
     res=[]
     # By using .hits, we can get just the ids instead of getting the results. See Solr documentation
     things.group(:eq_id_str).groups.each do |g|
-      group = g.results
-      res << group.first.id unless group.empty?
+      res << g.hits.first.primary_key.to_i
     end
     Product.cachemany(res)
   end
