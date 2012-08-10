@@ -12,7 +12,7 @@
       <span class="cents" style="font-size: 18px; font-family: arial; position: relative; top: -9px;"><%= cents(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
       <div class="clear"><!-- --></div>
     </div>
-    <%= render partial: 'product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
+    <%= render partial: 'compare/product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
   <% end %>
   <% title_style = "outline: medium none; font-weight: bold; margin: 7px 7px 0 0; display: block;" %>
   <% title_style += "font-size: 11px; font-family:verdana; color: #333;" if Session.futureshop? %>
@@ -28,7 +28,7 @@
       		<span style= "font-size:20px; font-color:#da1a36; font-family: Arial Black, Arial, Helvetica, Sans-serif; font-weight: 900;"><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : 	"saleprice"]) %></span>
     	</div>
     <%end%>	
-    <%= render partial: 'product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
+    <%= render partial: 'compare/product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
   <% end -%>
   
   <% if Session.amazon? -%>
@@ -48,7 +48,7 @@
   <% end -%>
   
 
-  <% siblings = product.siblings_cached.map{|s| s if Product.cached(s.sibling_id).instock}.compact -%>
+  <% siblings = product.siblings_cached.map{|s| s if Maybe(Product.cached(s.sibling_id)).instock}.compact -%>
   <!-- Colour swatches -->
   <%# Colour swatches go after customer rating in Future Shop design %>
   <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>

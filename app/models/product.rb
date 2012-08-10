@@ -96,7 +96,7 @@ class Product < ActiveRecord::Base
   end
   
   def self.cached(id)
-    CachingMemcached.cache_lookup("Product#{id}"){find(id)}
+    CachingMemcached.cache_lookup("Product#{id}"){find_by_id(id)}
   end
   
   def self.by_sku(sku)
@@ -105,7 +105,7 @@ class Product < ActiveRecord::Base
   
   #Returns an array of results
   def self.cachemany(ids)
-    res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',')}"){ids.map{|id|find(id)}}
+    res = CachingMemcached.cache_lookup("ManyProducts#{ids.join(',')}"){ids.map{|id|find_by_id(id)}.compact}
     if res.class == Array
       res
     else
