@@ -25,8 +25,7 @@
                   data-value='<%= spec.value %>'
                 <% end %>
                   >
-                <% str = displaySelectedString(spec, rangesShow.empty? ? nil : rangesShow[index]) %>
-                <%= t("#{Session.product_type}.filter.#{str}.name", :default => str) -%>
+                <%= displaySelectedString(spec, rangesShow.empty? ? nil : rangesShow[index]) %>
                 <% unless spec.name == 'keyword' %>
                   <a class='remove_filter' href='#'><div><!-- --></div> <%= Session.futureshop? ? '' : t('products.compare.undo') %> </a>
                 <% end %>
