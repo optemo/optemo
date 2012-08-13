@@ -13,7 +13,7 @@ class DirectComparisonController < ApplicationController
     @sp = {"Continuous" => {},"Categorical" => {}, "Binary" => {}}
     @products = params[:id].split(",").map do |id| 
       #The skus are passed via the URL
-      p = Product.by_sku(id)
+      p = Product.find_by_sku_and_retailer(id,Session.retailer)
       @sp["Continuous"][p.id] = ContSpec.cache_all(p.id)
       @sp["Categorical"][p.id] = CatSpec.cache_all(p.id)
       @sp["Binary"][p.id] = BinSpec.cache_all(p.id)
