@@ -143,6 +143,8 @@
   	background-image:url(<%= asset_data_uri("fs-pricepill.png") %>);
   	padding-left: 25px;
   	background-repeat: no-repeat;
+    height: 31px;
+    line-height: 31px;
   }
   .ie67 .price {
     background-image: url(<%= asset_path "fs-pricepill.png" %>);
@@ -245,28 +247,24 @@
   }
   .ratingStar, .ratingHalfStar, .ratingEmptyStar {
     float: left;
-  }
-  .ratingStar {
-    background: url(<%= asset_data_uri "futureshopStar.gif"%>);
     width: 15px;
     height: 15px;
     margin-right: 4px;
+  }
+  .ratingStar {
+    background: url(<%= asset_data_uri "futureshopStar.gif"%>);
   }
   .ie67 .ratingStar {
     background: url(<%= asset_path "futureshopStar.gif"%>);
   }
   .ratingHalfStar {
     background: url(<%= asset_data_uri "futureshophalfstar.gif"%>);
-    width: 15px;
-    height: 15px;
   }
   .ie67 .ratingHalfStar {
     background: url(<%= asset_path "futureshophalfstar.gif"%>);
   }
   .ratingEmptyStar {
     background: url(<%= asset_data_uri "futureshopemptystar.gif"%>);
-    width: 15px;
-    height: 15px;
   }
   .ie67 .ratingEmptyStar {
     background: url(<%= asset_path "futureshopemptystar.gif"%>);

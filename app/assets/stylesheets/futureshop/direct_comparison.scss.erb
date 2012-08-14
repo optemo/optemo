@@ -141,6 +141,29 @@
   .quadruple_height_compare_row .cell {
     height: 64px;
   }
+  
+  .leftcolumntext {
+    .closed {
+    	background: url(<%= asset_data_uri "demo-spindown-closed.gif" %>) no-repeat left center;
+    	padding-left: 10px;
+    	padding-right: 7px;
+    	display: block;
+    	width: 100px;
+    }
+    .ie67 .closed {
+      background-image: url(<%= asset_path "demo-spindown-closed.gif" %>);
+    }
+    .open {
+    	background: url(<%= asset_path "demo-spindown-open.gif" %>) no-repeat left center;
+    	padding-left: 10px;
+    	padding-right: 7px;
+    	display: block;
+    	width: 100px;
+    }
+    .ie67 .open {
+      background-image: url(<%= asset_path "demo-spindown-open.gif" %>);
+    }
+  }
   a.title_link, a.title_link:visited {
     color: #000;
   }
