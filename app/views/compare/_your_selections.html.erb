@@ -20,13 +20,12 @@
             <% else -%>
               <div class='list_item hanging_margin' data-name='<%= spec_type(spec) %>_<%= spec.name %>' class='current_filter' 
                 <% if spec_type(spec) == 'continuous' %>
-                  data-value='<%=spec.min%>;<%=spec.max%>'
+                  data-value='<%= my_to_i(spec.min) %>;<%= my_to_i(spec.max) %>'
                 <% elsif spec_type(spec) == 'categorical' %>
                   data-value='<%= spec.value %>'
                 <% end %>
                   >
-                <% str = displaySelectedString(spec, rangesShow.empty? ? nil : rangesShow[index]) %>
-                <%= t("#{Session.product_type}.filter.#{str}.name", :default => str) -%>
+                <%= displaySelectedString(spec, rangesShow.empty? ? nil : rangesShow[index]) %>
                 <% unless spec.name == 'keyword' %>
                   <a class='remove_filter' href='#'><div><!-- --></div> <%= Session.futureshop? ? t('products.compare.remove') : t('products.compare.undo') %> </a>
                 <% end %>

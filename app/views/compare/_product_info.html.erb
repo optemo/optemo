@@ -18,15 +18,15 @@
   <div class="productspecs"><!--&--></div>
   <% if Session.bestbuy? -%>
     <%if !bin_specs["onsale"]%>
-    	<div class="price"> 
-      		<span><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
-    	</div>
+      <div class="price">
+        <span><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
+      </div>
     <%else%>	
-    	<div class="saleprice" <%=raw only_if_onsale(product) %>>
-      		<span><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : 	"saleprice"]) %></span>
-    	</div>
+      <div class="saleprice" <%=raw only_if_onsale(product) %>>
+        <span><%= number_to_currency(cont_specs[Session.quebec ? "pricePlusEHF" : 	"saleprice"]) %></span>
+      </div>
     <%end%>	
-    <%= render partial: 'product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
+    <%= render partial: 'compare/product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
   <% end -%>
   
   <% if Session.amazon? -%>
@@ -46,7 +46,7 @@
   <% end -%>
   
 
-  <% siblings = product.siblings_cached.map{|s| s if Product.cached(s.sibling_id).instock}.compact -%>
+  <% siblings = product.siblings_cached.map{|s| s if Maybe(Product.cached(s.sibling_id)).instock}.compact -%>
   <!-- Colour swatches -->
   <%# Colour swatches go after customer rating in Future Shop design %>
   <%= render partial: 'compare/color_swatches', :locals => {:siblings => siblings} unless Session.futureshop? %>
