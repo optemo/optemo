@@ -229,7 +229,7 @@
     anchor.append(result)
 
     # Put the thumbnails and such at the bottom of the compare area too (in the hideable matrix)
-    remove_row = $('#basic_matrix .compare_row:first')
+    remove_row = $('#basic_matrix div:first')
     anchor.append(
       remove_row.clone(),
       remove_row.next().clone(),
