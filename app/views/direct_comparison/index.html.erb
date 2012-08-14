@@ -70,16 +70,14 @@
 
 <div class="spacer togglespecs morespecs">
   <div class="left">
-    <div class="<%= Session.futureshop? ? "btn" : "right" %>" style="width: 150px">
-      <a href="#" class="toggle_specs">
-        <span class="moretext">
-          <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"morespecs" %>
-        </span>
-        <span class="lesstext" style="display:none;">
-          <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"lessspecs" %>
-        </span>
-        <div class=<%= Session.futureshop? ? "" : "gt_sym" %>><!-- --></div>
-      </a>
+    <div class="<%= Session.futureshop? ? "btn" : "right" %> toggle_specs" style="width: 150px">
+      <span class="moretext">
+        <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"morespecs" %>
+      </span>
+      <span class="lesstext" style="display:none;">
+        <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"lessspecs" %>
+      </span>
+      <div class=<%= Session.futureshop? ? "" : "gt_sym" %>><!-- --></div>
     </div>
   </div>
 </div>

@@ -22,7 +22,7 @@ fr:
             more:             "Plus"
             less:             "Moins"
             powered:          "Offert par "
-            available:        "%{count} produits disponibles"
+            available:        "produits disponibles"
             outof:            "Parmi"
             rembrandfilter:   "Retirer le filtre de marque"  
             onsale:           "En solde"

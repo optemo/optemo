@@ -28,7 +28,6 @@
   
   #navtitle {
     display: inline-block;
-    margin-top: 9px;
     margin-right: 5px;
     width: 350px;
   }
@@ -40,24 +39,13 @@
   .seeall, .seeall:visited {
     float: right;
     color: black;
-    margin-top: 5px;
-  }
-  .seeall div {
-    display: inline-block;
-    width: 8px; 
-    height: 13px;
-    position: relative;
-    top: 2px;
-  }
-  #IE .seeall div {
-    display: inline;
-    zoom: 1;
+    margin-top: -8px;
   }
   #nav_compare_btn {
     color: black;
   }
   #navigator_bar {
-    padding-bottom: 10px;
+    padding: 12px 0;
     border-top: solid 1px #ebebeb;
     border-bottom: solid 1px #ebebeb;
   }
@@ -76,7 +64,7 @@
   }
   .caret {
     background-image: url(<%= asset_data_uri "carat_down.gif" %>);
-    width: 12px;
+    width: 13px;
     height: 8px;
     display: inline-block;
   }

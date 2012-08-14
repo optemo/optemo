@@ -22,7 +22,7 @@ en:
             less:             "Less"
             filters:          "Filters"
             powered:          "Powered by "
-            available:        "%{count} products available"
+            available:        "products available"
             product:          "Product"
             outof:            "Out of"
             rembrandfilter:   "Remove brand filter"
