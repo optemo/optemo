@@ -51,15 +51,15 @@
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
   vertical-align: middle;
   cursor: pointer;
-  background-color: #eeeeee;
-  background-image: -moz-linear-gradient(top, #eeeeee 0%, #e2e2e2 100%);
-  background-image: -ms-linear-gradient(top, #eeeeee 0%,#e2e2e2 100%);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: linear-gradient(top, #ffffff, #e6e6e6);
+  background: #eeeeee;
+  background: -moz-linear-gradient(top, #eeeeee 0%, #e2e2e2 100%);
+  background: -ms-linear-gradient(top, #eeeeee 0%,#e2e2e2 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#e2e2e2));
+  background: -webkit-linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%);
+  background: -o-linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%);
+  background: linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e2e2e2',GradientType=0 );
   border-color: #e6e6e6 #e6e6e6 #bfbfbf;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   *background-color: #e6e6e6;
@@ -92,7 +92,7 @@
 .btn:first-child {
   *margin-left: 0;
 }
-.btn:hover {
+.optemo .btn:hover {
   color: #333333;
   text-decoration: none;
   background-color: #e6e6e6;

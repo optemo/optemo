@@ -36,9 +36,7 @@
   }
   .columntitle {
   	width: 189px;
-  	height: 27px;
-  	font-size: 0.92em;
-  	padding-top: 3px;
+  	padding-top: 13px;
   	padding-right: 5px;
   	z-index: 1000;
   	position: relative;
@@ -51,7 +49,7 @@
   }
 
   .whitebg {
-  	background: white;
+  	background: #ebebeb;
   }
   .leftmostcolumn {
   	width: 128px;
@@ -60,33 +58,29 @@
   .leftcolumntext {
   	width: 124px;
   	padding-left: 0px;
-  	font-weight: bold;
   	padding-right: 7px;
-  	text-align: right;
   }
   .leftmostcolumntitle {
   	width: 123px;
-  /*	border-left: solid 1px #ccc; */
   	padding-left: 0px;
   	font-weight: bold;
-  	padding-right: 7px;
-  	text-align: right;
+  	padding-bottom: 7px;
+  	text-align: left;
   }
   .tabletitle {
   	font-size:0.85em;
   	font-weight: normal;
   }
-  .remove {
-  	font-size: 0.8em;
-  	padding-left: 10px;
-  }
-  a.remove {
-    color: #333;
-    text-decoration: underline;
+  .remove span{
+    background-image: url(<%= asset_data_uri "remove_fs.png" %>);
+    width: 9px;
+    height: 9px;
+    vertical-align: middle;
+    display: inline-block;
   }
   .thumbnail_container {
   	height: 100px;
-  	text-align: center;
+  	text-align: center;v
   	img {
   	  height: 100%;
 	  }
@@ -120,13 +114,12 @@
   }
   .compare_row {
     clear: both;
-    line-height: 16px;
+    line-height: 21px;
     height:auto;
-    border-top: 1px solid #ccc;
   }
   .double_height_compare_row {
     clear: both;
-    line-height: 16px;
+    line-height: 21px;
     height: 32px;
   }
   .double_height_compare_row .cell {

@@ -182,9 +182,9 @@
     for heading of grouped_specs
       if (heading != "")
         #Add Heading
-        rowHeight = row_height(heading.length,true) * 16
-        # The 16 pixel-per-line height is arbitrary. Different layouts might need a change here.
-        # In that case, it might be a bit of work, but moving to a table-based layout might make sense.
+        lineHeight = 21
+        rowHeight = row_height(heading.length,true) * lineHeight
+        
         result += '<div class="compare_row"><div class="cell ' + (if whitebg then 'whitebg' else 'graybg') + ' leftcolumntext" style="font-style: italic; height: '+rowHeight+'px;"><a class="togglable closed title_link" style="font-style: italic;" href="#">' + heading.replace('&','&amp;') + '</a></div>'
         
         for sku,index in skus  
@@ -203,7 +203,7 @@
             array.push(i.length)
         
         # Calculate row height
-        rowHeight = Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true)) * 16
+        rowHeight = Math.max(row_height(Math.max.apply(null,array)),row_height(spec.length,true)) * lineHeight
         result += '<div class="compare_row" style="' + 'height: ' + (rowHeight + 6) + 'px;">'
         
         #Row heading

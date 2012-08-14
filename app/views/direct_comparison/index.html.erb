@@ -16,7 +16,9 @@
     <div class="columntitle leftmostcolumn leftmostcolumntitle"></div>
     <% @products.each_with_index do |product, i| %>
       <div class="columntitle spec_column_<%= i %>">
-        <%= link_to image_tag('remove'+(Session.futureshop? ? "_fs" : "")+'.png', :style => "vertical-align: text-top;")+" "+t('compare.index.remove'), "", :"data-sku" => product.sku, :class => 'remove spec_column_' + i.to_s %>
+        <%= link_to "", :"data-sku" => product.sku, :class => 'remove spec_column_' + i.to_s do %>
+          <span><!-- --></span> <%=t 'compare.index.remove' %>
+        <% end %>
       </div>
     <% end %>
   </div>
@@ -30,7 +32,7 @@
   </div>
 
   <div class="clear">
-    <div class="cell whitebg leftmostcolumn leftcolumntext">
+    <div class="cell leftmostcolumn leftcolumntext">
       &nbsp;
     </div>
     <% @products.each_with_index do |product,i| %>
@@ -68,7 +70,7 @@
 
 <div class="spacer togglespecs morespecs">
   <div class="left">
-    <div class="right" style="width: 150px">
+    <div class="<%= Session.futureshop? ? "btn" : "right" %>" style="width: 150px">
       <a href="#" class="toggle_specs">
         <span class="moretext">
           <%=t "products.compare."+(Session.futureshop? ? "futureshop_" : "")+"morespecs" %>

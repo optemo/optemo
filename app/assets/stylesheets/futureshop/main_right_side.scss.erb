@@ -103,43 +103,30 @@
   }
 
   .bb_poptitle {
-  	font-weight: bold;
-  	font-size: 1.13em;
-  	color: #000;
-    height: 22px;
-    margin-left: -2px;
-    margin-top: 5px;
-  	line-height:22px;
-  	margin-bottom:5px;
+  	color: white;
     overflow: visible;
-    background-color: #ABABAB;
-    height: 40px;
+    background-color: #be0027;
+    height: 60px;
+    text-align: center;
+    margin: 0 -15px;
   }
 
   .bb_poptitle .bb_quickview_close {
-  	float: right;
-  	margin: -45px -37px 0 0;
+  	position: absolute;
+  	right: 20px;
+  	top: 20px;
   	cursor: pointer;
-    background: url(<%= asset_data_uri('closepopup_futureshop.gif') %>) no-repeat bottom right;
-    height: 39px;
-    width: 80px;
+    background: url(<%= asset_data_uri('closepopup_futureshop.png') %>) no-repeat bottom right;
+    height: 20px;
+    width: 20px;
   }
   .ie67 .bb_poptitle .bb_quickview_close {
     background-image: url(<%= asset_path('closepopup_futureshop.gif') %>);    
-    position: relative;
-  }
-  .ie6 .bb_poptitle .bb_quickview_close {
-    margin: -38px -48px 0 0;
-    display: inline;
-  }
-  .ie7 .bb_poptitle .bb_quickview_close {
-    margin: -39px -37px 0 0;
   }
 
   .comp-title {
-  	display:block;
-  	float:left;
-    margin: 10px 12px;
+    line-height: 60px;
+    font-size: 16px;
   }
 
   /*.fv {
