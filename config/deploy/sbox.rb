@@ -1,5 +1,5 @@
 set :application, "sbox"
-set :repository,  "git@jaguar:site.git"
+set :repository,  "ssh://jaguar:29418/site.git"
 set :domain, "jaguar"
 set :branch, "master"
 set :user, "#{ `whoami`.chomp }"
