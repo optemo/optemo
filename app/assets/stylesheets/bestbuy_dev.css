@@ -12,11 +12,8 @@
 *= require bestbuy/main_right_side
 *= require bestbuy/nav_bar
 *= require bestbuy/show_page_and_related
-*= require jquery.autocomplete
-*= require jslider
 *= require bestbuy/slider
 *= require bestbuy/buttons
-*= require bootstrap-dropdown
 */
 
 /* Global Declarations are in colour_and_buttons.scss.erb */

@@ -1,9 +1,12 @@
-<div id="navigator_bar" <%= "style='height:99px'" if (request.host == "keyword" && local_assigns[:bottom].nil?) %><%= "style='height:80px'" if request.host == "keyword" %>>
+<div id="navigator_bar<%= "_bottom" if local_assigns[:bottom] %>" <%= "style='height:99px'" if (request.host == "keyword" && local_assigns[:bottom].nil?) %><%= "style='height:80px'" if request.host == "keyword" %>>
   <div id="navtitle">
     <% if local_assigns[:landing] %>
       <span class="strong"><%= Session.search.products_size %></span> <%=t "products.compare.available" %>
     <% else %>
-      Displaying <span class="strong"><%= page_entries_info(Session.search.paginated_products) %></span> of <span class="strong"><%= Session.search.products_size %></span>
+      Displaying <span class="strong"><%= page_entries_info(Session.search.paginated_products) %></span>
+      <% if Session.futureshop? %>
+        of <span class="strong"><%= Session.search.products_size %></span>
+      <% end %>
     <% end %>
   </div>
   <% if local_assigns[:landing] %>

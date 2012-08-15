@@ -34,12 +34,10 @@
     overflow: hidden;
     position: relative;
     margin-bottom: 1px;
+    height: 55px;
   }
   #IE #navigator_bar {
     background: url(<%= asset_path "IE/navigator_bar_bg.gif" %>) repeat-x;
-  }
-  .ie67 #navigator_bar {
-    height: 84px;
   }
   #navigator_bar_bottom {
   	padding: 0;
@@ -56,11 +54,10 @@
   }
   #navtitle {
     display: inline-block;
-    margin-left: 17px;
-    margin-top: 9px;
-    margin-right: 5px;
+    margin: 18px 5px 15px 17px;
     font-weight: bold;
     width: 388px;
+    text-align: left;
   }
   #navigator_bar_top {
   	padding: 0;
@@ -76,14 +73,12 @@
   }
   #navigator_bar a#nav_compare_btn {
     position: absolute;
-    top: 19px;
-    right: 10px;
+    top: 10px;
+    right: 18px;
     font-size: 12pt;
-    width: 149px;
-    height: 20px;
-    padding: 8px 0 8px;
     text-align: center;
-    font-weight: bold; 
+    font-weight: bold;
+    padding: 5px 10px;
   }
   #navigator_bar a.nav-compare-btn:hover, #navigator_bar a.nav-compare-btn:visited {
     color: #fff;

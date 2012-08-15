@@ -1,10 +1,10 @@
 <% if Session.bestbuy? || Session.amazon? %>
   <div class='pagination-container'>
     <%= render "pagination" %>
-    <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
-      <%=raw sortby %>
-    </ul>
   </div>
+  <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
+    <%=raw sortby %>
+  </ul>
 <% else %>
   <%= render 'comparison_and_sort' %>
 <% end %>
