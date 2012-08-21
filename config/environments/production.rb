@@ -55,7 +55,7 @@ Site::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
   #Add our custom BB files
-  config.assets.precompile += ['loader.js','bestbuy.css','futureshop.css']
+  config.assets.precompile += ['loader.js','bestbuy.css','futureshop.css','bestbuy_dev.css','futureshop_dev.css']
 
   # Defaults to Rails.root.join("public/assets")
   # config.assets.manifest = YOUR_PATH
