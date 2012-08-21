@@ -35,7 +35,7 @@ Site::Application.configure do
     else "localhost"
   end
   config.cache_store = :dalli_store, memcache_server+":11211",
-      { :namespace => "OPT", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }
+      { :namespace => "OPT-REDESIGN", :expires_in => 86400, :compress => true, :compress_threshold => 64*1024 }
   
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
