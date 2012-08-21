@@ -1,6 +1,6 @@
 set :application, "production"
-set :repository,  "ssh://jaguar:29418/site.git"
-set :domains, %w(linode1 linode2 linode3 linode4 linode5 rackspace1 rackspace2 rackspace3)
+set :repository,  "git@jaguar:site.git"
+set :domains, %w(linode1 linode2 linode3 rackspace1 rackspace2 rackspace3)
 role(:app) { domains }
 role(:web) { domains }
 role :memcached, "linode1", "rackspace1"
