@@ -7,7 +7,7 @@
     <% else %>
       <div style="height: 11px"><!-- --></div>
     <% end %>
-    <div style="font-weight: bold; margin-bottom: 6px; margin-top: 1px; background-position:0px 10px; color: #000; font-family: arial; background-image:url('http://fs.optemo.com/assets/fs-pricepill.png');padding-left: 25px; background-repeat: no-repeat; font-family: arial;">
+    <div style="font-weight: bold; margin-bottom: 6px; margin-top: 1px; background-position:0px 10px; color: #000; font-family: arial; background-image:url(<%= asset_path 'fs-pricepill.gif' %>);padding-left: 25px; background-repeat: no-repeat; font-family: arial;">
       <span class="dollars" style="font-size: 30px;"><%= dollars(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
       <span class="cents" style="font-size: 18px; font-family: arial; position: relative; top: -9px;"><%= cents(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
       <div class="clear"><!-- --></div>
