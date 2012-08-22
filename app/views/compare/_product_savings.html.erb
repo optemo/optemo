@@ -4,11 +4,15 @@
     <%# French translation still needed for "environmental handling fee" -- please make changes in fr.yml %>
   </div>
 <% end -%>
-<span class="save" <%=raw only_if_onsale(product) %>>
-  <%= t('products.compare.save')+(fr?.empty? ? "" : " ")+": " %>
-  <%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %>
-</span>
-<div class="saleends" style="<%=raw "display:none;" if !bin_specs["onsale"] || (cat_specs["saleEndDate"] ) && Time.now > Date.parse(cat_specs["saleEndDate"])%>">
-  <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
-  <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) if cat_specs["saleEndDate"] %>
-</div>
+<% if bin_specs["onsale"] -%>
+  <span class="save" style="<%= "font-size: 12px;" if !fr?.empty? && Session.futureshop? %>">
+    <%= t('products.compare.save') %><%= (fr?.empty? ? "" : " ")+": " if Session.bestbuy? %>
+    <%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %>
+  </span>
+  <% if cat_specs["saleEndDate"] && Time.now > Date.parse(cat_specs["saleEndDate"]) -%>
+    <div class="saleends">
+      <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
+      <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) %>
+    </div>
+  <% end %>
+<% end -%>
