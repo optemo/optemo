@@ -31,5 +31,5 @@ load 'config/deploy/recipes'
 
 before 'deploy:update', :set_umask
 before "deploy:assets:precompile", :serversetup
-after "deploy:symlink", :restartmemcached
+after "deploy:create_symlink", :restartmemcached
 after :restartmemcached, :redopermissions
