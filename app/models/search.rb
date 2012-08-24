@@ -44,9 +44,13 @@ class Search < ActiveRecord::Base
           end
         end
       end  
-
-      type, direction = sortby.try(:split, "_") || ["utility", "desc"] #Default is utility
-      type = "lr_utility" if type == "utility" #Use logistic regression first if possible
+      
+      # sort by: either selected sortby or by default, the first of the sortby facets set in the session
+      type, direction = sortby.try(:split, "_")
+      if type.nil?
+        type = Session.features['sortby'].first.name
+        direction = Session.features['sortby'].first.style
+      end
       order_by(type.to_sym, direction.to_sym)
       order_by(:utility, :desc) #Break ties with heuristic utility (used as utility if lr_utility is nil)
           
@@ -91,7 +95,6 @@ class Search < ActiveRecord::Base
       end
       (Session.features["filter"] || []).each do |f|
         #puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
-    
           if f.feature_type == "Continuous"
             facet f.name.to_sym, sort: :index, exclude: cont_filters[f.name], limit: -1
           elsif f.feature_type == "Binary"
@@ -446,8 +449,9 @@ class Search < ActiveRecord::Base
       # condition true iff the facet is a dynamic facet but a matching product category is not also selected in the search
       category_found = false
       unless facet_name == 'product_type'
-        dynamic_facets = Facet.find_by_name_and_product_type(facet_name, current_product_type).dynamic_facets
-        unless dynamic_facets.empty?
+        # get the dynamic facets if there are any set for the current product type, otherwise do nothing
+        dynamic_facets = Maybe(Facet.find_by_name_and_product_type(facet_name, current_product_type)).dynamic_facets
+        unless dynamic_facets.nil? or dynamic_facets.empty?
           unless selected_product_types.nil?
             selected_product_types.split('*').each do |p_type|
               category_found = true unless dynamic_facets.where(:category => p_type).empty?

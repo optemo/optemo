@@ -57,17 +57,22 @@ class Session
   end
   
   def self.set_features(categories = [])
-    #if an array of categories is given, dynamic features which apply only to those categories are shown
-    dynamically_excluded = []
-    # initialize features
-    self.features = Facet.where(product_type: product_type, active: true).includes(:dynamic_facets).order(:value).select do |f|
+    # if an array of categories is given, dynamic features which apply only to those categories are shown
+    # If there's 1 product subcategory selected, get its display facets if any, otherwise, get facets of the current product type
+    facets = []
+    if categories.length == 1
+      facets = Facet.where(product_type: categories.first, active: true, used_for: ['filter','sortby','show'])
+    end
+    facets = Facet.where(product_type: product_type, active: true, used_for: ['filter','sortby','show']) if facets.empty?
+    # initialize features to the facets, not including the dynamically excluded facets
+    dynamically_excluded = []    
+    self.features = facets.includes(:dynamic_facets).order(:value).select do |f|
       #These are the subcategories for which this feature is only used for
       subcategories = f.dynamic_facets.map{|x|x.category}
       subcategories.empty? || #We don't store subcategories for features which are always used
       subcategories.any?{|e| categories.include? e} ||
       (dynamically_excluded << f && false) #If a feature is not selected, we need to note this
     end.group_by{|x|x.used_for}
-    
     # Some filters of last search need to be removed when dynamic filters removed
     unless categories.empty?
       dynamically_excluded.each do |f|

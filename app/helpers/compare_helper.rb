@@ -238,7 +238,7 @@ module CompareHelper
   
 	def getDist(feat)
     num_buckets = 24
-    discretized = Session.search.solr_search(mycats: [], mybins: [], myconts: []).facet(feat.to_sym).rows
+    discretized = Session.search.solr_search(mycats: Session.search.userdatacats, mybins: Session.search.userdatabins, myconts: Session.search.userdataconts).facet(feat.to_sym).rows
     if (!discretized.empty?)
       min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.first.value}
       max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{Session.product_type}#{feat}") {discretized.last.value}
@@ -359,11 +359,11 @@ module CompareHelper
   end
   
   def sortby
-    current_sorting_option = Session.search.sortby || "utility_desc"
+    current_sorting_option = Session.search.sortby || (Session.features["sortby"].first.name + '_' + Session.features['sortby'].first.style)
     (Session.features["sortby"] || []).map do |f|
         suffix = f.style.length > 0 ? '_' + f.style : ''
-        content_tag :li, (current_sorting_option == (f.name+suffix)) ? @t[Session.product_type+".sortby."+f.name+suffix+".name"] : link_to(@t[Session.product_type+".sortby."+f.name+suffix+".name"], "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
-    end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))    
+        content_tag :li, (current_sorting_option == (f.name+suffix)) ? @t[f.product_type+".sortby."+f.name+suffix+".name"] : link_to(@t[f.product_type+".sortby."+f.name+suffix+".name"], "#", {:'data-feat'=>f.name+suffix, :class=>"sortby"})
+    end.join(content_tag(:span, raw("&nbsp;&nbsp;|&nbsp;&nbsp;"), :class => "seperator"))
   end
   
   def stars(numstars)
