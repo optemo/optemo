@@ -1,7 +1,7 @@
-set :application, "sbox"
+set :application, "site-production"
 set :repository,  "ssh://jaguar:29418/site.git"
 set :domain, "jaguar"
-set :branch, "master"
+set :branch, "production"
 set :user, "#{ `whoami`.chomp }"
 
 # If you aren't deploying to /u/apps/#{application} on the target
@@ -31,5 +31,5 @@ load 'config/deploy/recipes'
 
 before 'deploy:update', :set_umask
 before "deploy:assets:precompile", :serversetup
-after "deploy:symlink", :restartmemcached
+after "deploy:create_symlink", :restartmemcached
 after :restartmemcached, :redopermissions
