@@ -134,16 +134,16 @@ class Product < ActiveRecord::Base
     end
     case imgSize
     when :thumbnail
-      sizeUrl = "55x55/"
+      sizeUrl = "55x55"
       name = 'thumbnail_url'
     when :small
-      sizeUrl = "100x100/"
+      sizeUrl = "100x100"
       name = 'image_url_s'
     when :medium
-      sizeUrl = "150x150/"
+      sizeUrl = "150x150"
       name = 'image_url_m'
     when :large
-      sizeUrl = "250x250/"
+      sizeUrl = "250x250"
       name = 'image_url_l'
     end
     url_spec = TextSpec.cache_all(id)[name]
