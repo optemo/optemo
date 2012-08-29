@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 
-gem 'rails', '3.2.2'
+gem 'rails', '3.2.8'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -42,12 +42,12 @@ gem 'i18n-active_record',
 # gem 'nokogiri'
 # gem 'sqlite3-ruby', :require => 'sqlite3'
 # gem 'aws-s3', :require => 'aws/s3'
-gem 'sunspot_rails', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo", ref: "e522dc5aec"
+gem 'sunspot_rails', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo"
 #gem 'sunspot_rails', :git=> "git://github.com/sunspot/sunspot.git"
 gem 'ruby_core_source'
 gem 'progress_bar'
 
-gem 'will_paginate', '3.0.0'
+gem 'will_paginate'
 #gem 'rmagick'
 
 group :production, :profile do
@@ -55,7 +55,7 @@ group :production, :profile do
 end
 
 group :development do
-   gem 'sunspot_solr', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo", :ref=>"e522dc5aec" # optional pre-packaged Solr distribution for use in development
+   gem 'sunspot_solr', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"optemo" # optional pre-packaged Solr distribution for use in development
    #gem 'sunspot_solr', '2.0.0.optemo', :path => 'vendor/plugins/sunspot' # optional pre-packaged Solr distribution for use in development
 end
 
