@@ -3,9 +3,9 @@
   #****Public Functions****
   @getRealtimePrices = (comparison_flag) ->
     if optemo_module.layout == "fs"
-      API_URL = "http://www.futureshop.ca/api/v2/json/search?pagesize=100&query="
+      API_URL = "http://str1-fsca.bestbuy.ca/api/v2/json/search?pagesize=100&query="
     else
-      API_URL = "http://www.bestbuy.ca/api/v2/json/search?pagesize=100&query="
+      API_URL = "http://str1-bbyca.bestbuy.ca/api/v2/json/search?pagesize=100&query="
 
     if comparison_flag
       skus = $("#basic_matrix .productinfo").map( ->
