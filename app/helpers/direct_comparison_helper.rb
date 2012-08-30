@@ -6,7 +6,7 @@ module DirectComparisonHelper
       if feature.feature_type == "Continuous"
     	  if spec.nil?
     		  "-"
-    	  elsif feature.name=="saleprice"
+    	  elsif feature.name == "saleprice" or feature.name == "pricePlusEHF"
     	  	number_to_currency(spec)
     	  else
     	  	number_with_delimiter(spec).to_s + " " + t("#{Session.product_type}.specs.#{feature.name}.unit", :default => "")

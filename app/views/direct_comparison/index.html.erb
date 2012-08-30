@@ -52,10 +52,11 @@
   <% gray = false %>
   <% Session.features['show'].each do |feature| %>
     <%#needs to be more efficient especially if we want to have unlimited number of products in the compare box%>	
-    <% if feature.feature_type != "Binary" && !@products.map{|product| @sp[feature.feature_type][product.id][feature.name]}.compact.empty? %> 
-      <div class="<%= t("#{Session.product_type}.specs.#{feature.name}.name", :default=>feature.name).length < 20 ? "compare_row" : "double_height_compare_row" %>">
+    <% if feature.feature_type != "Binary" && !@products.map{|product| @sp[feature.feature_type][product.id][feature.name]}.compact.empty? %>
+      <% t_key = (feature.name == 'pricePlusEHF' ? 'saleprice' : feature.name) -%>
+      <div class="<%= t("#{Session.product_type}.specs.#{t_key}.name", :default=>t_key).length < 20 ? "compare_row" : "double_height_compare_row" %>">
         <div class="cell <%= gray ? "graybg" : "whitebg" %> leftmostcolumn leftcolumntext">
-          <%= t("#{Session.product_type}.show.#{feature.name}.name", :default=>feature.name) %>:
+          <%= t("#{Session.product_type}.show.#{t_key}.name", :default=>t_key) %>:
         </div>
         <% @products.each_with_index do |product, i| %>
           <%# Some features have a french version and others don't %>

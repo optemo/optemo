@@ -78,7 +78,7 @@ else
 var urlRegex = new RegExp("([0-9]+)(opt)?\.aspx", "i");
 var url_category = urlRegex.exec(window.location.href);
 if (url_category != null) {
-  var opt_brand = new RegExp("futureshop\.ca", "i").exec(window.location.href);
+  var opt_brand = new RegExp("futureshop\.ca|str1-fsca\.bestbuy\.com|str2-fsca\.bestbuy\.com", "i").exec(window.location.href);
   opt_category_id = (opt_brand ? "F" : "B") + url_category[1];
 }
 
@@ -95,11 +95,8 @@ if (opt_category_id == 0) {
   if (typeof(console) != "undefined") console.warn("Product category not recognized - Cameras used as default");
 }
 
-QC_cookie_value = getValueFromCookie("isQuebec");
-var quebec = false;
-if (QC_cookie_value == "True" || QC_cookie_value == "true")
-  quebec = true;
-
+QC_cookie_value = getValueFromCookie("regionCode");
+var quebec = (QC_cookie_value == "QC") ? "true" : "false";
 if (opt_history.length > 0)
   var opt_options = {embedding:'true', hist: opt_history, category_id: opt_category_id, is_quebec: quebec};
 else

@@ -1,6 +1,7 @@
 #//--------------------------------------//
 #//              Cookies                 //
 #//--------------------------------------//
+
 opt = window.optemo_module ? {}
 #****Public Functions****
 # This should return all values from a cookie containing sku-type values in an array.
@@ -20,6 +21,10 @@ opt.readAllCookieValues = (name) ->
     $(".optemo_compare_checkbox:checked").each (index) ->
         skus.push($(this).attr('data-sku'))
   return skus
+  
+opt.getCookieValue = (name) ->
+  cookie = readCookie(name)
+  return cookie
 
 opt.addValueToCookie = (name, value, days) ->
   savedData = readCookie(name)

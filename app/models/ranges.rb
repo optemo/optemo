@@ -10,7 +10,7 @@ module Ranges
         dis = dis.rows
 	      rs = []
 	      if (!dis.empty?)
-	        if feat=="saleprice"
+	        if feat == "saleprice" or feat == "pricePlusEHF"
 	          rs  = self.price_ranges(dis)
           else    
 	          grouped_data = Kmeans.compute(num, dis.map{|r| [r.value]*r.count}.flatten)
@@ -27,7 +27,7 @@ module Ranges
   end
     
   def self.count(feat, min, max)
-    if (feat == "saleprice")
+    if feat == "saleprice" or feat == "pricePlusEHF"
       Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value == min||(p.value<max && p.value>=min) }.inject(0){|sum,elem|sum+elem.count}
     else
       Session.search.solr_cached.facet(feat.to_sym).rows.select{|p| p.value<=max && p.value>=min }.inject(0){|sum,elem|sum+elem.count}

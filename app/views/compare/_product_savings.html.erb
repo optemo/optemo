@@ -1,4 +1,4 @@
-<% if Session.quebec %>
+<% if Session.quebec and cont_specs["EHF"] > 0 %>
   <div class="price_breakdown">
     <%= number_to_currency(cont_specs["saleprice"]) + " + " + number_to_currency(cont_specs["EHF"], precision: 0) + " " + t('products.compare.environmentalfee') %>
     <%# French translation still needed for "environmental handling fee" -- please make changes in fr.yml %>

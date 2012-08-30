@@ -52,8 +52,7 @@ class Session
   end
   
   def self.range_filters
-    #Hard-coding EHF price lookup
-    features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact << "pricePlusEHF"
+    features["filter"].map{|f| f.name if f.feature_type=="Continuous" && f.ui=="ranges"}.compact
   end
   
   def self.set_features(categories = [])
@@ -64,10 +63,11 @@ class Session
       facets = Facet.where(product_type: categories.first, active: true, used_for: ['filter','sortby','show'])
     end
     facets = Facet.where(product_type: product_type, active: true, used_for: ['filter','sortby','show']) if facets.empty?
-    # initialize features to the facets, not including the dynamically excluded facets
-    dynamically_excluded = []    
+    
+    dynamically_excluded = []
     self.features = facets.includes(:dynamic_facets).order(:value).select do |f|
       #These are the subcategories for which this feature is only used for
+      f.name = 'pricePlusEHF' if (f.name == 'saleprice' && Session.quebec)
       subcategories = f.dynamic_facets.map{|x|x.category}
       subcategories.empty? || #We don't store subcategories for features which are always used
       subcategories.any?{|e| categories.include? e} ||

@@ -4,11 +4,12 @@
     <% grouped_filters.each do |f| -%>
       <% values = f[1] %>
       <% fname = f[0] %>
+      <% t_key = (fname == 'pricePlusEHF' ? 'saleprice' : fname) %>
       <% unless values.nil? %>
         <% if values.count > 0 %>
           <% unless spec_type(values.first) == 'facet' or spec_type(values.first) == 'binary' %>
             <div class='label list_item hanging_margin'>
-              <%= @t["#{Session.product_type}.filter.#{fname}.name"] || @t["#{chosencats('product_type').first}.filter.#{fname}.name"] || fname.capitalize %><%= ":" if Session.futureshop? %>
+              <%= @t["#{Session.product_type}.filter.#{t_key}.name"] || @t["#{chosencats('product_type').first}.filter.#{t_key}.name"] || t_key.capitalize %><%= ":" if Session.futureshop? %>
             </div>
           <% end %>
           <% rangesShow = showSelectedRanges(values, fname) %>

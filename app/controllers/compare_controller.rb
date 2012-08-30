@@ -3,7 +3,7 @@ class CompareController < ApplicationController
   require 'open-uri'
   def index
     # For more information on _escaped_fragment_, google "google ajax crawling" and check lib/absolute_url_enabler.rb.
-
+    Session.quebec = params[:is_quebec] == "true" ? true : false
     if (params[:page] && params[:keyword] && params[:keyword] != "Search terms" )
       classVariables(Search.create({page: params[:page], keyword: params[:keyword], sortby: params[:sortby] || 'utility', action_type: "nextpage", parent: params[:hist]}))
     

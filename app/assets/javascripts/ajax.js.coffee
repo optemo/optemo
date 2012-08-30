@@ -81,6 +81,8 @@ opt.ajaxsend = (hash,myurl,mydata) ->
   lis = opt.loading_indicator_state
   #The Optemo category ID should be set in the loader unless this file is loaded non-embedded, then it is set in the opt_discovery section
   mydata = $.extend({'ajax': true, category_id: window.opt_category_id},mydata)
+  QC_cookie_value = optemo_module.getCookieValue("regionCode")
+  mydata.is_quebec = (if (QC_cookie_value is "QC") then "true" else "false")
   if (typeof hash isnt "undefined" and hash isnt null and hash isnt "") 
     mydata.hist = hash
   else

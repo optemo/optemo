@@ -1,3 +1,4 @@
 <div class="<%= filter_label.style.blank? ? "label" : filter_label.style %>">
-  <%= @t["#{filter_label.product_type}.filter.#{filter_label.name}.name"] || filter_label.name.capitalize %>
+  <% fname = (filter_label.name == "pricePlusEHF" ? "saleprice" : filter_label.name) %>
+  <%= @t["#{filter_label.product_type}.filter.#{fname}.name"] || fname.capitalize %>
 </div>

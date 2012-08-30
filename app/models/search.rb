@@ -94,7 +94,6 @@ class Search < ActiveRecord::Base
         with :product_type, Session.product_type_leaves
       end
       (Session.features["filter"] || []).each do |f|
-        #puts "product_type #{Session.product_type} feature_type #{f.feature_type} feature_name #{f.name}"
           if f.feature_type == "Continuous"
             facet f.name.to_sym, sort: :index, exclude: cont_filters[f.name], limit: -1
           elsif f.feature_type == "Binary"

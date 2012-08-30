@@ -1,5 +1,5 @@
 class DirectComparisonController < ApplicationController
-  LOW_IS_BETTER = ["saleprice","minFocalLength"]
+  LOW_IS_BETTER = ["saleprice","pricePlusEHF","minFocalLength"]
   
 # Compares products selected for comparison ('saved' products)
   include CachingMemcached

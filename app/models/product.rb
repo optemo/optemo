@@ -45,20 +45,24 @@ class Product < ActiveRecord::Base
     string :second_ancestors
     
     (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
-    if (s.feature_type == "Continuous")
-      float s.name.to_sym, trie: true do
-        cont_specs.find_by_name(s.name).try(:value)
-      end
-    elsif (s.feature_type == "Categorical")
-      string s.name.to_sym do
-        cat_specs.find_by_name(s.name).try(:value)
-      end
-    elsif (s.feature_type == "Binary")
-      string s.name.to_sym do
-        bin_specs.find_by_name(s.name).try(:value)
+      if (s.feature_type == "Continuous")
+        float s.name.to_sym, trie: true do
+          cont_specs.find_by_name(s.name).try(:value)
+        end
+      elsif (s.feature_type == "Categorical")
+        string s.name.to_sym do
+          cat_specs.find_by_name(s.name).try(:value)
+        end
+      elsif (s.feature_type == "Binary")
+        string s.name.to_sym do
+          bin_specs.find_by_name(s.name).try(:value)
+        end
       end
     end
+    float :pricePlusEHF, trie: true do
+      cont_specs.find_by_name(:pricePlusEHF).try(:value)
     end
+    
     float :lr_utility, trie: true do
       cont_specs.find_by_name(:lr_utility).try(:value)
     end

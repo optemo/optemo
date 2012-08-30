@@ -1,5 +1,5 @@
 <%if product && product.id%>
-  <% cache "Navbox#{I18n.locale}#{product.id}" do %>
+  <% cache "Navbox#{I18n.locale}#{product.id}#{Session.quebec}" do %>
     <div id="box<%= product.id %>" class="navbox">
       <div class="navboxcompare">
         <input type="checkbox" data-sku="<%= product.sku %>" class="optemo_compare_checkbox" />
