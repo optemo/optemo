@@ -8,14 +8,14 @@
         <% if values.count > 0 %>
           <% unless spec_type(values.first) == 'facet' or spec_type(values.first) == 'binary' %>
             <div class='label list_item hanging_margin'>
-              <%= @t["#{Session.product_type}.filter.#{fname}.name"] || fname.capitalize %><%= ":" if Session.futureshop? %>
+              <%= @t["#{Session.product_type}.filter.#{fname}.name"] || @t["#{chosencats('product_type').first}.filter.#{fname}.name"] || fname.capitalize %><%= ":" if Session.futureshop? %>
             </div>
           <% end %>
           <% rangesShow = showSelectedRanges(values, fname) %>
           <% values.each_with_index do |spec, index| -%>
             <% if spec_type(spec) == 'facet' -%>
               <div class='label list_item hanging_margin'>
-                <%= @t["#{Session.product_type}.filter.#{spec.name}.name"] || spec.name.capitalize -%>
+                <%= @t["#{spec.product_type}.filter.#{spec.name}.name"] || spec.name.capitalize -%>
               </div>
             <% else -%>
               <div class='list_item hanging_margin' data-name='<%= spec_type(spec) %>_<%= spec.name %>' class='current_filter' 

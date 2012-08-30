@@ -1,6 +1,8 @@
 ##Create our 16 products
-Factory.define :product do |p|
-   p.sequence(:id) {|n| n}
+FactoryGirl.define do
+  factory :product do
+    sequence(:id) {|n| n}
+  end
 end
 #
 #Factory.define :cluster do |c|

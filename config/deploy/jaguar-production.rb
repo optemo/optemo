@@ -1,7 +1,7 @@
-set :application, "sbox"
-set :repository,  "git@jaguar:site.git"
+set :application, "site-production"
+set :repository,  "ssh://jaguar:29418/site.git"
 set :domain, "jaguar"
-set :branch, "master"
+set :branch, "production"
 set :user, "#{ `whoami`.chomp }"
 
 # If you aren't deploying to /u/apps/#{application} on the target

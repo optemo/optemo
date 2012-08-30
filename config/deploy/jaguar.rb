@@ -1,7 +1,7 @@
-set :application, "production"
-set :repository,  "git@jaguar:site.git"
-set :domain, "linode"
-set :branch, "staging"
+set :application, "site"
+set :repository,  "ssh://jaguar:29418/site.git"
+set :domain, "jaguar"
+set :branch, "master"
 set :user, "#{ `whoami`.chomp }"
 
 # If you aren't deploying to /u/apps/#{application} on the target
@@ -23,6 +23,7 @@ set :use_sudo, false
 
 role :app, domain
 role :web, domain
+role :memcached, domain
 role :db,  domain, :primary => true
 
 load 'deploy/assets'
@@ -30,6 +31,5 @@ load 'config/deploy/recipes'
 
 before 'deploy:update', :set_umask
 before "deploy:assets:precompile", :serversetup
-after "deploy:symlink", :restartmemcached
+after "deploy:create_symlink", :restartmemcached
 after :restartmemcached, :redopermissions
-after "deploy:restart", :warmupserver
