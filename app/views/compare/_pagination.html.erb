@@ -1,8 +1,5 @@
 <% if Session.search.products_size > Product.per_page %>
   <% products = Session.search.paginated_products %>
-  <% if Session.bestbuy? %>
-    <span class='pagi-info'><%= page_entries_info(products) %></span>
-  <% end %>
   <%= raw "<b>#{t('products.page')}:</b>" unless Session.futureshop? %>
   <%= will_paginate(products, {previous_label: raw("<span class='pagination-prev'></span>"), next_label: raw("<span class='pagination-next'></span>"), page_links: true, outer_window: -4}) %>
 <% end %>

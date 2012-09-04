@@ -527,11 +527,7 @@ module WillPaginate
       entry_name = options[:entry_name] ||
         (collection.empty? ? 'entry' :
           collection.first.class.name.underscore.sub('_', ' '))
-      if Session.futureshop?
-        "#{collection.offset + 1} - #{collection.offset + collection.length}"
-      else # Best Buy
-        t('will_paginate.page_entries_info.multi_page_html', :from => collection.offset + 1, :to => collection.offset + collection.length, :count => collection.total_entries)
-      end
+      t('will_paginate.page_entries_info.multi_page_html', :from => collection.offset + 1, :to => collection.offset + collection.length, :count => collection.total_entries)
     end
   end
 end
