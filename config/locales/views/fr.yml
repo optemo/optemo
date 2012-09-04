@@ -18,6 +18,7 @@ fr:
         preorder:           "Précommande"
         seeall:             "Visionner tout"
         seeall_fs:          "Visionner tout"
+        displaying:         "Afficher"
         compare:
             more:             "Plus"
             less:             "Moins"

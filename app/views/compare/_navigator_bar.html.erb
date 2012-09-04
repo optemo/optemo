@@ -3,7 +3,7 @@
     <% if local_assigns[:landing] %>
       <span class="strong"><%= Session.search.products_size %></span> <%=t "products.compare.available" %>
     <% else %>
-      Displaying <span class="strong"><%= page_entries_info(Session.search.paginated_products) %></span>
+      <%=t "products.displaying" %> <span class="strong"><%= page_entries_info(Session.search.paginated_products) %></span>
       <% if Session.futureshop? %>
         of <span class="strong"><%= Session.search.products_size %></span>
       <% end %>

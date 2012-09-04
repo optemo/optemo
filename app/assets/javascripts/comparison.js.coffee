@@ -313,7 +313,8 @@
   $('.nav_clear_btn').live "click", ->
     #Uncheck currently checked navboxes
     $('.optemo_compare_checkbox:checked').each ->
-      $(this).attr('checked', '')
+      @checked = false
+      return
     #Remove saved cookie values
     optemo_module.eraseCookie(optemo_module.cmpcookie)
     changeNavigatorCompareBtn(0)

@@ -11,14 +11,14 @@
     $.history.init(optemo_module.ajaxsend,{unescape: true})
 
   #****Public Functions****
-  # Submit a categorical filter, e.g. brand.
   @whenDOMready = ->
-    optemo_module.BestBuyLandingElements()
-    optemo_module.SetLayout()
+    BestBuyLandingElements()
+    SetLayout()
     optemo_module.SliderInit()
     optemo_module.getRealtimePrices(false) if typeof(optemo_module.getRealtimePrices) == "function"
     optemo_module.load_comparisons()
-
+  
+  # Submit a categorical filter, e.g. brand.
   @submitAJAX = ->
     selections = $("#filter_form").serializeObject()
     $.each(selections, (k,v) ->
@@ -31,22 +31,7 @@
     if $("#product_name").val() == "" || $("#product_name").val() == "Search terms"
       optemo_module.ajaxcall("/compare/create", selections)
     else
-      optemo_module.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections) )
-
-  @BestBuyLandingElements = ->
-    bb_divs = $("#pagecontentmain2 > [id^=ctl00_CP], #pagecontentmain2 > .std-bottommargin, #pagecontentmain2 .articles-container, #pagecontentmain2 .ui-tabcontrol, #contentleft1 [id^=ctl00_CC], #contentleft1 .department-headline")
-    if ($("#landingpage_indicator").length == 0)
-      # If they exist, hide the Best Buy landing page elements
-      if (bb_divs.length != 0) # Make sure they exist
-        bb_divs.hide()
-    else
-      # show them again for landing page
-      if (bb_divs.length != 0) # Make sure they exist
-        bb_divs.show()
-    $('#pagecontentleft2 .sublevel, #pagecontentleft2 .leftnavbox-white').hide();
-        
-  @SetLayout = ->
-    optemo_module.layout = $('#opt_outsidecontainer').attr('data-layout') # This will be either fs or bb to indicate which layout
+      optemo_module.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections))
 
   @removeSilkScreen = ->
     $('#opt_silkscreen, #opt_outsidecontainer').hide()
@@ -172,6 +157,21 @@
     $('#opt_loading').hide()
 
   #****Private Functions****
+  BestBuyLandingElements = ->
+    bb_divs = $("#pagecontentmain2 > [id^=ctl00_CP], #pagecontentmain2 > .std-bottommargin, #pagecontentmain2 .articles-container, #pagecontentmain2 .ui-tabcontrol, #contentleft1 [id^=ctl00_CC], #contentleft1 .department-headline")
+    if ($("#landingpage_indicator").length == 0)
+      # If they exist, hide the Best Buy landing page elements
+      if (bb_divs.length != 0) # Make sure they exist
+        bb_divs.hide()
+    else
+      # show them again for landing page
+      if (bb_divs.length != 0) # Make sure they exist
+        bb_divs.show()
+    $('#pagecontentleft2 .sublevel, #pagecontentleft2 .leftnavbox-white').hide();
+  
+  SetLayout = ->
+    optemo_module.layout = $('#opt_outsidecontainer').attr('data-layout') # This will be either fs or bb to indicate which layout
+  
   quickajaxcall = (element_name, myurl, fn) -> # The purpose of this is to do an ajax load without having to go through the relatively heavy ajaxcall().
     if (window.OPT_REMOTE)
       #Check for absolute urls
