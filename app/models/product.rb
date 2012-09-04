@@ -126,9 +126,9 @@ class Product < ActiveRecord::Base
   
   def image_url(imgSize) #creates the url to a product's image given and sku and image size (thumbnail, small, medium, large -> predetermined sizes)
     if Session.retailer == "B"
-      baseUrl = "http://str1-bbyca.bestbuy.ca/multimedia/Products/"
+      baseUrl = "http://www.bestbuy.ca/multimedia/Products/"
     elsif Session.retailer == "F"
-      baseUrl = "http://str1-fsca.bestbuy.ca/multimedia/Products/"
+      baseUrl = "http://www.futureshop.ca/multimedia/Products/"
     else
       raise 'Invalid call to image_url with other retailer'
     end
@@ -149,9 +149,9 @@ class Product < ActiveRecord::Base
     url_spec = TextSpec.cache_all(id)[name]
     if url_spec.nil?
       if Session.futureshop?
-        url = "http://str1-fsca.bestbuy.ca/multimedia/Products/#{sizeUrl}/"
+        url = "http://www.futureshop.ca/multimedia/Products/#{sizeUrl}/"
       elsif Session.bestbuy?
-        url = "http://str1-bbyca.bestbuy.ca/multimedia/Products/#{sizeUrl}/"
+        url = "http://www.bestbuy.ca/multimedia/Products/#{sizeUrl}/"
       else
         raise "No known image link for product: #{sku}"
       end
