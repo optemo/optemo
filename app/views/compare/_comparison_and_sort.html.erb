@@ -6,7 +6,7 @@
         <%= @t[Session.product_type+".sortby."+(Session.search.sortby || "utility_desc")+".name"] %>
         <b class="caret"></b>
       </a>
-      <ul class="dropdown-menu">
+      <ul class="dropdownmenu">
         <%= current_sorting_option = Session.search.sortby || "utility_desc"
             raw((Session.features["sortby"] || []).map do |f|
             suffix = f.style.length > 0 ? '_' + f.style : ''
@@ -15,6 +15,6 @@
       </ul>
     </div>
   </div>
-  <%= link_to(t("products.compare.futureshop_compare")+' (0) ', "#", {:class=>'nav-compare-btn btn', :id=>"nav_compare_btn"})  %>
+  <%= link_to(t("products.compare.futureshop_compare")+' (0) ', "#", {:class=>'nav-compare-btn bttn', :id=>"nav_compare_btn"})  %>
   <%= link_to t('products.compare.clear'), "#", :class => "nav_clear_btn", :rel => "nofollow", :title => t('products.compare.cleardesc') %>
 </div>

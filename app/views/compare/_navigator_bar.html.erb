@@ -7,7 +7,7 @@
     <% end %>
   </div>
   <% if local_assigns[:landing] %>
-    <%= link_to root_path, class: 'seeall btn' do %>
+    <%= link_to root_path, class: 'seeall bttn' do %>
       <%=t "products.seeall#{"_fs" if Session.futureshop?}" %>
       <%= content_tag :div, raw("<!-- -->") unless Session.futureshop? %>
     <% end %>

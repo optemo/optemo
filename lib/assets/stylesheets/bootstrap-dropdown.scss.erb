@@ -1,0 +1,171 @@
+/*!
+ * Bootstrap v2.0.4
+ *
+ * Copyright 2012 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ * Customized: Buttons & Dropdown components
+ * removed .bttn font-size, .caret
+ */
+.optemo {
+  .bttn {
+    display: inline-block;
+    *display: inline;
+    /* IE7 inline-block hack */
+  
+    *zoom: 1;
+    padding: 4px 10px 4px;
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 18px;
+    *line-height: 20px;
+    color: #333333;
+    text-align: center;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+    vertical-align: middle;
+    cursor: pointer;
+    background: #eeeeee;
+    background: -moz-linear-gradient(top, #eeeeee 0%, #e2e2e2 100%);
+    background: -ms-linear-gradient(top, #eeeeee 0%,#e2e2e2 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#e2e2e2));
+    background: -webkit-linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%);
+    background: -o-linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%);
+    background: linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e2e2e2',GradientType=0 );
+    border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    *background-color: #e6e6e6;
+    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    border: 1px solid #bababa;
+    *border: 0;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    *margin-left: .3em;
+    -webkit-box-shadow: inset 0 0 2px #ECECEC;
+    -moz-box-shadow: inset 0 0 2px #ECECEC;
+    box-shadow: inset 0 0 2px #ECECEC;
+  }
+  .bttn:hover,
+  .bttn:active,
+  .bttn.active,
+  .bttn.disabled,
+  .bttn[disabled] {
+    background-color: #e6e6e6;
+    *background-color: #d9d9d9;
+  }
+  .bttn:active,
+  .bttn.active {
+    background-color: #cccccc \9;
+  }
+  .bttn:first-child {
+    *margin-left: 0;
+  }
+  .bttn:hover {
+    color: #333333;
+    text-decoration: none;
+    background: #eeeeee; /* Old browsers */
+    background: -moz-linear-gradient(top,  #eeeeee 0%, #e2e2e2 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#e2e2e2)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%); /* IE10+ */
+    background: linear-gradient(top,  #eeeeee 0%,#e2e2e2 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#e2e2e2',GradientType=0 ); /* IE6-9 */
+  }
+  .bttn:focus {
+    outline: thin dotted #333;
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+  }
+  .bttn.active,
+  .bttn:active {
+    background-image: none;
+    background: #dbdbdb; /* Old browsers */
+    background: -moz-linear-gradient(top,  #dbdbdb 0%, #ffffff 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dbdbdb), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #dbdbdb 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #dbdbdb 0%,#ffffff 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #dbdbdb 0%,#ffffff 100%); /* IE10+ */
+    background: linear-gradient(top,  #dbdbdb 0%,#ffffff 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dbdbdb', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+    
+  }
+  .bttn.disabled,
+  .bttn[disabled] {
+    cursor: default;
+    background-color: #e6e6e6;
+    background-image: none;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
+  .bttn {
+    border-color: #ccc;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  }
+  
+  .dropup,
+  .dropdown {
+    position: relative;
+  }
+  .dropdown-toggle {
+    *margin-bottom: -3px;
+  }
+  .dropdown-toggle:active,
+  .open .dropdown-toggle {
+    outline: 0;
+  }
+  .caret {
+    background-image: url(<%= asset_data_uri "carat_down.gif" %>);
+    width: 13px;
+    height: 8px;
+    display: inline-block;
+    margin-top: 6px;
+    margin-left: 2px;
+  }
+  .dropdown:hover .caret,
+  .open .caret {
+    opacity: 1;
+    filter: alpha(opacity=100);
+  }
+  .dropdownmenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 10px 16px;
+    margin: 0;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid #CCC;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+  }
+  .dropdownmenu a {
+    display:block;
+    padding:5px 0;
+    clear:both;
+    font-weight:normal;
+    line-height:18px;
+    white-space:nowrap;
+  }
+  .open {
+    *z-index: 1000;
+  }
+  .open  > .dropdownmenu {
+    display: block;
+  }
+
+}
