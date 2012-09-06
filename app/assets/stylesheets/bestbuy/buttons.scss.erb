@@ -63,13 +63,20 @@
       width: 130px;
       height: 29px;
     }
-    a {
-      @include button-link;
+    span {
+      cursor: pointer;
+      display: inline-block;
+      font-weight: bold;
+      line-height: 14px;
+      overflow: visible;
+      text-align: center;
+      outline: 0 none;
+      text-decoration: none;
       color: #737474 !important;
       font-size: 12px;
-      padding: 6px 12px 5px;
+      padding: 6px 1px 5px;
     }
-    a div {
+    .gt_sym {
       background: url(<%= asset_data_uri('gt.gif') %>);
       display: inline-block;
       width: 8px;
@@ -81,7 +88,7 @@
   }
   #IE {
     .morespecs {
-      a div {
+      .gt_sym {
         display: inline;
         zoom: 1;
       }
@@ -99,10 +106,7 @@
         background: url(<%= asset_path('yellow_r.gif') %>) no-repeat right;
         @include button-prop;
       }
-      a:hover {
-        text-decoration: none;
-      }
-      a div {
+      .gt_sym {
         background: url(<%= asset_path('gt.gif') %>);
       }
     }
