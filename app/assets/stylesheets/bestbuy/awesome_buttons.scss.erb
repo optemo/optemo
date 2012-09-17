@@ -1,3 +1,4 @@
+@import 'shareddefs';
 /*--------------------------------------//
 //            Awesome Buttons           //
 //--------------------------------------*/
@@ -38,7 +39,6 @@
 	    -webkit-box-shadow: inset 0 7px 8px #2680bf;
 	    box-shadow: inset 0 7px 8px #2680bf;
 	    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-/*	border: 1px solid #c4c5c5; */
 	    position: relative;
 	    cursor: pointer;
     }
@@ -48,9 +48,7 @@
 }
 .optemo .awesome_reset_grey, 
         .optemo .awesome_reset_grey:visited {
-          background-image:-moz-linear-gradient(center bottom, #9e9e9e, #ccc);
-          background-image:-o-linear-gradient(bottom, rgb(158,158,158), rgb(204,204,204));
-	        background-image:-webkit-gradient(linear, left bottom, left top, from(#9e9e9e), to(#ccc));
+          @include background-gradient(#9e9e9e, #ccc);
    	      display: inline-block; 
 	        color: #FFF; 
 	        text-decoration: none;

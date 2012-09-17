@@ -1,0 +1,11 @@
+@mixin background-gradient($from, $to) {
+  background: $from; /* Old browsers */
+  background:-moz-linear-gradient(center bottom, $from, $to); /* FF3.6+ */
+  background:-o-linear-gradient(bottom, $from, $to); /* Opera 11.10+ */
+  background:-webkit-gradient(linear, left bottom, left top, from($from), to($to)); /* Chrome, Safari */
+  background: -ms-linear-gradient(bottom, $from, $to); /* IE10+ */
+  background: linear-gradient(to top, $from 0%, $to 100%); /* W3C */
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#{ie-hex-str($to)}', endColorstr='#{ie-hex-str($from)}');"; /* IE 8-9 */
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#{ie-hex-str($to)}', endColorstr='#{ie-hex-str($from)}'); /*IE 6-7 */
+  zoom: 1;
+}

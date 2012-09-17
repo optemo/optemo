@@ -1,5 +1,4 @@
-/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
-
+@import 'shareddefs';
 /*--------------------------------------//
 //        Show page and related         //
 //--------------------------------------*/
@@ -119,40 +118,6 @@ div#reviews {
   .clear {
   	clear:both;
   }
-  a.tab {
-  	text-decoration: none;
-  	color: #3E3E3E;
-  	text-align: center;
-  	float: left;
-  	height:17px;
-  	border: 1px solid #ccc;
-  	background-image:-moz-linear-gradient(center bottom, white, #cdcdcd);
-  	background-image:-o-linear-gradient(bottom, white, rgb(205,205,205));
-  	background-image:-webkit-gradient(linear, left bottom, left top, from(white), to(#cdcdcd));
-  }
-  #IE a.tab {
-  	background: url(<%= asset_path "IE/gray_gradient.png" %>) repeat;
-  }
-  .tab:hover {
-  	text-decoration: none;
-  }
-  #tab_selected {
-  	background-image:-moz-linear-gradient(center bottom, white, #FFEF00);
-  	background-image:-o-linear-gradient(bottom, white, rgb(255,239,0));
-  	background-image:-webkit-gradient(linear, left bottom, left top, from(white), to(#ffef00));
-  	border-bottom: 1px solid white;
-  	color: black;
-  	font-weight: bold;
-  }
-  #IE #tab_selected {
-  	background: url(<%= asset_path "IE/yellow_gradient.png" %>) repeat;
-  }
-  .tabspacer {
-  	height: 30px;
-  	border-bottom : 1px solid #ccc;
-  	width: 4px;
-  	float: left;
-  }
   .pricespacer {
   	border-bottom: 1px dashed #999; 
   	clear: both; 
@@ -186,9 +151,7 @@ div#reviews {
   }
 
   .y_heading {
-    background-image:-moz-linear-gradient(center bottom, #cecece, #e9e9e9);
-    background-image:-o-linear-gradient(bottom, rgb(206,206,206), rgb(233,233,233));
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#cecece), to(#e9e9e9));
+    @include background-gradient(#cecece, #e9e9e9);
     padding: 10px;
     margin-bottom: -8px;
     h1 {
@@ -199,7 +162,6 @@ div#reviews {
     }
   }
   #IE .y_heading {
-    background: url(<%= asset_path('IE/y_heading.gif') %>) repeat-x scroll 0 0 transparent;
     position: relative;
     margin-bottom: -10px;
   }

@@ -1,5 +1,5 @@
 /* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
-
+@import 'shareddefs';
 /*--------------------------------------//
 //         Global Declarations          //
 //--------------------------------------*/
@@ -71,15 +71,12 @@ html {
     margin: 12px 0 0px;
     padding-right: 6px;
     padding-bottom: 3px;
-    background-image:-moz-linear-gradient(center bottom, #d1d1d1, #e8e8e8);
-    background-image:-o-linear-gradient(bottom, rgb(209,209,209), rgb(232,232,232));;
-    background-image:-webkit-gradient(linear, left bottom, left top, from(#d1d1d1), to(#e8e8e8));
+    @include background-gradient(#d1d1d1, #e8e8e8);
     height: 25px;
     font-weight: bold;
   }
 
   #IE .y_bottom {
-    background: url(<%= asset_path 'IE/y_bottom_bg.gif' %>) repeat-x;
     height: 28px;
     padding-bottom: 0;
   }

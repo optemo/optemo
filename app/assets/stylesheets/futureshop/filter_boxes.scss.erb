@@ -1,5 +1,4 @@
-/* CSS declarations shared between grid view and list view (Optemo Direct and Optemo Assist) go here */
-
+@import 'shareddefs';
 /*--------------------------------------//
 //             Filter Boxes             //
 //--------------------------------------*/
@@ -39,14 +38,7 @@
     margin-bottom: 8px;
   	padding: 8px 0;
   	border: 1px solid #DEE8F4;
-  	background: #dee8f4; /* Old browsers */
-  	background: -moz-linear-gradient(top,  #dee8f4 0%, #ffffff 100%); /* FF3.6+ */
-  	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dee8f4), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
-  	background: -webkit-linear-gradient(top,  #dee8f4 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
-  	background: -o-linear-gradient(top,  #dee8f4 0%,#ffffff 100%); /* Opera 11.10+ */
-  	background: -ms-linear-gradient(top,  #dee8f4 0%,#ffffff 100%); /* IE10+ */
-  	background: linear-gradient(to bottom,  #dee8f4 0%,#ffffff 100%); /* W3C */
-  	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dee8f4', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+  	@include background-gradient(#ffffff, #dee8f4);
   }
   .unitdisp {      /* Display units of features in filters */
   	font-size: 0.8em;
