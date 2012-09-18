@@ -9,7 +9,7 @@
       <% sibling_cat_specs = CatSpec.cache_all(sibling_id) -%>
       <% color = sibling_cat_specs["color"] %>
       <%= link_to TextSpec.cacheone(sibling_id, "productUrl#{fr?}"), :'data-id' => sibling_id, :class => "sibling", :title => sibling.is_a?(ProductSibling) ? sibling_cat_specs["color#{fr?}"] : sibling_cat_specs["title#{fr?}"] do %>
-        <div class="swatch<%= " white_swatch" if color.try(:downcase) == "white" %>" style="background-color:<%= color %>; float:left" title="<%=t "color.#{color}" %>"><!-- --></div>
+        <div class="swatch<%= " white_swatch" if color.try(:downcase) == "white" %>" style="background-color:<%= color %>" title="<%=t "color.#{color}" %>"><!-- --></div>
       <% end %>
     <% end %>
     &nbsp;
