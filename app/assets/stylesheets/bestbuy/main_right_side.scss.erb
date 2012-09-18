@@ -149,7 +149,8 @@
   .saleprice {
   	color: #da1a36;
   	font-size: 20px;
-	font-family: arial black;
+    font-family: arial black;
+    font-weight: bold;
   }
   .save {
   	color: #da1a36;
@@ -159,10 +160,10 @@
   	padding-bottom: 1px;
   }
   .saleends {
-  	color: #2e3337;
-  	font-size: 11px;
-	line-height: 1.35em;
-  	margin-bottom: 4px;
+    color: #88898B;
+    font-size: 11px;
+    line-height: 1.35em;
+    margin-bottom: 4px;
   }
   .stars {
   	padding-top: 3px;
@@ -294,6 +295,20 @@
     background-image: url(<%= asset_path('more_package_deals_plus.gif') %>);  
   } 
   .ie6 .more_package_deals_plus {
+    left: -18px;
+  }
+  .more_package_deals_minus {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 1px;
+    left: 12px; 
+    background: url(<%= asset_data_uri('more_package_deals_minus.gif') %>) no-repeat bottom right;
+  }
+  .ie67 .more_package_deals_minus {
+    background-image: url(<%= asset_path('more_package_deals_minus.gif') %>);  
+  } 
+  .ie6 .more_package_deals_minus {
     left: -18px;
   }
   .bundle_package_stub_text {

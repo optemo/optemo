@@ -225,5 +225,5 @@ DEPENDENCIES
   sunspot_solr!
   therubyracer
   uglifier
-  will_paginate
+  will_paginate (= 3.0.3)
   yui-compressor

@@ -48,7 +48,7 @@ gem 'ruby_core_source'
 gem 'progress_bar'
 #gem 'newrelic_rpm'
 
-gem 'will_paginate'
+gem 'will_paginate', "3.0.3" #Fixed version due to tweak, see will_paginate_tweak
 #gem 'rmagick'
 
 group :production, :profile do

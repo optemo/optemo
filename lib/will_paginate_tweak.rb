@@ -48,9 +48,8 @@ module WillPaginate
     protected
     class LinkRenderer < ViewHelpers::LinkRenderer
       protected
-      def base_url_params
-        # page links should not include GET parameters
-        default_url_params
+      def merge_get_params(url_params)
+        url_params
       end
     end
   end

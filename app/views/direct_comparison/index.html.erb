@@ -1,7 +1,7 @@
 <div class="bb_poptitle">
   <label class="comp-title"><%=t "compare.index.title"%></label>
   <div class="bb_quickview_close"></div>
-<div class="clear">&nbsp;</div>
+<div class="floatclear">&nbsp;</div>
 </div>
 
 <div id="basic_matrix" class="comparisonmatrix" style="width: <%= box_width %>px" data-skus="<%= @products.map{|x|x.sku}.join(",") %>">
@@ -22,7 +22,7 @@
       </div>
     <% end %>
   </div>
-  <div class="clear">
+  <div class="floatclear">
     <div class="thumbnailcell leftmostcolumn tabletitle" style="padding-right:3px;"> <%# the style information is here because IE can't handle .class.otherclass CSS declarations %>
       &nbsp;
     </div>
@@ -31,7 +31,7 @@
     <% end %>
   </div>
 
-  <div class="clear">
+  <div class="floatclear">
     <div class="cell leftmostcolumn leftcolumntext">
       &nbsp;
     </div>
@@ -40,7 +40,7 @@
     <% end %>
   </div>
 
-  <div class="clear">
+  <div class="floatclear">
     <div class="columntitle leftmostcolumntitle spec-capt">
       <%=t 'compare.index.proddetails'%>
     </div>
@@ -66,7 +66,7 @@
     <% end %>
   <% end %>
 </div>
-<div style="clear:both"><!-- --></div>
+<div class="floatclear"><!-- --></div>
 
 <div class="spacer togglespecs morespecs">
   <div class="left">

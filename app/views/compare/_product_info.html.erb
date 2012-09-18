@@ -10,7 +10,7 @@
     <div class="price">
       <span class="dollars"><%= dollars(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
       <span class="cents"><%= cents(cont_specs[Session.quebec ? "pricePlusEHF" : "saleprice"]) %></span>
-      <div class="clear"><!-- --></div>
+      <div class="floatclear"><!-- --></div>
     </div>
     <%= render partial: 'compare/product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
   <% end %>
