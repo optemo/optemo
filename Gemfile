@@ -46,7 +46,7 @@ gem 'sunspot_rails', :git=> "git://github.com/wildoats/sunspot.git", :branch=>"o
 #gem 'sunspot_rails', :git=> "git://github.com/sunspot/sunspot.git"
 gem 'ruby_core_source'
 gem 'progress_bar'
-#gem 'newrelic_rpm'
+gem 'newrelic_rpm'
 
 gem 'will_paginate', "3.0.3" #Fixed version due to tweak, see will_paginate_tweak
 #gem 'rmagick'

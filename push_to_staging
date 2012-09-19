@@ -3,5 +3,5 @@ git fetch
 git checkout staging
 git merge origin/staging
 git merge master
-git push
+git push origin staging
 git checkout master
