@@ -9,7 +9,7 @@
     <%= t('products.compare.save') %><%= (fr?.empty? ? "" : " ")+": " if Session.bestbuy? %>
     <%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %>
   </span>
-  <% if cat_specs["saleEndDate"] && Time.now > Date.parse(cat_specs["saleEndDate"]) -%>
+  <% if cat_specs["saleEndDate"] && Time.now < Date.parse(cat_specs["saleEndDate"]) -%>
     <div class="saleends">
       <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
       <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) %>
