@@ -86,11 +86,11 @@ opt.ajaxsend = (hash,myurl,mydata) ->
   else
     mydata.landing = true
   if (not(lis.spinner_timer)) 
-    lis.spinner_timer = setTimeout("optemo_module.start_spinner()", 800)
+    lis.spinner_timer = setTimeout("optemo_module.start_spinner", 800)
   val_timeout = 10000
   if (/localhost/.test(myurl) or /192\.168/.test(myurl))
     val_timeout = 100000
-  lis.socket_error_timer = setTimeout("optemo_module.ajaxerror()", val_timeout)
+  lis.socket_error_timer = setTimeout("optemo_module.ajaxerror", val_timeout)
   if (window.OPT_REMOTE)
     #Embedded Layout
     myurl = if myurl? then myurl.replace(/http:\/\/[^\/]+/,'') else "/compare"
@@ -105,13 +105,11 @@ opt.ajaxsend = (hash,myurl,mydata) ->
       myurl = myurl[0...myurl.indexOf('?')]                   
     JSONP.get(window.OPT_REMOTE+myurl,mydata,ajaxhandler)
   else
-    $.ajax(
-      #type: (mydata==null)?"GET":"POST",
+    $.ajax
       data: if mydata? then mydata else "",
       url: myurl or "/compare",
       success: ajaxhandler,
       error: opt.ajaxerror
-    )
 
 opt.ajaxerror = ->
   clear_loading()
