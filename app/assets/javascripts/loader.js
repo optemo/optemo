@@ -26,7 +26,7 @@ function opt_insert(d,name) {
     opt_t.className = "optemo";
     se.innerHTML = d;
     opt_t.appendChild(se);
-    if (name == "optemo_filter")
+    if (name == "optemo_filter" && typeof(optemo_module.whenDOMready) != "undefined")
       optemo_module.whenDOMready();
   } else
     setTimeout(function(){opt_insert(d,name);d=null;name=null;},10);

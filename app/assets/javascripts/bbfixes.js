@@ -3,7 +3,7 @@
 
 var omniture_fix = (function() {
    if (typeof s == "undefined")
-        setTimeout("omniture_fix()",1000);
+        setTimeout("omniture_fix",1000);
    else {
    var old = s.ot;
    s.ot = function(el) {
@@ -11,4 +11,4 @@ var omniture_fix = (function() {
    };
    }
 });
-setTimeout("omniture_fix()",1000);
+setTimeout("omniture_fix",1000);
