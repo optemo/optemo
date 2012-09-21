@@ -1,6 +1,7 @@
 <div class="comparison_and_sort">
   <div class="sortby-container">
     <%= t("products.sortby") %>:
+    <span id="current_sorting_method" style="display:none"><%= Session.search.sortby || "utility_desc" %></span>
     <div class="dropdown sorting-menu">
       <a class="dropdown-toggle" data-toggle="dropdown">
         <% sortby = Session.search.sortby || "utility_desc" %>

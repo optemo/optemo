@@ -59,9 +59,9 @@ if $('#opt_discovery').length
   #Pass in the option as a url param (Digital Cameras are default)
   window.opt_category_id = decodeURI((RegExp('([?]|&)[Cc]ategory_id=(.+?)(&|$)').exec(location.search)||[0,0,"B20218"])[2])
   if (location.hash)
-    opt.ajaxsend(location.hash.replace(/^#/, ''),'/', {category_id: opt_category_id})
+    opt.ajaxsend('/', {category_id: opt_category_id}, location.hash.replace(/^#/, ''))
   else
-    opt.ajaxsend(null,'/', {landing:'true', category_id: opt_category_id})
+    opt.ajaxsend('/', {landing:'true', category_id: opt_category_id}, null)
     
 window.optemo_module = opt
 

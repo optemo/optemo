@@ -2,9 +2,12 @@
   <div class='pagination-container'>
     <%= render "pagination" %>
   </div>
-  <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
-    <%=raw sortby %>
-  </ul>
+  <div id="sorting_method_container">
+    <span id="current_sorting_method" style="display:none"><%= Session.search.sortby || "utility_desc" %></span>
+    <ul id="sorting_method_box"><li><strong><%= t("products.sortby") %>: </strong></li>
+      <%=raw sortby %>
+    </ul>
+  </div>
 <% else %>
   <%= render 'comparison_and_sort' %>
 <% end %>
@@ -12,7 +15,7 @@
 <div id="product_content">
     <div class='border-content'>	
     <%= raw main_boxes %>
-    <span id="actioncount" style="display:none"><%= [Session.search.id.to_s].pack("m").chomp %></span>
+    <span id="actioncount" style="display:none"><%= Session.search.hash_to_embed %></span>
     </div>
     <%= render partial: "navigator_bar", locals: {bottom: true} %>
     <% if Session.futureshop? -%>

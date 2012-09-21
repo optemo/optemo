@@ -5,7 +5,7 @@ require 'will_paginate/array'
 class Search < ActiveRecord::Base
   attr_reader :expanded
   attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size, :filters_cats, :filters_conts, :filters_bins
-  attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :old_keyword, :specs, :siblings, :sibling_assocs, :bundles, :bundle_assocs
+  attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :specs, :siblings, :sibling_assocs, :bundles, :bundle_assocs
   
   self.per_page = 18 #for will_paginate
   
@@ -277,48 +277,31 @@ class Search < ActiveRecord::Base
       CatSpec.joins("INNER JOIN `bin_specs` ON `cat_specs`.product_id = `bin_specs`.product_id").where(bin_specs: {name: "featured"}, cat_specs: {name: "product_type", value: Session.product_type_leaves}).map{|x|x.product_id}
     end
   end
+
+  # This is the hash we want to embed in the page (and which in turn will be displayed in the address bar).
+  # For the landing page, we want no hash displayed in the address bar.
+  def hash_to_embed
+    if not self.initial?
+      self.params_hash
+    else
+      ""
+    end
+  end
   
   def initialize(p={}, opt=nil)
     super({})
-    #Set parent id
-    self.parent_id = CGI.unescape(p[:parent]).unpack("m")[0].to_i unless p[:parent].blank?
-    unless p[:action_type] == "allproducts" || p[:action_type] == "landing" #Exception for initial clusters
-      old_search = Search.find_by_id(self.parent_id)
+    self.initial = (not p[:landing].nil?)
+    if not p[:keyword].nil? and not p[:keyword].blank?
+      self.keyword_search = p[:keyword]
     end
-    # If there is a sort method to keep from last time, move it across
-    self.sortby = old_search[:sortby] if old_search && old_search[:sortby]
-    # save the old_keyword 
-    @old_keyword = old_search.keyword_search if old_search
-    #puts "old_keyword_init #{@old_keyword}"
-    case p[:action_type]
-    when "allproducts"
-      #Initial load of the homepage
-      self.initial = false
-      @userdataconts = []
-      @userdatabins = []
-      @userdatacats = []
-    when "landing"
-      #Initial load of the homepage
-      self.initial = true
-      @userdataconts = []
-      @userdatabins = []
-      @userdatacats = []
-    when "nextpage"
-      #the next page button has been clicked
-      self.keyword_search  = p[:keyword] unless p[:keyword].blank?
-      self.page = p[:page]
-      duplicateFeatures(old_search)
-    when "sortby"
-      self.keyword_search  = p[:keyword] unless p[:keyword].blank?
-      self.sortby = p[:sortby]
-      duplicateFeatures(old_search)
-      self.initial = false
-    when "filter" 
-      createFeatures(p[:filters])
-      self.initial = false
-    else
-      #Error
-    end
+    self.page = p[:page]
+    self.sortby = p[:sortby]
+    self.params_hash = p[:params_hash]
+
+    @userdataconts = []
+    @userdatabins = []
+    @userdatacats = []
+    createFeatures(p[:filters])
   end
   
   after_save do
@@ -350,9 +333,6 @@ class Search < ActiveRecord::Base
   end
    
   def createFeatures(p)
-    #Save keyword search
-    self.keyword_search = p[:keyword] unless p[:keyword].blank?
-    
     @filters_cats =  []
     @filters_conts = []
     @filters_bins =  []
@@ -416,7 +396,7 @@ class Search < ActiveRecord::Base
     
     @expanded = p[:expanded].try(:keys)
     
-    unless(@old_keyword==keyword_search) 
+    unless(keyword_search.nil?) 
       @filters_cats = @userdatacats
       @filters_conts = @userdataconts
       @filters_bins = @userdatabins

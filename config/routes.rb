@@ -56,12 +56,11 @@ Site::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id(.:format)))'
 
-  resources :compare, :only => [:index, :create], :as => "searches"
-  match "compare/create" => "compare#create"
+  resources :compare, :only => [:index], :as => "searches"
   match "comparison/:id" => "direct_comparison#index" #This should be cleaned up to a POST instead of a GET in JS
   match "sitemap" => "compare#sitemap"
   match "bbiframe"  => "bbiframe#index"
   match "fr-ca-bbiframe" => "bbiframe#index"
-  match "search" => "compare#create"
+  match "search" => "compare#index"
   root :to => "compare#index"
 end

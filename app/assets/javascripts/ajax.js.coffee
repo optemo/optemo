@@ -6,12 +6,13 @@
 opt = window.optemo_module ? {}
 opt.loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false}
 
-#Set up the AJAX send function for use with the back button
+#Set up the on_hash_change function for use with the back button
 $(document).ready ->
-  $.history.init(opt.ajaxsend,{unescape: true})
+  $.history.init(opt.on_hash_change,{unescape: true})
 
 #****Public Functions****
 opt.whenDOMready = ->
+  $.history.update_hash($("#actioncount").html(), null, null)
   BestBuyLandingElements()
   SetLayout()
   opt.SliderInit()
@@ -20,18 +21,7 @@ opt.whenDOMready = ->
 
 # Submit a categorical filter, e.g. brand.
 opt.submitAJAX = ->
-  selections = $("#filter_form").serializeObject()
-  $.each(selections, (k,v) ->
-    if(v is "" or v is "-" or v is ";" or v is "false") 
-      delete selections[k]
-    #/* Slider values shouldn't get sent unless specifically set */
-    if(k.match(/superfluous/)) 
-      delete selections[k]
-  )
-  if $("#product_name").val() == "" || $("#product_name").val() == "Search terms"
-    opt.ajaxcall("/compare/create", selections)
-  else
-    opt.ajaxcall("/compare/create", $.extend({"keyword" :$("#product_name").val()},selections))
+  opt.ajaxcall("/compare", opt.build_ajax_data())
 
 opt.removeSilkScreen = ->
   $('#opt_silkscreen, #opt_outsidecontainer').hide()
@@ -76,8 +66,17 @@ opt.applySilkScreen = (url,data,width,height,f) ->
           f()
     )
 
+# Called whenever the forward or back button is pressed.
+opt.on_hash_change = (hash,myurl,mydata) ->
+  if not hash or hash == ""
+    if not mydata
+      mydata = {landing: true}
+    else
+      $.extend(mydata, {landing: true})
+  opt.ajaxsend(myurl,mydata,hash)
+
 #/* Does a relatively generic ajax call and returns data to the handler below */
-opt.ajaxsend = (hash,myurl,mydata) ->
+opt.ajaxsend = (myurl,mydata,hash) ->
   lis = opt.loading_indicator_state
   #The Optemo category ID should be set in the loader unless this file is loaded non-embedded, then it is set in the opt_discovery section
   mydata = $.extend({'ajax': true, category_id: window.opt_category_id},mydata)
@@ -85,8 +84,6 @@ opt.ajaxsend = (hash,myurl,mydata) ->
   mydata.is_quebec = (if (QC_cookie_value is "QC") then "true" else "false")
   if (typeof hash isnt "undefined" and hash isnt null and hash isnt "") 
     mydata.hist = hash
-  else
-    mydata.landing = true
   if (not(lis.spinner_timer)) 
     lis.spinner_timer = setTimeout(opt.start_spinner, 800)
   val_timeout = 10000
@@ -126,16 +123,35 @@ opt.ajaxerror = ->
   unless opt.lastpage?
     opt.lastpage = true #Loads the first page after the dialog is closed to try and mitigate the problem. and only do it once
 
-opt.ajaxcall = (myurl,mydata) ->
+opt.ajaxcall = (myurl,mydata,hash=null) ->
   # Disable interface elements.
   $('.binary_filter, .cat_filter').attr('disabled', true)
   opt.loading_indicator_state.disable = true #Disables any live click handlers and sliders
   $('.jslider-pointer').each( ->
     $(this).addClass('jslider-pointer-disabled')
   )
-  
-  opt.lasthash = window.location.hash.replace(/^#/, '') #Save the last request hash in case there is an error
-  $.history.load($("#actioncount").html(),myurl,mydata)
+  opt.ajaxsend(myurl, mydata, hash)
+
+# Builds the data parameter for the Ajax call. Values in the data hash (if provided)
+# override the values gathered by this function.
+opt.build_ajax_data = (data = null) ->
+  ajax_data = $("#filter_form").serializeObject()
+  $.each(ajax_data, (k,v) ->
+    if(v is "" or v is "-" or v is ";" or v is "false")
+      delete ajax_data[k]
+    #/* Slider values shouldn't get sent unless specifically set */
+    if(k.match(/superfluous/))
+      delete ajax_data[k]
+  )
+  product_name = $("#product_name").val()
+  if product_name? and product_name != "" and product_name != "Search terms" 
+    ajax_data["keyword"] = $("#product_name").val()
+  sorting_method = $("#current_sorting_method").html()
+  if sorting_method? and sorting_method != ""
+    ajax_data["sortby"] = sorting_method
+  if data?
+    $.extend(ajax_data, data)
+  ajax_data
 
 #//--------------------------------------//
 #//            Loading Spinner           //
@@ -232,7 +248,6 @@ clear_loading = ->
       $(this).removeClass('jslider-pointer-disabled')
     )
     
-
 #Serialize an form into a hash, Warning: duplicate keys are dropped
 $.fn.serializeObject = ->
   o = {}
@@ -249,20 +264,16 @@ $.fn.serializeObject = ->
 #/* LiveInit functions */
 $(".bb_quickview_close, #opt_silkscreen").live 'click', ->
   opt.removeSilkScreen()
-  if (opt.lastpage? and opt.lasthash)
+  if (opt.lastpage?)
     #There was an error in the last request
-    $("#actioncount").html(opt.lasthash) #Undo the last action
-    opt.ajaxcall("/")
+    opt.ajaxcall("/", null, location.hash.replace(/^#/, ''))
     opt.lastpage = false
 
 #Pagination links
 $('.pagination a').live "click", ->
   if (opt.loading_indicator_state.disable) 
     return false
-  if $("#product_name").val()!= "Search terms" && $("#product_name").val()!= ""
-    opt.ajaxcall($(this).attr('href'), {"keyword": $("#product_name").val()})
-  else
-    opt.ajaxcall($(this).attr('href'))
+  opt.ajaxcall($(this).attr('href'), opt.build_ajax_data())
   return false
 
 #See all Products
@@ -274,10 +285,7 @@ $('.seeall').live 'click', ->
 $('.sortby').live 'click', ->
   if (opt.loading_indicator_state.disable)
     return false
-  if $("#product_name").val()!= "Search terms" && $("#product_name").val()!= ""
-    opt.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat'), "keyword": $("#product_name").val()})
-  else
-    opt.ajaxcall("/compare", {"sortby" : $(this).attr('data-feat')})
+  opt.ajaxcall("/compare", opt.build_ajax_data({"sortby" : $(this).attr('data-feat')}))
   return false
 
 #/* End of LiveInit Functions */
