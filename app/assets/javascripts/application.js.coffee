@@ -1,4 +1,3 @@
-## require def
 #= require raphael
 #= require jquery.dependClass
 #= require jquery.history
