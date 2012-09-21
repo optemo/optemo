@@ -34,7 +34,7 @@
             <% unless display_feature[:no_display] %>
               <%= render partial: 'filter_label', object: f %>
             <%end%>
-            <div class="swatches">
+            <div class="opt_swatches">
               <%= render partial: 'colour_filter', collection: display_feature[:display_colours], locals: {chosen_cats: chosen_cats} %>
             </div>
             <div style="clear: left;">
