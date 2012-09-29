@@ -12,7 +12,7 @@ var scriptSource = (function(scripts) {
 }());
 var temp_element = document.createElement("a");
 temp_element.href = scriptSource;
-optemo_french = (window.location.href.match(/ca\/fr-ca/i));
+optemo_french = (window.location.href.match(/(ca|com)\/fr-ca/i));
 OPT_REMOTE = 'http://';
 if (typeof(optemo_french) != undefined && optemo_french != null) OPT_REMOTE += "fr.";
 OPT_REMOTE += temp_element.host;
