@@ -13,10 +13,10 @@ $('.checkbox_text').live 'click', ->
   if (opt.loading_indicator_state.disable)
     return false
   checkbox = $(this).siblings('input')
-  if (checkbox.attr("checked"))
-    checkbox.removeAttr("checked")
+  if (checkbox.is(":checked"))
+    checkbox.prop('checked', false)
   else
-    checkbox.attr("checked", "checked")
+    checkbox.prop('checked', 'checked')
   opt.submitAJAX()
   return false
 
@@ -57,8 +57,8 @@ $('.remove_filter').live 'click', ->
     $("#product_name").val('')
   else
     filter_node = $('#'+name+'[value="'+value+'"]')
-  if (filter_node.attr("checked"))
-    filter_node.removeAttr('checked')
+  if (filter_node.is(":checked"))
+    filter_node.prop('checked', false)
   if (filter_node.hasClass('range'))
     filter_node.attr('value',';')
   opt.submitAJAX()

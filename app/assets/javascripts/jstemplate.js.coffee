@@ -12,7 +12,7 @@ private_func = (args) ->
 
 #****Live-init Functions*
 $('.example').live 'click', ->
-  optemo_module.ajaxcall('/', {})
+  opt.ajaxcall('/', {})
   return false
     
 window.optemo_module = opt

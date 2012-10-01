@@ -11,10 +11,10 @@ opt.readAllCookieValues = (name) ->
   if (cookie) 
     #Remove items that don't match the current product class
     skus = $.grep cookie.split('*'), (value) ->
-      return value.split(',')[1] is window.opt_category_id
+      value.split(',')[1] is window.opt_category_id
     #Remove product_type from cookie values
     skus = $.map skus, (value) ->
-      return value.split(',')[0]
+      value.split(',')[0]
   else
     # Fix for cookie not saving but some product checkboxes are checked. Issue found in IE6.
     skus = []

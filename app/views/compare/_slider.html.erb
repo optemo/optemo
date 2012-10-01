@@ -1,7 +1,7 @@
 <div style="position:relative">
   <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
   <%= hidden_field_tag "continuous[#{slider.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
-  <span class="sliderspan">
+  <span class="sliderspn">
     <input 
       class="slider" 
       type="slider" 

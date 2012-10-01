@@ -9,7 +9,7 @@ opt.load_comparisons = ->
   skus = opt.readAllCookieValues(opt.cmpcookie)
   $.each skus, (index,sku) ->
      $('.optemo_compare_checkbox[data-sku="'+sku+'"]').each ->
-        $(this).attr('checked', 'checked')
+        @checked = 'checked'
         loadspecs(sku)
   changeNavigatorCompareBtn(skus.length)
 
@@ -18,7 +18,7 @@ opt.load_comparisons = ->
 removeFromComparison = (sku) ->
   $(".optemo_compare_checkbox").each (index) ->
     if ($(this).attr('data-sku') == sku)
-      $(this).attr('checked', '')
+      @checked = false
       return
   remove_comparison_from_skus(sku)
 
@@ -43,7 +43,7 @@ comparison_checkbox_change = ->
         alert("Le nombre maximum de produits que vous pouvez comparer est de 5. Veuillez réessayer.")
       else
         alert("The maximum number of products you can compare is 5. Please try again.")
-      t.attr('checked', '')
+      t.prop("checked", false)
   else
     remove_comparison_from_skus(t.attr('data-sku'))
   sku_size = opt.readAllCookieValues(opt.cmpcookie).length
@@ -296,16 +296,9 @@ loadspecs = (sku, bundle_sku) ->
 #Remove buttons on compare
 $('.remove').live 'click', ->
   removeFromComparison($(this).attr('data-sku'))
-  class_name = $(this).attr('class').split(' ').slice(-1) # spec_column_0, for example
-
-  $("." + class_name).each ->
-    $(this).remove()
-
-  # If this is the last one, take the comparison screen down too
   skus = opt.readAllCookieValues(opt.cmpcookie)
-  #if (skus.length == 0)
   opt.removeSilkScreen()
-  if (skus.length isnt 0)
+  if (skus.length isnt 0) # If this is the last one, no need to show the comparison screen
     show_comparison_window()
   return false
 
@@ -337,8 +330,8 @@ $('.optemo_compare_checkbox').live('click', comparison_checkbox_change)
 
 $('.optemo_compare_button').live 'click', ->
   my_checkbox = $(this).parent().find('.optemo_compare_checkbox')
-  if (!my_checkbox.attr('checked'))
-    my_checkbox.attr('checked','checked')
+  if (!my_checkbox.is(':checked'))
+    my_checkbox.prop('checked', 'checked')
     comparison_checkbox_change(my_checkbox)
   
   if (my_checkbox.is(':checked'))
