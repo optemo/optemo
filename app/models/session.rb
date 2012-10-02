@@ -3,32 +3,42 @@ class Session
   cattr_accessor :product_type # The product type which is an integer hash of the current category_id plus retailer
   cattr_accessor :ab_testing_type # Categorizes new users for AB testing
   cattr_accessor :features # Gets the feature customizations which allow the site to be configured
-  cattr_accessor :quebec
+  cattr_accessor :quebec # Whether the current region was detected as Quebec, used for EHF
+  cattr_accessor :landing_page # Preserve the landing page's product type in case product_type gets changed to a subcategory
+  cattr_accessor :subcategory # Used to look up values of ranges by a subcategory under the product type
 
   def initialize (product_type = nil)
     self.product_type = product_type || ProductCategory.first.product_type
+    self.landing_page = self.product_type
+    self.subcategory = []
     self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
   end
   
-  def self.initialize_product_type(product_type)
-    product_type = product_type || ProductCategory.first.product_type
-    # If no facets are defined for a (sub)category, set the product type as the parent instead to get the parent's layout
-    product_type = Maybe(ProductCategory.get_parent(product_type).first) if Facet.where(product_type: product_type, active: true).empty?
-    self.product_type = product_type
-    self.features = Hash.new{|h,k| h[k] = []} #This get configured by the set_features function
-  end
-  
-  def self.effective_product_type
-    counts = CatSpec.count_current("product_type")
-    if counts.keys.length == 1
-      [counts.keys.first]
-    else
-      ProductCategory.get_ancestors(counts.keys)
+  def self.initialize_with_search(search)
+    self.search = search
+    self.subcategory = []
+    selected_product_type = Maybe(search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value})
+    if selected_product_type.length == 1
+      # one subcategory selected, save its name for use in caching
+      self.subcategory = search.userdatacats.select{|d| d.name == 'product_type'}
+      if !Facet.find_by_product_type_and_used_for(selected_product_type.first, ['sortby','show','filter']).nil?
+        # subcategory has its own facets, therefore, set product type to it
+        new_product_type = selected_product_type.first
+      else
+        new_product_type = self.product_type
+      end
+      self.product_type = new_product_type
     end
+    self.features = Hash.new{|h,k| h[k] = []} #This gets configured by the set_features function
+    set_features([new_product_type])
   end
   
   def self.product_type_leaves
     ProductCategory.get_leaves(product_type)
+  end
+  
+  def self.landing_page_leaves
+    ProductCategory.get_leaves(landing_page)
   end
   
   def self.retailer
@@ -57,13 +67,20 @@ class Session
   
   def self.set_features(categories = [])
     # if an array of categories is given, dynamic features which apply only to those categories are shown
-    # If there's 1 product subcategory selected, get its display facets if any, otherwise, get facets of the current product type
     facets = []
+    if Session.subcategory.length == 1 and [Session.subcategory.first.value] != categories
+      # correct the categories if passed in the parent category but a subcategory is selected
+      categories = [Session.subcategory.first.value]
+    end
     if categories.length == 1
+      # set facets to those of given category if they exist and if not more than one subcategory selected
       facets = Facet.where(product_type: categories.first, active: true, used_for: ['filter','sortby','show'])
     end
-    facets = Facet.where(product_type: product_type, active: true, used_for: ['filter','sortby','show']) if facets.empty?
-    
+    if facets.empty?
+      # default to facets of landing page
+      facets = Facet.where(product_type: Session.landing_page, active: true, used_for: ['filter','sortby','show'])
+    end
+    # initialize features to the facets, not including the dynamically excluded facets
     dynamically_excluded = []
     self.features = facets.includes(:dynamic_facets).order(:value).select do |f|
       #These are the subcategories for which this feature is only used for

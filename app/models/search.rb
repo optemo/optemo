@@ -59,15 +59,13 @@ class Search < ActiveRecord::Base
         cat_filters[name] = any_of do  #disjunction inside the category part
           group.each do |cats|
             if cats.name == "product_type"
-              leaves = ProductCategory.get_leaves(cats.value)
-              with :product_type, leaves  
+              with :product_type, ProductCategory.get_leaves(cats.value)
             else
               with cats.name.to_sym, cats.value
             end
           end
         end
       end
-      
       #The default is a conjunction for all the items
       mybins.each do |bins|
         with bins.name.to_sym, bins.value
@@ -90,8 +88,8 @@ class Search < ActiveRecord::Base
         #truncate # facet counts are based on the most relevant document of each group matching the query
         order_by(:isBundleCont, :asc)
       end
-      if (!search_term)
-        with :product_type, Session.product_type_leaves
+      unless search_term
+        with :product_type, Session.landing_page_leaves
       end
       (Session.features["filter"] || []).each do |f|
           if f.feature_type == "Continuous"

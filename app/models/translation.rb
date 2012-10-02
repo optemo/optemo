@@ -18,7 +18,7 @@ class Translation < ActiveRecord::Base
     # This function is probably far too specific but it is fast
     # cache translations that are under the current product type, its children, and the leaves under it
     CachingMemcached.cache_lookup("TranslationProductType#{I18n.locale}#{Session.product_type}") do
-      I18n::Backend::ActiveRecord::Translation.find_by_sql("SELECT `key`,`value` FROM `translations` WHERE `locale` = '#{I18n.locale}' AND (`key` LIKE '#{Session.product_type}%'" +  ProductCategory.get_subcategories(Session.product_type).map{|x| " OR `key` LIKE '" + x + "%'"}.join("")+")").inject({}) do |h,f|
+      I18n::Backend::ActiveRecord::Translation.find_by_sql("SELECT `key`,`value` FROM `translations` WHERE `locale` = '#{I18n.locale}' AND (`key` LIKE '#{Session.product_type}%'" + (ProductCategory.get_subcategories(Session.product_type) + [Session.landing_page]).map{|x| " OR `key` LIKE '" + x + "%'"}.join("")+")").inject({}) do |h,f|
         h[f["key"]] = f["value"]
         h
       end

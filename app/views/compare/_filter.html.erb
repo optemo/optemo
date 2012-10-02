@@ -65,7 +65,7 @@
               <!-- -->
             <% end -%>
             <% display_feature[:displayed_ranges].each do |dr| -%>
-              <% checked = chosen_conts.include?({:min => dr[:min], :max => dr[:max]}) -%>
+              <% checked = chosen_conts.include? ({min: dr[:min], max: dr[:max]}) -%>
               <% available_count = dr[:count] -%>
               <% show_range = (available_count > 0 or checked) %>
               <% if show_range -%>

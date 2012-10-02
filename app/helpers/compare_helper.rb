@@ -112,8 +112,10 @@ module CompareHelper
   end
   
   def getDisplayedRanges(f, chosen_conts)
-    ranges = Ranges.cache[f.name.to_sym]
-    chosen_conts.each{|c| ranges << c unless ranges.include?(c)}
+    fname = Session.quebec && f.name == "saleprice" ? "pricePlusEHF" : f.name #Substitude EHF price for regular price
+    selected_ranges = chosen_conts.map{|c| c[:min]..c[:max]}
+    ranges = Ranges.cache[fname.to_sym]
+    ranges = Ranges.modifyRanges(selected_ranges, ranges, f.name) unless selected_ranges.empty?
     displayed_ranges = displayRanges(f.name, ranges)
     no_display = !displayed_ranges.inject(false){|res,e| res || e[:count]>0}
     return {:displayed_ranges => displayed_ranges, :no_display => no_display}
@@ -183,7 +185,7 @@ module CompareHelper
     ret
   end
 
-  def getSearchFilters()
+  def getSearchFilters
     # getting the currently applied filters in order that they appear in the page
     # without extra processing, the values of the categorical filters are also in the same order as in the page
     filters = Session.search.userdataconts + Session.search.userdatacats + Session.search.userdatabins
@@ -193,7 +195,6 @@ module CompareHelper
     sorted = filters.group_by{|x|x.name}.sort_by  do |name, values|
       Facet.find_by_name_and_product_type_and_used_for(name, Session.product_type, 'filter').try(:value) || 0
     end
-    
     # add ordering; another option would be to make page_order into a hash by name
     page_order = Session.features['filter'].map{ |f| {:name => f.name, :feature_type => f.feature_type, :value => f.value, :printed => false} }
     new_sorted = []
@@ -203,6 +204,7 @@ module CompareHelper
         new_group = {name => []}
         values.each do |v|
           if item[:feature_type] == 'Binary'
+            # if necessary, include the last binary group heading
             past_headings = page_order.select{|f| f[:value] < item[:value] and f[:feature_type] == 'Heading'}
             if !past_headings.empty? and past_headings.last[:printed] == false
               past_headings.last[:printed] = true
@@ -218,7 +220,7 @@ module CompareHelper
     new_sorted
   end
   
-  def displaySelectedString(spec, range)
+  def displaySelectedString(spec, range=nil)
     if spec.instance_of?(Userdatabin)
       @t["#{Session.product_type}.filter.#{spec.name}.name"] || spec.name
     elsif spec.instance_of?(Userdatacat)
@@ -232,7 +234,7 @@ module CompareHelper
       unless range.nil?
         range[:display]
       else
-        displayRanges(spec.name, [{:min => spec.min, :max => spec.max}], true)[0][:display]
+        displayRanges(spec.name, [spec.min..spec.max], true)[0][:display]
       end
     end
   end
@@ -309,24 +311,24 @@ module CompareHelper
     unless ranges.nil?
       unit = @t["#{Session.product_type}.filter.#{trans_name}.unit"]
       ranges.each_with_index do |r, ind|
-        r[:min] = my_to_i(r[:min]) 
-        r[:max] = my_to_i(r[:max])
-        dr << {:count => Ranges.count(feat, r[:min], r[:max]), :min => r[:min], :max => r[:max], :display => ""}
-        if r[:min] == r[:max]
+        r_min = my_to_i(r.min) 
+        r_max = my_to_i(r.max)
+        dr << {:count => Ranges.count(feat, r_min, r_max), :min => r_min, :max => r_max, :display => ""}
+        if r_min == r_max
           if feat == "saleprice" or feat == "pricePlusEHF"
-            dis = my_number_to_currency(r[:min])
-          elsif (feat=="capacity" && r[:min] >=1000) 
-            dis = "#{number_with_delimiter(tb(r[:min]))} " + (I18n.locale == :en ? "TB" : "To")
+            dis = my_number_to_currency(r_min)
+          elsif (feat == "capacity" && r_min >= 1000)
+            dis = "#{number_with_delimiter(tb(r_min))} " + (I18n.locale == :en ? "TB" : "To")
           else
-            dis =  "#{number_with_delimiter(r[:min])} " + unit
+            dis =  "#{number_with_delimiter(r_min)} " + unit
           end
         else
           if feat == "saleprice" or feat == "pricePlusEHF"
-            dis = my_number_to_currency(r[:min]) + " - " + my_number_to_currency(r[:max])              
-          elsif (feat=="capacity" && r[:min] >=1000) 
-            dis = "#{number_with_delimiter(tb(r[:min]))} - #{number_with_delimiter(tb(r[:max]))} " + (I18n.locale == :en ? "TB" : "To")
+            dis = my_number_to_currency(r_min) + " - " + my_number_to_currency(r_max)              
+          elsif (feat=="capacity" && r_min >=1000) 
+            dis = "#{number_with_delimiter(tb(r_min))} - #{number_with_delimiter(tb(r_max))} " + (I18n.locale == :en ? "TB" : "To")
           else
-            dis = "#{number_with_delimiter(r[:min])} - #{number_with_delimiter(r[:max])} " + unit
+            dis = "#{number_with_delimiter(r_min)} - #{number_with_delimiter(r_max)} " + unit
           end    
         end 
         dr.last[:display] << dis
@@ -387,15 +389,16 @@ module CompareHelper
     return ret
   end
   
-  def cat_order(f, chosen_cats, tree_level= 1)
+  def cat_order(f, chosen_cats, tree_level=1)
     optionlist={}
     toplist = []
     if f.name == "product_type"
       optionlist = {}
-      children = ProductCategory.get_subcategories(Session.product_type)
+      product_type = Session.landing_page
+      children = ProductCategory.get_subcategories(product_type)
       leaves = CatSpec.count_feat(f.name)
       children.each do |fp|
-        l = ProductCategory.get_leaves(fp)          
+        l = ProductCategory.get_leaves(fp)
         optionlist[fp] = l.map{|e| leaves[e]}.compact.inject(0){|res,ele| res+ele}
       end
       if children.empty?
