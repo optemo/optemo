@@ -1,6 +1,6 @@
 <div style="position:relative">
-  <div class="hist" data-data="<%= distribution_data.second.join(',') %>"></div>
-  <%= hidden_field_tag "continuous[#{slider.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range'}%>
+  <div class="hist" data-data="<%= slider.distribution.second.join(',') %>"></div>
+  <%= hidden_field_tag "continuous[#{slider.name}]", current.min.to_s+";"+current.max.to_s, {:class => 'range', :'data-id' => "slider#{slider.name}"}%>
   <span class="sliderspn">
     <input 
       class="slider" 
@@ -10,10 +10,10 @@
       data-step='<%= step %>'
       data-min= '<%= datamin %>'
       data-max= '<%= datamax %>'
-      data-distmin=<%= distribution_data.first[0] %>
-      data-distmax=<%= distribution_data.first[1] %>
+      data-distmin='<%= slider.distribution.first[0] %>'
+      data-distmax='<%= slider.distribution.first[1] %>'
       <%# Take out data-unit for now. Needs logic for $ before/after, etc. %>
-      data-unit=<%= unit %>
+      data-unit='<%= unit %>'
       disabled="disabled"/>
   </span>
 </div>

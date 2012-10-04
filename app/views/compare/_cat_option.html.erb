@@ -1,23 +1,17 @@
 <% k = cat_option.first %>
 <% available_count = cat_option.second %>
-<% checked = chosen_cats.include?(k) %>
+<% checked = selected.find{|x|x.value == k} %>
 <% intoplist = toplist.empty? || toplist.include?(k) %>
 <% display = expanded || intoplist %>
 <div class="list_item hanging_indent<%= ' invisible' if available_count == 0 and !checked %><%= ' minor' unless intoplist %>" style="<%= "font-weight:bold;" if checked %><%= "display:none;" unless display %>">
-  <%= check_box_tag "categorical[#{f.name}]", k, checked, :disabled => (available_count == 0 && !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => (available_count == 0) ? 'true' : 'false' %>
-  <% trans_key = (f.name == "product_type") ? "#{Session.landing_page}.filter.#{k}.name" : "cat_option.#{Session.retailer}.#{f.name}.#{k.gsub('.','-')}" %>
-  <% d_str = @t[trans_key] || @t["#{k}.name"] || t(trans_key, :default => ["#{k}.name".to_sym, k]) %>
+  <% check_opts = {class: 'cat_filter'} %>
+  <% check_opts[:'data-id'] = checked.data_id if checked %>
+  <%= check_box_tag "categorical[#{name}]", k, !!checked, check_opts %>
+  <% trans_key = (name == "product_type") ? "#{Session.landing_page}.filter.#{k}.name" : "cat_option.#{Session.retailer}.#{name}.#{k.gsub('.','-')}" %>
+  <% d_str = t(trans_key, :default => ["#{k}.name".to_sym, k]) %>
     <%= (available_count == 0) ?  d_str : link_to(d_str, "#", :class => "checkbox_text") %>
-  <span class="av_count"><%= "(#{available_count})" unless checked %></span>
-  <% if checked && f.name == "product_type" %>
-    <% optionlist1 = sub_level(k) %>
-    <% optionlist1.each do |k1,available_count1| %>
-      <% checked1 = chosen_cats.include?(k1) %>
-	    <div class="list_item hanging_indent" <%=raw "style='font-weight:normal;'" unless checked1 %> >
-        <%= check_box_tag "categorical[#{f.name}]", (k + "+" + k1), checked1, :class => 'cat_filter' %>
-	      <%= (available_count1 == 0) ?  @t["#{Session.product_type}.filter.#{k1}.name"] || @t["#{k1}.name".to_sym] || k1 : link_to(@t["#{Session.product_type}.filter.#{k1}.name"] || @t["#{k1}.name".to_sym] || k1, "#", :class => "checkbox_text") %>
-        <span class="av_count"><%= "(#{available_count1})" unless checked1 %></span>
-      </div>
-    <% end %> <%# optionlist1.each %>
-  <% end %> <%# if checked %>
+  <span class="av_count"><%= "(#{available_count})" unless !!checked %></span>
+  <% if checked && name == "product_type" %>
+    <%= render partial: "cat_option", collection: sub_level(k), locals: {selected: selected, name: name, expanded: expanded, toplist: toplist} %>
+  <% end %>
 </div>

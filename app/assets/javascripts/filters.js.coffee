@@ -25,7 +25,7 @@ $('.swatch_button').live 'click', ->
   if (opt.loading_indicator_state.disable)
     return false
   t = $(this)
-  if (t.hasClass("selected_swatch"))
+  if (t.hasClass("selected_swatch_dark") || t.hasClass("selected_swatch_light"))
     #Removed selected color
     $('#categorical_color').val("")
   else 
@@ -36,32 +36,18 @@ $('.swatch_button').live 'click', ->
   opt.submitAJAX()
 
 $('.remove_filter').live 'click', ->
-  selected_node = $(this).parent()
-  name = selected_node.attr('data-name')
-  value = selected_node.attr('data-value')
-  if value == undefined
-    filter_node = $('#'+name)
-  if name.match(/binary/)
-    filter_node = $('#'+name)
-  else if name.match(/slider/)
-    filter_node = $('#continuous_' + name.split('_')[1])
-  else if name.match(/continuous/)
-    the_min = value.split(';')[0]
-    filter_node = $('#' + name + '[data-min="' + the_min + '"]')
-    filter_node = $('#' + name + '[class="range"]') if filter_node.length==0
-  else if name.match(/categorical_color/)
-    $('#categorical_color').val("")
-    filter_node = $('.swatch_button[title="' + value + '"]')
-    filter_node.removeClass('selected_swatch')
-  else if name.match(/keyword/)
-    $("#product_name").val('')
-  else
-    filter_node = $('#'+name+'[value="'+value+'"]')
-  if (filter_node.is(":checked"))
-    filter_node.prop('checked', false)
-  if (filter_node.hasClass('range'))
-    filter_node.attr('value',';')
-  opt.submitAJAX()
+  id = $(this).attr('data-id')
+  selection = 'input[data-id="' + id + '"]'
+  if id.match(/slider/)
+    $(selection).val(';')
+    opt.submitAJAX()
+  else 
+    if id == "swatchcolor"
+      $(selection).val('')
+      opt.submitAJAX()
+    else
+      $(selection).prop('checked', false).click()
+  #Needs to handle slider and color swatches
   return false
 
 #Reset filters

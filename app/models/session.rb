@@ -16,7 +16,6 @@ class Session
   
   def self.initialize_with_search(search)
     self.search = search
-    self.subcategory = []
     selected_product_type = Maybe(search.userdatacats.select{|d| d.name == 'product_type'}.map{|d| d.value})
     if selected_product_type.length == 1
       # one subcategory selected, save its name for use in caching

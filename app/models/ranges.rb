@@ -26,8 +26,8 @@ module Ranges
     ranges
   end
   
-  def self.modifyRanges(selected_ranges, ranges, fname)
-    epsilon = (fname == 'saleprice' ? 0 :  0.1)
+  def self.modifyRanges(selected_ranges, ranges, fname = nil)
+    epsilon = fname == 'saleprice' || fname == 'pricePlusEHF' ? 0 :  0.1
     selected_ranges.sort!{|a,b| a.min <=> b.min}
     #Ranges are expected to be ordered
     modified_ranges = []
@@ -78,7 +78,7 @@ module Ranges
     end
     #        |****|
     # |----|
-    modified_ranges.map!{|r| r.min.round(1)..r.max.round(1)}
+    modified_ranges.map!{|r| FloatRange.new(r.min.round(1),r.max.round(1),fname)}
     modified_ranges + selected_ranges
   end
   

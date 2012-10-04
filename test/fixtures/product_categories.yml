@@ -1,0 +1,48 @@
+departments:
+  id: 1
+  product_type: BDepartments
+  feed_id: Departments
+  retailer: B
+  l_id: 1
+  r_id: 900
+  level: 1
+cameras:
+  id: 2
+  product_type: B20218
+  feed_id: 20218
+  retailer: B
+  l_id: 869
+  r_id: 878
+  level: 3
+point_and_shoot:
+  id: 4
+  product_type: B22474
+  feed_id: 22474
+  retailer: B
+  l_id: 870
+  r_id: 871
+  level: 4
+ultrazoom: 
+  id: 5
+  product_type: B28381
+  feed_id: 28381
+  retailer: B
+  l_id: 872
+  r_id: 873
+  level: 4
+Flaptops:
+  id: 6
+  product_type: F1002
+  feed_id: 1002
+  retailer: F
+  l_id: 2
+  r_id: 6
+  level: 2
+Fultrabooks:
+  id: 8
+  product_type: Fultrabooks
+  feed_id: ultrabooks
+  retailer: F
+  l_id: 3
+  r_id: 4
+  level: 2

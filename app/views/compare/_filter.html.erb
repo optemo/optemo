@@ -16,89 +16,55 @@
       </div>
     <% end -%>
   </div>
-  <% grouped_filters = getSearchFilters() %>
-  <% unless grouped_filters.empty? %>
-    <%= render partial: 'your_selections', locals: {grouped_filters: grouped_filters} %>
-  <% end %>
+  
+  <%= your_selections %>
+  <% last_heading = nil %>
+
   <form id="filter_form" method="get" action="/compare">
-    <%# Function that determines which facets to display and pulls up the values needed to display %>
-    <% get_active_features().each do |display_feature| -%>
-      <% f = display_feature[:f] -%>
+    <% Session.features["filter"].each do |f| %>
+      <% next if f.no_display -%>
       <div class="feature">
-        <% case f.feature_type -%>
-        <% when "Heading" -%>
-          <%= render partial: 'filter_label', object: f %>
-        <% when "Categorical" -%>
-          <% chosen_cats = chosencats(f.name) %>
-          <% if f.name == "color" -%>           
-            <% unless display_feature[:no_display] %>
-              <%= render partial: 'filter_label', object: f %>
-            <%end%>
+        <%= render partial: 'filter_label', object: f unless (f.is_a?(Binary) || f.is_a?(Heading)) %>
+        <% case f -%>
+        <% when Heading %>
+          <%# Save for binary filters %>
+          <% last_heading = render partial: 'filter_label', object: f %>
+        <% when Categorical -%>
+          <% if f.name == "color" -%>
             <div class="opt_swatches">
-              <%= render partial: 'colour_filter', collection: display_feature[:display_colours], locals: {chosen_cats: chosen_cats} %>
+              <%= render partial: 'colour_filter', collection: f.display_colours, locals: {selected: f.selected} %>
             </div>
-            <div style="clear: left;">
-              <%= hidden_field_tag "categorical[color]", chosen_cats.join("*") %>
+            <%= hidden_field_tag "categorical[color]", f.selected.join("*"), :'data-id' => "swatchcolor" %>
+          <% else -%>
+            <div class="categorical">
+              <%= render partial: "cat_option", collection: f.optionlist.to_a, locals: {selected: f.selected, name: f.name, expanded: f.expanded, toplist: f.toplist} %>
+              <%= link_to t('products.compare.more'), "#", {class: "moreless", style: f.expanded ? 'display:none;' : ''} unless f.toplist.empty? %>
+              <%= link_to t('products.compare.less'), "#", {class: "moreless", style: f.expanded ? '' : 'display:none;'} unless f.toplist.empty? %>
             </div>
-          <% else %>
-            <%# Bring the chosen products to the top, while preserving the previous ordering (ordered highest count to lowest) %>
-            <% unless display_feature[:all_options].empty? %>
-              <% unless display_feature[:no_display] %>
-                <%= render partial: 'filter_label', object: f %>
-                <div class="categorical">
-                  <%= render partial: "cat_option", collection: display_feature[:all_options].to_a, locals: {chosen_cats: chosen_cats, f: f, expanded: display_feature[:expanded], toplist: display_feature[:top_options]} %>
-                  <%= link_to t('products.compare.more'), "#", {class: "moreless", style: display_feature[:expanded] ? 'display:none;' : ''} unless display_feature[:top_options].empty? %>
-                  <%= link_to t('products.compare.less'), "#", {class: "moreless", style: display_feature[:expanded] ? '' : 'display:none;'} unless display_feature[:top_options].empty? %>
-                </div>
-                <%= hidden_field_tag "expanded[#{f.name}]", display_feature[:expanded] %>
-              <% end %>
-            <% else %>
-              <!-- -->
-            <% end %>
-          <% end %> <%# Color If %>
-        <% when "Continuous" -%>	
+            <%= hidden_field_tag "expanded[#{f.name}]", f.expanded %>
+          <% end -%>
+        <% when Continuous %>
           <% if f.ui == "ranges" -%>
-            <% chosen_conts = chosenconts(f.name) -%>
-            <% unless display_feature[:no_display] -%>
-              <%= render partial: 'filter_label', object: f %>
-            <% else -%>
-              <!-- -->
-            <% end -%>
-            <% display_feature[:displayed_ranges].each do |dr| -%>
-              <% checked = chosen_conts.include? ({min: dr[:min], max: dr[:max]}) -%>
-              <% available_count = dr[:count] -%>
-              <% show_range = (available_count > 0 or checked) %>
-              <% if show_range -%>
-                <div class="hanging_indent<%= ' disabled' unless show_range %>" <%=raw 'style="font-weight:bold;"' if checked %>>
-                  <%= check_box_tag "continuous[#{f.name}]", "#{dr[:min]};#{dr[:max]}", checked ,:disabled => (available_count == 0 and !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => show_range ? 'true' : 'false', :"data-min" => dr[:min], :"data-max" => dr[:max] %>
-                  <%= (available_count <= 0) ? dr[:display] : link_to(dr[:display], "#", :class => "checkbox_text") %>
-                  <span class="av_count"><%= "(#{available_count})" unless checked %></span>
-                </div>
-              <% end -%>	
-            <% end -%> <%# ranges.each %>
+            <%= render partial: 'range_option', collection: f.ranges, :locals => {selected: f.selected, name: f.name} %>
           <% else -%> <%# Use sliders still, not ranges %>
-            <% unless display_feature[:no_display] %>
-              <%= render partial: 'filter_label', object: f %>
-              <% if display_feature[:single_value] %>
-                <div class="disabled" style="margin: 4px 0 0 5px"><%= display_feature[:single_value] %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
-              <% else %>
-                <% distribution_data = display_feature[:distribution_data] -%>
-                <% current, step, datamin, datamax, unit = getSliderSettings(f, distribution_data) -%>
-                <%= render partial: 'slider', object: f, :locals => {:distribution_data => distribution_data, :current => current, :step => step, :datamin => datamin, :datamax => datamax, :unit => unit} %>
-              <% end %><%# end distribution of more than one %>
+            <% if f.single_value %>
+              <div class="disabled" style="margin: 4px 0 0 5px"><%= f.single_value %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
             <% else %>
-              <!-- -->
-            <% end %><%# end checking for non-blank distribution %>
-          <% end -%><%# end ranges %>
-        <% when "Binary" -%>
-          <div class="hanging_indent<%= ' invisible' if display_feature[:no_display] %>" <%=raw 'style="font-weight:bold;"' unless display_feature[:unchecked] %>>
-            <%= check_box_tag "binary[#{f.name}]", "1", !display_feature[:unchecked] ,:disabled => display_feature[:no_display], :class => 'binary_filter' %>
-            <%= display_feature[:no_display] ? (@t["#{Session.product_type}.filter.#{f.name}.name"] || f.name.capitalize) : link_to( @t["#{Session.product_type}.filter.#{f.name}.name"] || f.name.capitalize, "#", :class => "checkbox_text") %>
-            <span class="av_count"><%= "(#{display_feature[:available_count]})" if display_feature[:unchecked] %></span>
+              <%= render partial: 'slider', object: f, :locals => f.sliderSettings %>
+            <% end %>
+          <% end -%>
+        <% when Binary %>
+          <%= last_heading.freeze unless last_heading.frozen? %>
+          <div class="hanging_indent" <%=raw 'style="font-weight:bold;"' if f.checked %>>
+            <% check_opts = {class: 'binary_filter'} %>
+            <% check_opts[:'data-id'] = f.selected.first.data_id if f.checked %>
+            <%= check_box_tag "binary[#{f.name}]", "1", f.checked, check_opts %>
+            <%= link_to(t("#{Session.product_type}.filter.#{f.name}.name", default: f.name.capitalize), "#", :class => "checkbox_text") %>
+            <span class="av_count"><%= "(#{f.count})" unless f.checked %></span>
           </div>
-        <% end # End case -%>
+        <% end -%>
       </div>
-    <% end # End iterating over features %>
+    <% end %>
   </form>
   <% unless local_assigns[:landing] -%>
     <div class="y_bottom">

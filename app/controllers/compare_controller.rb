@@ -70,7 +70,6 @@ class CompareController < ApplicationController
   def classVariables(search)
     Session.initialize_with_search(search)
     @search_view = true if params[:keyword] || !Session.search.keyword_search.blank?
-    @t = Translation.cache_product_translations
   end
   
   def correct_render

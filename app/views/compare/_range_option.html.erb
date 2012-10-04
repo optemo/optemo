@@ -1,0 +1,15 @@
+<% r = range_option -%>
+<% checked = selected.find{|s|s.range == r} -%>
+<% available_count = r.count -%>
+<% show_range = (available_count > 0 or checked) %>
+<% if show_range -%>
+  <div class="hanging_indent<%= ' disabled' unless show_range %>" <%=raw 'style="font-weight:bold;"' if checked %>>
+    <% check_opts = {:disabled => (available_count == 0 and !checked) ? true : false, :class => 'cat_filter', :'data-disabled' => show_range ? 'true' : 'false', :"data-min" => r.min, :"data-max" => r.max} %>
+    <% check_opts[:'data-id'] = checked.data_id if checked %>
+    <%= check_box_tag "continuous[#{name}]", "#{r.min};#{r.max}", !!checked, check_opts %>
+    <%= (available_count <= 0) ? r.to_s : link_to(r.to_s, "#", :class => "checkbox_text") %>
+    <span class="av_count">
+      <%= "(#{available_count})" unless checked %>
+    </span>
+  </div>
+<% end -%>
