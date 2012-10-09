@@ -45,8 +45,8 @@ fr:
             refineyoursearch1: "Peaufinez votre"
             selections:       "Votre sélection"
             undo:             "Annuler"
-            remove:           "remove"
-            futureshop_refineyoursearch: "Peaufinez votre"
+            remove:           "annuler"
+            futureshop_refineyoursearch: "Peaufinez votre recherche"
             environmentalfee: "Écofrais"
             finalclearance: "LIQUIDATION FINALE"
 
