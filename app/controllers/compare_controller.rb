@@ -10,7 +10,11 @@ class CompareController < ApplicationController
   # Order matters here -- we need to ensure the before_filter runs before the caches_action, since the caches_action
   # uses the params_hash as the cache key.
   before_filter :calculate_params_hash
-  caches_action :index, :cache_path => Proc.new { |controller| {params_hash: controller.params_hash} } 
+  caches_action :index, :create, :cache_path => Proc.new { |controller| {params_hash: controller.params_hash} } 
+
+  def create
+    index
+  end
 
   def index
     Session.quebec = params[:is_quebec] == "true" ? true : false
