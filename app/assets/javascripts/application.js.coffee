@@ -58,8 +58,11 @@ $('.bundle_more_deals_stub').live 'click', ->
 if $('#opt_discovery').length
   #Pass in the option as a url param (Digital Cameras are default)
   window.opt_category_id = decodeURI((RegExp('([?]|&)[Cc]ategory_id=(.+?)(&|$)').exec(location.search)||[0,0,"B20218"])[2])
-  if (location.hash)
-    opt.ajaxsend('/', {category_id: opt_category_id}, location.hash.replace(/^#/, ''))
+  hash = location.hash
+  if hash?
+    hash = hash.replace(/^#/, '')
+  if (hash? and hash != "")
+    opt.ajaxsend('/', {category_id: opt_category_id}, hash)
   else
     opt.ajaxsend('/', {landing:'true', category_id: opt_category_id}, null)
     

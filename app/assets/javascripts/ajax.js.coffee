@@ -6,13 +6,16 @@
 opt = window.optemo_module ? {}
 opt.loading_indicator_state = {spinner_timer : null, socket_error_timer : null, disable : false}
 
-#Set up the on_hash_change function for use with the back button
-$(document).ready ->
-  $.history.init(opt.on_hash_change,{unescape: true})
-
 #****Public Functions****
 opt.whenDOMready = ->
+  if not opt.history_initialized
+    # Set up the on_hash_change function for use with the back button
+    $.history.init(opt.on_hash_change,{unescape: true})
+    opt.history_initialized = true
+
+  # Update the hash to match the value provided in the page.
   $.history.update_hash($("#actioncount").html(), null, null)
+
   BestBuyLandingElements()
   SetLayout()
   opt.SliderInit()
@@ -68,8 +71,8 @@ opt.applySilkScreen = (url,data,width,height,f) ->
 
 # Called whenever the forward or back button is pressed.
 opt.on_hash_change = (hash,myurl,mydata) ->
-  if not hash or hash == ""
-    if not mydata
+  if not hash? or hash == ""
+    if not mydata?
       mydata = {landing: true}
     else
       $.extend(mydata, {landing: true})
@@ -82,7 +85,7 @@ opt.ajaxsend = (myurl,mydata,hash) ->
   mydata = $.extend({'ajax': true, category_id: window.opt_category_id},mydata)
   QC_cookie_value = opt.getCookieValue("regionCode")
   mydata.is_quebec = (if (QC_cookie_value is "QC") then "true" else "false")
-  if (typeof hash isnt "undefined" and hash isnt null and hash isnt "") 
+  if (hash? and hash != "") 
     mydata.hist = hash
   if (not(lis.spinner_timer)) 
     lis.spinner_timer = setTimeout(opt.start_spinner, 800)
