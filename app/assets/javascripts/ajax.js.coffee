@@ -148,7 +148,7 @@ opt.build_ajax_data = (data = null) ->
   )
   product_name = $("#product_name").val()
   if product_name? and product_name != "" and product_name != "Search terms" 
-    ajax_data["keyword"] = $("#product_name").val()
+    ajax_data["keyword"] = product_name
   sorting_method = $("#current_sorting_method").html()
   if sorting_method? and sorting_method != ""
     ajax_data["sortby"] = sorting_method

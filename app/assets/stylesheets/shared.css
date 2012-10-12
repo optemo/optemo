@@ -10,6 +10,17 @@
 /*--------------------------------------//
 //         Global Declarations          //
 //--------------------------------------*/
+#pagecontentleft2 {
+  width: 180px !important;
+  margin-right: 5px !important;
+  float: left;
+  clear: left;
+}
+
+#pagecontentmain2 {
+    float: left;
+    width: 560px;
+}
 
 .optemo a img {	border: none; }
 .optemo a { text-decoration: none; }

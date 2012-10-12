@@ -63,5 +63,6 @@ Site::Application.routes.draw do
   match "bbiframe"  => "bbiframe#index"
   match "fr-ca-bbiframe" => "bbiframe#index"
   match "search" => "compare#create"
+  match "demo" => "demo#index"
   root :to => "compare#index"
 end

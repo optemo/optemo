@@ -91,7 +91,10 @@ for (var i in category_id_hash) {
 }
 // Failsafe just in case nothing seems to match
 if (opt_category_id == 0) {
-  opt_category_id = "B20218";
+  if (location.pathname == '/demo')
+    opt_category_id = "ADepartments";
+  else
+    opt_category_id = "B20218";
   if (typeof(console) != "undefined") console.warn("Product category not recognized - Cameras used as default");
 }
 

@@ -14,9 +14,13 @@
     </div>
     <%= render partial: 'compare/product_savings', locals: {product: product, cont_specs: cont_specs, cat_specs: cat_specs, bin_specs: bin_specs} %>
   <% end %>
-  <div class="easylinkbox">
-    <%= link_to (text_specs["title#{fr?}"] || text_specs["title"]), (text_specs["productUrl#{fr?}"] || text_specs["productUrl"]), :class => "easylink", :title => t('products.compare.clickforspecs') %>
-  </div>
+  <% if Session.amazon? %>
+    <%= text_specs["title#{fr?}"] || text_specs["title"] %>
+  <% else %>
+    <div class="easylinkbox">
+      <%= link_to (text_specs["title#{fr?}"] || text_specs["title"]), (text_specs["productUrl#{fr?}"] || text_specs["productUrl"]), :class => "easylink", :title => t('products.compare.clickforspecs') %>
+    </div>
+  <% end %>
   <div class="productspecs"><!--&--></div>
   <% if Session.bestbuy? -%>
     <%if !bin_specs["onsale"]%>

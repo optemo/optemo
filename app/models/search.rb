@@ -4,7 +4,7 @@ require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
   attr_reader :expanded
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size, :filters_cats, :filters_conts, :filters_bins
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size
   attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :specs, :siblings, :sibling_assocs, :bundles, :bundle_assocs
   
   self.per_page = 18 #for will_paginate
@@ -24,24 +24,10 @@ class Search < ActiveRecord::Base
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
         fulltext phrase do
-          #boost() 
-          #  function do
-          #    for i in (0..size-1)
-          #      a = sum(filters_bins[i].name.to_sym, a)
-          #    end
-          #  end
-          # )
-          filters_bins.each do |b|
-            boost(30) {with(b.name.to_sym, b.value)}
-          end
-          
-          filters_cats.each do |ca|
-            boost(20) {with ca.name, ca.value}
-          end
-          
-          filters_conts.each do |c|
-            boost(10) { with (c.name.to_sym), c.min||0..c.max||100000}   
-          end
+          # Example of how to do boost, if we wish to use boosting in future.
+          #filters_bins.each do |b|
+          #  boost(30) {with(b.name.to_sym, b.value)}
+          #end
         end
       end  
       
@@ -187,18 +173,6 @@ class Search < ActiveRecord::Base
     @parentconts ||=[]
   end  
   
-  def filters_cats
-    @filters_cats ||= []
-  end
-  
-  def filters_conts
-    @filters_conts ||= []
-  end
-  
-  def filters_bins
-    @filters_bins ||= []
-  end
- 
   def paginated_products #set the paginated_products
     unless @paginated_products
       products
@@ -312,34 +286,10 @@ class Search < ActiveRecord::Base
     end
   end
  
-  # Duplicate the features of search (s) and the last search (os)
-  def duplicateFeatures(os)
-    @userdataconts = []
-    @userdatabins = []
-    @userdatacats = []
-    if os
-      os.userdataconts.each do |d|
-        @userdataconts << d.class.new(d.attributes)
-      end
-      os.userdatacats.each do |d|
-        @userdatacats << d.class.new(d.attributes)
-      end
-      os.userdatabins.each do |d|
-        @userdatabins << d.class.new(d.attributes)
-      end
-      #Save keyword search
-      #self.keyword_search = os.keyword_search unless os.keyword_search.blank?
-    end
-  end
-   
   def createFeatures(p)
-    @filters_cats =  []
-    @filters_conts = []
-    @filters_bins =  []
-    
     @userdataconts = []
     @parentconts=[]
-    
+
     unless p[:categorical].nil?
       product_types = p[:categorical][:product_type]
     end  
@@ -396,17 +346,6 @@ class Search < ActiveRecord::Base
     
     @expanded = p[:expanded].try(:keys)
     
-    unless(keyword_search.nil?) 
-      @filters_cats = @userdatacats
-      @filters_conts = @userdataconts
-      @filters_bins = @userdatabins
-      @userdataconts = []
-      @userdatabins = []
-      @userdatacats = []
-      @parentcats= []
-      @parentconts= []
-    end
-
   end
   
   def extra_dynamic_facet?(facet_name, selected_product_types, current_product_type)

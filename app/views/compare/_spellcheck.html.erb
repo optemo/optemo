@@ -6,8 +6,8 @@
       <span style="color:black;">/ Did you mean</span> <a class="suggestion" href="#"> <%=Session.search.collation%></a><span style="color:black;">?</span>
     <%end%>
   <%else%>
-	 <%if (Session.search.num_result == 0 && (Session.search.col_emp_result || Session.search.collation==nil))%>
-    Your search, <b><%=Session.search.keyword_search%></b>, did not match any products. 	
-  <%end%>
+  	 <%if (Session.search.num_result == 0 && (Session.search.col_emp_result || Session.search.collation==nil))%>
+      Your search, <b><%=Session.search.keyword_search%></b>, did not match any products. 	
+    <%end%>
   <%end%>
 </div>

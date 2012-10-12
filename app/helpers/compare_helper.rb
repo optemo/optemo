@@ -142,6 +142,13 @@ module CompareHelper
   def your_selections
     res = "".html_safe
     last_heading = nil
+    if Session.search.keyword_search and not Session.search.keyword_search.empty?
+      keyword_facet = Categorical.new(name: "keyword")
+      keyword_value = Userdatacat.new(name: "keyword", value: Session.search.keyword_search)
+      last_heading = render(partial: 'filter_label', object: keyword_facet, locals: {selected: true}) 
+      result = render partial: "selected", collection: [keyword_value], locals: {last_heading: last_heading}
+      res += result unless result.nil?
+    end
     Session.features["filter"].each do |f|
       last_heading = render(partial: 'filter_label', object: f, locals: {selected: true}) unless f.is_a? Binary
       unless f.is_a? Heading
