@@ -34,7 +34,7 @@
             <div class="opt_swatches">
               <%= render partial: 'colour_filter', collection: f.display_colours, locals: {selected: f.selected} %>
             </div>
-            <%= hidden_field_tag "categorical[color]", f.selected.join("*"), :'data-id' => "swatchcolor" %>
+            <%= hidden_field_tag "categorical[color]", f.selected.map(&:value).join("*"), :'data-id' => "swatchcolor" %>
           <% else -%>
             <div class="categorical">
               <%= render partial: "cat_option", collection: f.optionlist.to_a, locals: {selected: f.selected, name: f.name, expanded: f.expanded, toplist: f.toplist} %>
