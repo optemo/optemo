@@ -12,10 +12,7 @@
       <div>
       </div>
       <div>
-        <!--Static Content-->
-        <div id="opt_silkscreen">&nbsp;</div>
-        <div id="opt_loading"><%= image_tag "spinner_white_background.gif" %></div>
-        <div id="opt_outsidecontainer" data-layout=<%= Session.futureshop? ? 'fs' : 'bb' %>><div id="info">&nbsp;</div></div>
+        <%= render "static" %>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
 <%= render partial: 'navigator_bar', :locals => {landing: Session.search.initial} %>[BRK]
 <%= render partial: 'filter', :locals => {landing: Session.search.initial} %>[BRK]
-<%= render partial: Session.search.initial && !Session.amazon? ? 'landing' : 'discoverybrowser' %>
-<%=raw "[BRK]" + render(partial: 'static') if params[:embedding] %>
+<%= render partial: Session.search.initial && !Session.amazon? ? 'landing' : 'discoverybrowser' %>[BRK]
+<%= render partial: 'static', locals: {tracking: true} %>

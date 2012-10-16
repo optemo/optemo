@@ -1,12 +1,16 @@
 <div id="opt_silkscreen">&nbsp;</div>
 <div id="opt_loading"><%= image_tag "spinner_white_background.gif" %></div>
-<div id="opt_outsidecontainer" data-layout=<%= Session.futureshop? ? 'fs' : 'bb' %>><div id="info">&nbsp;</div></div>
+<div id="opt_outsidecontainer" data-layout=<%= Session.futureshop? ? 'fs' : 'bb' %>>
+  <div id="info">&nbsp;</div>
+</div>
 
-<!-- CrazyEgg tracking -->
-<script type="text/javascript">
-setTimeout(function(){var a=document.createElement("script");
-var b=document.getElementsByTagName("script")[0];
-a.src=document.location.protocol+"//dnn506yrbagrg.cloudfront.net/pages/scripts/0011/8157.js?"+Math.floor(new Date().getTime()/3600000);
-a.async=true;a.type="text/javascript";b.parentNode.insertBefore(a,b)}, 1);
-</script>
-<!-- End CrazyEgg tracking -->
+<% unless local_assigns[:tracking].nil? %>
+  <!-- CrazyEgg tracking -->
+  <script type="text/javascript">
+  setTimeout(function(){var a=document.createElement("script");
+  var b=document.getElementsByTagName("script")[0];
+  a.src=document.location.protocol+"//dnn506yrbagrg.cloudfront.net/pages/scripts/0011/8157.js?"+Math.floor(new Date().getTime()/3600000);
+  a.async=true;a.type="text/javascript";b.parentNode.insertBefore(a,b)}, 1);
+  </script>
+  <!-- End CrazyEgg tracking -->
+<% end %>
