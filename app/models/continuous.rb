@@ -13,7 +13,7 @@ class Continuous < Facet
   
   #Does the distribution have just a single value?
   def single_value
-    return nil unless ui == "slider"
+    return nil if ui == 'ranges'
     distribution.first[2] != distribution.first[3] ? nil : distribution.first[2]
   end
   
@@ -36,7 +36,7 @@ class Continuous < Facet
   end
   
   def distribution
-    return [] unless ui == "slider"
+    return [] if ui == 'ranges'
     num_buckets = 24
     discretized = Session.search.solr_search(mycats: Session.search.userdatacats, mybins: Session.search.userdatabins, myconts: Session.search.userdataconts).facet(name.to_sym).rows
     if (!discretized.empty?)

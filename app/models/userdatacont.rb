@@ -8,10 +8,10 @@ class Userdatacont < ActiveRecord::Base
   end
   
   def data_id
-    if Session.features["filter"].find{|f|f.name == name}.try(:ui) == "slider"
-      "slider#{name}"
-    else
+    if Session.features["filter"].find{|f|f.name == name}.try(:ui) == "ranges"
       "Userdatacont#{id}"
+    else
+      "slider#{name}"
     end
   end
   
