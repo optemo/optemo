@@ -41,6 +41,14 @@ Filter Page:
   - Check a couple of binary filters then uncheck them (both in status and advanced search)
     - Click on both the link and the box
     - Check that the proper products are shown
+  - Dynamic ranges by product type
+    - select a subcategory that should have dynamic ranges behavior, e.g. internal hard drives in hard drives
+      - check whether for range filters other than price e.g. capacity for hard drives, the min/max of the range buckets change with the subcategory.
+      - check that the number of results in the ranges is also updated and different from the landing page
+    - apply several filters and select product type subcategories, select a couple ranges, and click "Undo" to remove applied filters
+      - check that all the different types of filters can be undone
+      - check that the user's selection is not changed (e.g. a selected range shouldn't disappear even if it's got zero results in a subcategory)
+      - look for inconsistencies
   - On FutureShop, click Clear Selections, then See all
     - Clear Selections should not appear if no filters are selected
   - Click on the Add to Cart link and see if it works
@@ -97,6 +105,13 @@ French:
   - Check that links go to French PDPs
   - Check that the copy and units are all French
   - Check that the numbers are formatted in French ($ after the amount, ',' as a decimal separator)
+
+EHF: 
+  BB and FS laptops should show EHF in prices when regionCode is QC.
+  - to set this up, in Firebug, edit the regionCode cookie value to be "QC", then reload the page
+    - look under the price in the navbox and in the compare page for the price breakdown
+    - check that the price filter facet / slider is shown and its values match the total price
+    - sort by price and check that the results make sense
   
 After changes to the update task:  
   - Compare live site to sandbox once the update task has been run on Jaguar for production
