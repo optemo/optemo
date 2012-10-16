@@ -78,7 +78,8 @@ module Ranges
     end
     #        |****|
     # |----|
-    modified_ranges.map!{|r| FloatRange.new(r.min.round(1),r.max.round(1),fname)}
+    round_factor = fname == 'saleprice' || fname == 'pricePlusEHF' ? 2 : 1
+    modified_ranges.map!{|r| FloatRange.new(r.min.round(round_factor),r.max.round(round_factor),fname)}
     modified_ranges + selected_ranges
   end
   

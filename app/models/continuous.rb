@@ -3,11 +3,7 @@ class Continuous < Facet
     return nil unless ui == "ranges"
     cache_name = Session.quebec && name == "saleprice" ? :pricePlusEHF : name.to_sym #Substitude EHF price for regular price
     ranges = Ranges.cache[cache_name]
-    if name == "saleprice"  # saleprice ranges are hard-coded, so no need to process them given the selection
-      ranges = ranges.map!{|r| FloatRange.new(r.min.round(2),r.max.round(2),name)}
-    else
-      ranges = Ranges.modifyRanges(selected.map(&:range), ranges, name)
-    end
+    ranges = Ranges.modifyRanges(selected.map(&:range), ranges, name)
     ranges
   end
   

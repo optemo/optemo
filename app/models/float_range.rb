@@ -29,7 +29,7 @@ class FloatRange
   end
   
   def unit
-    @unit ||= I18n.t("#{Session.product_type}.filter.#{@fname}.unit") unless @fname.nil?
+    @unit ||= I18n.t("#{Session.product_type}.filter.#{@fname == "pricePlusEHF" ? "saleprice" : @fname}.unit") unless @fname.nil?
   end
   
   def to_s
@@ -38,14 +38,14 @@ class FloatRange
     else
       res = [min,max].map{|n|prettify(n)}.join(" - ")
     end
-    res += " #{unit}" unless @fname == "saleprice"
+    res += " #{unit}" unless @fname == "saleprice" || @fname == "pricePlusEHF"
     res
   end
   
   private
   
   def prettify(n)
-    if @fname == "saleprice"
+    if @fname == "saleprice" || @fname == "pricePlusEHF"
       if (n.to_i == n)
         number_to_currency(n, precision: 0)
       else
