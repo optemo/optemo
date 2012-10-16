@@ -112,6 +112,7 @@ EHF:
     - look under the price in the navbox and in the compare page for the price breakdown
     - check that the price filter facet / slider is shown and its values match the total price
     - sort by price and check that the results make sense
+    - check the french pages as well, the EHF breakdown should appear and be in French
   
 After changes to the update task:  
   - Compare live site to sandbox once the update task has been run on Jaguar for production
