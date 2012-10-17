@@ -29,26 +29,40 @@ class CompareController < ApplicationController
   private 
 
   def create_search_and_render
-    search = Search.find_by_params_hash(@params_hash)
-    if search.nil?
-      search = Search.create({page: params[:page], keyword: params[:keyword], sortby: params[:sortby], 
-                              filters: params, landing: params[:landing], params_hash: @params_hash})
+    if @search.nil?
+      # If an existing search was not found in calculate_params_hash, create one.
+      @search = Search.create({page: params[:page], 
+                               keyword: params[:keyword],  
+                               sortby: params[:sortby], 
+                               filters: params, 
+                               landing: params[:landing], 
+                               params_hash: @params_hash})
     end
 
-    classVariables(search)
+    classVariables(@search)
       
     correct_render
   end
   
   def calculate_params_hash
+    @search = nil
     @params_hash = nil
+
     hist = params[:hist]
     if not hist.nil?
-      @params_hash = hist
-    else
+      # Use the hist param only if it corresponds to an existing search in the searches table.
+      search = Search.find_by_params_hash(hist)
+      if not search.nil?
+        @search = search
+        @params_hash = hist
+      end
+    end
+
+    if @params_hash.nil?
       # Sort the params to ensure the same param set always results in the same MD5 hash.
       params_as_array = sort_params(params)
       @params_hash = Base64.strict_encode64(Digest::MD5.digest(params_as_array.to_s))
+      @search = Search.find_by_params_hash(@params_hash)
     end
   end
 
