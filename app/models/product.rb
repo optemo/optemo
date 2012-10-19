@@ -15,64 +15,72 @@ class Product < ActiveRecord::Base
 
   self.per_page = 18 #for will_paginate
   
-  searchable do
-    text :title do
-      text_specs.find_by_name("title").try(:value)
-    end
-    
-    text :description do
-      text_specs.find_by_name("longDescription").try(:value)
-    end
-    text :sku
-    boolean :instock
-    string :eq_id_str
-    integer :isBundleCont do
-      cont_specs.find_by_name(:isBundleCont).try(:value)
-    end
-    string :product_type do
-      cat_specs.find_by_name(:product_type).try(:value)
-    end
-    string :product_category do
-      cat_specs.find_by_name(:product_type).try(:value)
-    end
-    text :category_of_product do # needed for keyword search to match category
-      category = cat_specs.find_by_name(:product_type).try(:value)
-      unless category.nil?  
-        I18n.t "#{category}.name"
-      end
-    end    
-    string :first_ancestors
-    string :second_ancestors
-    
-    (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
-      if (s.feature_type == "Continuous")
-        float s.name.to_sym, trie: true do
-          cont_specs.find_by_name(s.name).try(:value)
-        end
-      elsif (s.feature_type == "Categorical")
-        string s.name.to_sym do
-          cat_specs.find_by_name(s.name).try(:value)
-        end
-      elsif (s.feature_type == "Binary")
-        string s.name.to_sym do
-          bin_specs.find_by_name(s.name).try(:value)
-        end
-      end
-    end
-    float :pricePlusEHF, trie: true do
-      cont_specs.find_by_name(:pricePlusEHF).try(:value)
-    end
-    
-    float :lr_utility, trie: true do
-      cont_specs.find_by_name(:lr_utility).try(:value)
-    end
-    autosuggest :all_searchable_data do
-      if (instock)
+  # Configure indexing and search for Product objects.
+  # We define a separate function rather than directly calling the searchable DSL method, 
+  # as this allows the setup to be run again after the Facet fixtures are loaded in the tests.
+  def self.setup_sunspot
+    Sunspot.setup(Product) do
+      text :title do
         text_specs.find_by_name("title").try(:value)
+      end
+      
+      text :description do
+        text_specs.find_by_name("longDescription").try(:value)
+      end
+      text :sku
+      boolean :instock
+      string :eq_id_str
+      integer :isBundleCont do
+        cont_specs.find_by_name(:isBundleCont).try(:value)
+      end
+      string :product_type do
+        cat_specs.find_by_name(:product_type).try(:value)
+      end
+      string :product_category do
+        cat_specs.find_by_name(:product_type).try(:value)
+      end
+      text :category_of_product do # needed for keyword search to match category
+        category = cat_specs.find_by_name(:product_type).try(:value)
+        unless category.nil?  
+          I18n.t "#{category}.name"
+        end
+      end    
+      string :first_ancestors
+      string :second_ancestors
+      
+      (Facet.find_all_by_used_for("filter")+Facet.find_all_by_used_for("sortby")).each do |s|
+        if (s.feature_type == "Continuous")
+          float s.name.to_sym, trie: true do
+            cont_specs.find_by_name(s.name).try(:value)
+          end
+        elsif (s.feature_type == "Categorical")
+          string s.name.to_sym do
+            cat_specs.find_by_name(s.name).try(:value)
+          end
+        elsif (s.feature_type == "Binary")
+          string s.name.to_sym do
+            bin_specs.find_by_name(s.name).try(:value)
+          end
+        end
+      end
+      float :pricePlusEHF, trie: true do
+        cont_specs.find_by_name(:pricePlusEHF).try(:value)
+      end
+      
+      float :lr_utility, trie: true do
+        cont_specs.find_by_name(:lr_utility).try(:value)
+      end
+      autosuggest :all_searchable_data do
+        if (instock)
+          text_specs.find_by_name("title").try(:value)
+        end
       end
     end
   end
   
+  # Setup Sunspot on initial load of this file.
+  self.setup_sunspot
+    
   def first_ancestors
     if pt = cat_specs.find_by_name(:product_type)
       cur_level = ProductCategory.find_by_product_type(pt.value).level

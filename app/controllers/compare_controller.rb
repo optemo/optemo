@@ -64,6 +64,18 @@ class CompareController < ApplicationController
       @params_hash = Base64.strict_encode64(Digest::MD5.digest(params_as_array.to_s))
       @search = Search.find_by_params_hash(@params_hash)
     end
+
+    if not @search.nil?
+      # We found an existing search with the same parameters. Check if we need
+      # to update the updated_at field. We use the updated_at field in deciding whether an old
+      # search can be removed from the table.
+      delta = Time.now.utc - @search.updated_at.utc
+
+      if delta >= 24 * 60 * 60 # Throttle frequency of updates.
+        @search.touch
+      end
+    end
+
   end
 
   # Takes a hash and converts it to an array where each element is in turn an array of the form [key, value].
