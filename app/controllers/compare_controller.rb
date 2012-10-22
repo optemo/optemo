@@ -4,13 +4,8 @@ class CompareController < ApplicationController
   require 'base64'
   require 'digest/md5'
 
-  # params_hash is the base-64 encoding of the MD5 hash of the parameters.
-  attr_reader :params_hash
-
-  # Order matters here -- we need to ensure the before_filter runs before the caches_action, since the caches_action
-  # uses the params_hash as the cache key.
-  before_filter :calculate_params_hash
-  caches_action :index, :create, :cache_path => Proc.new { |controller| {params_hash: controller.params_hash} } 
+  # Cache key includes hostname (which ensures we cache French content correctly), as well as hash of all parameters.
+  caches_action :index, :create, :cache_path => Proc.new { |controller| {params_hash: controller.hash_params(controller.params)} } 
 
   def create
     index
@@ -26,56 +21,78 @@ class CompareController < ApplicationController
     end
   end
 
+  # Converts params hash to sorted array, then converts to string and hashes using MD5. Finally
+  # returns base-64 encoded version of MD5 hash, with trailing '=' deleted.
+  def hash_params(params)
+    params_as_array = sort_params(params)
+    hash = Base64.strict_encode64(Digest::MD5.digest(params_as_array.to_s))
+    # Remove the trailing pad characters as they can cause problems with embedded links in some email clients. 
+    # The pad characters are only required if you need to recover the original binary
+    # data from the encoded version, and the length of the binary data is not known. In our case, we know that
+    # the data length is always 128 bits. Also, we do not actually need to recover the binary data from the 
+    # base-64 encoded version.
+    while hash.end_with? "="
+      hash.chop!
+    end
+    hash
+  end
+
   private 
 
   def create_search_and_render
-    if @search.nil?
-      # If an existing search was not found in calculate_params_hash, create one.
-      @search = Search.create({page: params[:page], 
-                               keyword: params[:keyword],  
-                               sortby: params[:sortby], 
-                               filters: params, 
-                               landing: params[:landing], 
-                               params_hash: @params_hash})
-    end
+    search = lookup_or_create_search
 
-    classVariables(@search)
+    Session.initialize_with_search(search)
       
     correct_render
   end
   
-  def calculate_params_hash
-    @search = nil
-    @params_hash = nil
+  def lookup_or_create_search
+    search = nil
 
     hist = params[:hist]
     if not hist.nil?
-      # Use the hist param only if it corresponds to an existing search in the searches table.
       search = Search.find_by_params_hash(hist)
-      if not search.nil?
-        @search = search
-        @params_hash = hist
+    end
+
+    params_hash = nil
+    if search.nil?
+      # Hash just the parameters that are stored in the database.
+      search_params = params.select do |param, value|
+        ["page", "keyword", "sortby", "continuous", "binary", "categorical", "landing"].include?(param)
+      end
+      params_hash = hash_params(search_params)
+      search = Search.find_by_params_hash(params_hash)
+      if not search.nil? and not params[:expanded].nil?
+        # We currently do not store the :expanded parameter in the database, so initialize it here.
+        search.expanded = params[:expanded].keys
       end
     end
 
-    if @params_hash.nil?
-      # Sort the params to ensure the same param set always results in the same MD5 hash.
-      params_as_array = sort_params(params)
-      @params_hash = Base64.strict_encode64(Digest::MD5.digest(params_as_array.to_s))
-      @search = Search.find_by_params_hash(@params_hash)
-    end
-
-    if not @search.nil?
+    if search.nil?
+      # Create a new search.
+      filters = {continuous:  params[:continuous],
+                 binary:      params[:binary],
+                 categorical: params[:categorical],
+                 expanded:    params[:expanded]}
+      search = Search.create({page: params[:page], 
+                              keyword: params[:keyword],  
+                              sortby: params[:sortby], 
+                              filters: filters,
+                              landing: params[:landing], 
+                              params_hash: params_hash})
+    else
       # We found an existing search with the same parameters. Check if we need
       # to update the updated_at field. We use the updated_at field in deciding whether an old
       # search can be removed from the table.
-      delta = Time.now.utc - @search.updated_at.utc
+      delta = Time.now.utc - search.updated_at.utc
 
       if delta >= 24 * 60 * 60 # Throttle frequency of updates.
-        @search.touch
+        search.touch
       end
     end
-
+    
+    search
   end
 
   # Takes a hash and converts it to an array where each element is in turn an array of the form [key, value].
@@ -93,11 +110,6 @@ class CompareController < ApplicationController
     result.sort{ |a, b| a[0] <=> b[0] }
   end
 
-  def classVariables(search)
-    Session.initialize_with_search(search)
-    @search_view = true if params[:keyword] || !Session.search.keyword_search.blank?
-  end
-  
   def correct_render
     if params[:ajax] || params[:embedding]
       render 'ajax', :layout => false

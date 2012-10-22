@@ -3,9 +3,8 @@ require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
-  attr_reader :expanded
   attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size
-  attr_accessor :collation, :col_emp_result, :num_result, :validated_keyword, :specs, :siblings, :sibling_assocs, :bundles, :bundle_assocs
+  attr_accessor :expanded, :collation, :col_emp_result, :num_result, :validated_keyword, :specs, :siblings, :sibling_assocs, :bundles, :bundle_assocs
   
   self.per_page = 18 #for will_paginate
   
