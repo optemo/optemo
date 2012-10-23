@@ -24,18 +24,7 @@ class Categorical < Facet
   end
   
   def optionlist
-    cat_order(selected.map{|x|x.value}).first
-  end
-  
-  def toplist
-    cat_order(selected.map{|x|x.value}).second
-  end
-  
-  private
-  
-  def cat_order(chosen_cats, tree_level=1)
-    optionlist={}
-    toplist = []
+    optionlist = feat_counts
     if name == "product_type"
       optionlist = {}
       product_type = Session.landing_page
@@ -49,51 +38,59 @@ class Categorical < Facet
         leaf_type = Session.product_type
         optionlist[leaf_type] = leaves[leaf_type]
       end
-    elsif name == "brand" # To ensure alphabetical sorting (regardless of capitalization)
-      optionlist = CatSpec.count_feat(name)
-      chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
-      if optionlist.length > 10
-        toplist = optionlist.keys[0..9]
-      end
+      optionlist
+    elsif !custom_order.empty? #Order based on the ordering in the facet table
+      optionlist = optionlist_with_partial_order(optionlist, custom_order)
+    elsif alphabetical
       optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
+    else #Count-based ordering
+      optionlist #already sorted by counts from SOLR
+    end
+  end
+  
+  def toplist
+    if name == "product_type"
+      optionlist #Should not display More/Less
     else
-      # Check if the feature has translations
-      if I18n.t("cat_option.#{name}", :default => '').empty?
-        optionlist = CatSpec.count_feat(name)
-        chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
-        if optionlist.length > 10
-          toplist = optionlist.keys[0..9]
-        end
-        optionlist = Hash[*optionlist.sort{|a,b| a[0].downcase <=> b[0].downcase}.flatten]
-      elsif name == "processorType" && Session.retailer == 'F'
-        optionlist = CatSpec.count_feat(name)
-        order = CatSpec.order(name)
-        chosen_cats.each{|c| optionlist[c] = 0 unless optionlist.has_key?(c)}
-        if optionlist.length > 6
-          toplist = order.keys[0..5]
-        end
-        # for all elements in optionlist and not in order, add them to order with index > last
-        listed = optionlist.to_a.select{|k,v| !order[k].nil?}.sort{|a,b| order[a[0]] <=> order[b[0]] }
-        not_listed = optionlist.to_a.select{|k,v| order[k].nil?}
-        optionlist = Hash[*(listed + not_listed).flatten]
-      else
-        # Check if the feature has translations
-        if I18n.t("cat_option.#{name}", :default => '').empty?
-          optionlist = CatSpec.count_feat(name)
-          #optionlist = CatSpec.count_feat(name).to_a.sort{|a,b| (chosen_cats.include?(b[0]) ? b[1]+1000000 : b[1]) <=> (chosen_cats.include?(a[0]) ? a[1]+1000000 : a[1])}
-          order = CatSpec.order(name)
-        else #Need to downcase the keys so that they match
-          order = {}
-          CatSpec.order(name).each {|a,b| order[a.downcase] = b}
-          # Take this out when the specs/translations difference has been sorted out for all products
-          optionlist = {}
-          CatSpec.count_feat(name).each {|a,b| optionlist[a.downcase] = b}
-        end
-        unless order.empty?
-          optionlist = Hash[*optionlist.to_a.sort{|a,b| order[a[0]] <=> order[b[0]] }.flatten]
-        end
+      optionlist = feat_counts #Sorted by counts
+      unless custom_order.empty? #Order based on the ordering in the facet table
+        optionlist = optionlist_with_partial_order(optionlist, custom_order) 
+      end
+      optionlist.keys[0..(topcount-1)]
+    end
+  end
+  
+  private
+  
+  def feat_counts
+    @feat_counts ||= CatSpec.count_feat(name)
+  end
+  
+  def optionlist_with_partial_order(optionlist, order)
+    listed = optionlist.to_a.select{|k,v| !order[k].nil?}.sort{|a,b| order[a[0]] <=> order[b[0]]}
+    not_listed = optionlist.to_a.select{|k,v| order[k].nil?}
+    optionlist = Hash[*(listed + not_listed).flatten]
+  end
+  
+  def custom_order
+    if @custom_order
+      @custom_order
+    else
+      q = Facet.where(feature_type: "Ordering", product_type: product_type, used_for: name)
+      @custom_order = CachingMemcached.cache_lookup("CatOrder#{q.to_sql}") do
+        q.inject({}){|h,f| h[f.name] = f.value; h}
       end
     end
-    [optionlist, toplist]
+  end
+  
+  def alphabetical
+    %w(brand).include? name
+  end
+  
+  def topcount #The number of objects in the topcount
+    case name
+    when "brand" then 10
+    else 6
+    end
   end
 end

@@ -48,11 +48,4 @@ class CatSpec < ActiveRecord::Base
       q
     end
   end
-  
-  def self.order(feat)
-    q = Facet.where(used_for: "ordering", product_type: Session.product_type, feature_type: feat)
-    CachingMemcached.cache_lookup("CatOrder#{q.to_sql}") do
-      q.inject({}){|h,f| h[f.name] = f.value; h}
-    end
-  end
 end

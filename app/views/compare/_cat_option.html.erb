@@ -2,8 +2,8 @@
 <% available_count = cat_option.second %>
 <% checked = selected.find{|x|x.value == k} %>
 <% intoplist = toplist.empty? || toplist.include?(k) %>
-<% display = expanded || intoplist %>
-<div class="list_item hanging_indent<%= ' invisible' if available_count == 0 and !checked %><%= ' minor' unless intoplist %>" style="<%= "font-weight:bold;" if checked %><%= "display:none;" unless display %>">
+<% display = expanded || intoplist || checked %>
+<div class="list_item hanging_indent<%= ' invisible' if available_count == 0 and !checked %><%= ' minor' unless intoplist || checked %>" style="<%= "font-weight:bold;" if checked %><%= "display:none;" unless display %>">
   <% check_opts = {class: 'cat_filter'} %>
   <% check_opts[:'data-id'] = checked.data_id if checked %>
   <%= check_box_tag "categorical[#{name}]", k, !!checked, check_opts %>
