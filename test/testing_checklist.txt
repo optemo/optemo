@@ -32,8 +32,15 @@ Filter Page:
       - Do all the products show up if you manually reset the slider after having used it, eg: move the one end of the slider, let the new page load, then move it back to its original position
   - Categories:
     - Click a couple and see if they update the products available
-    - Check that brand filters are sorted alphabetically
-    - Check that no more than 10 filters appear; if there are more than 10, then the link "More" should appear instead
+    - Brands:
+      - Check that brand filters are sorted alphabetically
+      - Check that no more than 10 brands appear, when there are more than 10 in total, "More" should be shown as a link
+      - Click "More", check that expanded list is sorted alphabetically
+    - Select a value that appeared only after clicking "More", then click "Less", check that it's still shown
+    - Ordering of other facets:
+      - Find a facet with more than 6 total values, check that only 6 are displayed and there is a "More" link
+      - Verify custom order: e.g. check that for FS laptops, Windows 8 is displayed first under Operating System
+      - Verify default order: e.g. check that BB DSLRs focal length values are listed in decreasing order of counts
   - Check two brands, then click on a binary filter with a small number
     - Undo the filter. Test the cases where the filter matched:
       - Both brands: undoing it will preserve the two brands.
