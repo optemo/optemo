@@ -77,7 +77,12 @@ show_comparison_window = (num_tries = 0)->
   # num_tries refers to the number of times the page has tried to refresh the compare window due to failed spec searches. Defaults to 0 unless overridden by the refresh call in buildComparisonMatrix()
   skus = opt.readAllCookieValues(opt.cmpcookie)
   width = undefined
-
+  QC_cookie_value = opt.getCookieValue('regionCode')
+  if QC_cookie_value is "QC"
+    is_quebec = "true"
+  else 
+    is_quebec = "false"
+  
   return false if skus.length < 1
 
   # To figure out the width that we need, start with $('#opt_savedproducts').length probably
@@ -88,7 +93,7 @@ show_comparison_window = (num_tries = 0)->
   else
     width = 566
 
-  opt.applySilkScreen '/comparison/' + skus.join(",") + "?category_id=" + opt_category_id, null, width, 580, ->
+  opt.applySilkScreen '/comparison/' + skus.join(",") + "?category_id=" + opt_category_id + "&is_quebec=" + is_quebec, null, width, 580, ->
     # Jquery 1.5 would finish all the requests before building the comparison matrix once
     # With 1.4.2 we can't do that. Keep code for later.
     # $.when.apply(this,reqs).done();

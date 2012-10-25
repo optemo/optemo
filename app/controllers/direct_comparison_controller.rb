@@ -6,6 +6,7 @@ class DirectComparisonController < ApplicationController
   layout false
     
   def index
+    Session.quebec = params[:is_quebec] == "true" ? true : false
     # These IDs come straight from id=#opt_savedproducts on the client side (comma-separated)
     @contspecs = {}
     @catspecs = {}
