@@ -1,7 +1,7 @@
 ##Create our 16 products
 FactoryGirl.define do
   factory :product do
-    sequence(:id) {|n| n}
+    sequence(:id) {|n| n + 1} #Plus one as id 1 is in the fixtures
   end
 end
 #

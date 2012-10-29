@@ -3,10 +3,11 @@ class FloatRange
   include ActionView::Helpers::NumberHelper
   include Comparable
   
-  def initialize(min, max, fname = nil)
+  def initialize(min, max, fname = nil, precision=1)
     @min = min
     @max = max
     @fname = fname
+    @precision = precision
   end
   
   def <=>(a)
@@ -52,7 +53,7 @@ class FloatRange
         number_to_currency(n)
       end
     else
-      "%g" % conversions(n)
+      number_with_precision(conversions(n), precision: @precision, strip_insignificant_zeros: true)
     end
   end
   
