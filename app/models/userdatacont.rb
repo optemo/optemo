@@ -14,14 +14,4 @@ class Userdatacont < ActiveRecord::Base
       "slider#{name}"
     end
   end
-  
-  def bwname
-    #for backward compatibility
-    "continuous_#{name}"
-  end
-  
-  def value
-    #for backwards compatibility
-    "#{min};#{max}"
-  end
 end
