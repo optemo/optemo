@@ -11,7 +11,7 @@
   </span>
   <% if cat_specs["saleEndDate"] && Time.now < Date.parse(cat_specs["saleEndDate"]) -%>
     <div class="saleends">
-      <%= t('products.show.saleends')+(fr?.empty? ? "" : " ")+": "%>
+      <%= t('products.show.saleends')+(fr?.empty? ? ": " : "") %>
       <%= l((Date.parse(cat_specs["saleEndDate"]) - 1.day), :format => :long) %>
     </div>
   <% end %>

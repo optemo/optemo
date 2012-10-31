@@ -1,4 +1,4 @@
-<div class="<%= filter_label.style.blank? || defined?(selected) ? "label" : filter_label.style %><%= " list_item hanging_margin" if defined? selected %>">
+<div class="<%= filter_label.style.blank? || local_assigns[:selected] ? "label" : filter_label.style %><%= " list_item hanging_margin" if local_assigns[:selected] %>">
   <% fname = (filter_label.name == "pricePlusEHF" ? "saleprice" : filter_label.name) %>
-  <%= t("#{filter_label.product_type}.filter.#{fname}.name", default: fname.capitalize) %><%= ":" if defined?(selected) && Session.futureshop? %>
+  <%= t("#{filter_label.product_type}.filter.#{fname}.name", default: fname.capitalize) %><%= ":" if local_assigns[:selected] && Session.futureshop? %>
 </div>

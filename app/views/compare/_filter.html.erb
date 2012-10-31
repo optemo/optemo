@@ -38,8 +38,8 @@
           <% else -%>
             <div class="categorical">
               <%= render partial: "cat_option", collection: f.optionlist.to_a, locals: {selected: f.selected, name: f.name, expanded: f.expanded, toplist: f.toplist} %>
-              <%= link_to t('products.compare.more'), "#", {class: "moreless", style: f.expanded ? 'display:none;' : ''} if f.toplist.size < f.optionlist.size %>
-              <%= link_to t('products.compare.less'), "#", {class: "moreless", style: f.expanded ? '' : 'display:none;'} if f.toplist.size < f.optionlist.size %>
+              <%= link_to t('products.compare.more'), "#", {class: "moreless hanging_margin", style: f.expanded ? 'display:none;' : ''} if f.toplist.size < f.optionlist.size %>
+              <%= link_to t('products.compare.less'), "#", {class: "moreless hanging_margin", style: f.expanded ? '' : 'display:none;'} if f.toplist.size < f.optionlist.size %>
             </div>
             <%= hidden_field_tag "expanded[#{f.name}]", f.expanded %>
           <% end -%>
