@@ -1,6 +1,6 @@
 <%# Freezing the object is a convenient way to keep track of if its been printed before %>
 <%= last_heading.freeze unless last_heading.frozen? %>
-<div class="list_item hanging_margin" data-name="<%= selected.bwname %>" data-value="<%= selected.value %>"><!--Data-name and value are included only for backwards compatibility-->
+<div class="list_item hanging_margin">
   <%= selected %>
   <% unless selected.name == "keyword" %>
     <a class='remove_filter' href='#' data-id="<%= selected.data_id %>">

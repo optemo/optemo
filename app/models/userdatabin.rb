@@ -6,9 +6,4 @@ class Userdatabin < ActiveRecord::Base
   def data_id
     "Userdatabin#{id}"
   end
-  
-  def bwname
-    #for backward compatibility
-    "binary_#{name}"
-  end
 end

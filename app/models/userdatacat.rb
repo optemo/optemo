@@ -11,9 +11,4 @@ class Userdatacat < ActiveRecord::Base
       "Userdatacat#{id}"
     end
   end
-  
-  def bwname
-    #for backward compatibility
-    "categorical_#{name}"
-  end
 end
