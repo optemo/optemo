@@ -19,7 +19,7 @@ class Search < ActiveRecord::Base
     myconts = opt[:myconts] || userdataconts
     search_term = opt[:searchterm] || @validated_keyword
     
-    filtering = Sunspot.search(Product) do
+    filtering = Product.search do
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
         fulltext phrase do
@@ -100,7 +100,7 @@ class Search < ActiveRecord::Base
     myconts = userdataconts
     search_term = keyword_search
     #puts "\nmybins: #{mybins}\nmycats: #{mycats}\nmyconts: #{myconts}\n"
-    filtering = Sunspot.search(Product) do
+    filtering = Product.search do
       if search_term
         phrase = search_term.downcase.gsub(/\s-/,'').to_s
         fulltext phrase

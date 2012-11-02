@@ -19,7 +19,7 @@ class Product < ActiveRecord::Base
   # We define a separate function rather than directly calling the searchable DSL method, 
   # as this allows the setup to be run again after the Facet fixtures are loaded in the tests.
   def self.setup_sunspot
-    Sunspot.setup(Product) do
+    searchable do
       text :title do
         text_specs.find_by_name("title").try(:value)
       end
