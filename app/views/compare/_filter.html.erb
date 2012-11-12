@@ -48,7 +48,7 @@
             <%= render partial: 'range_option', collection: f.ranges, :locals => {selected: f.selected, name: f.name} %>
           <% else -%> <%# Use sliders still, not ranges %>
             <% if f.single_value %>
-              <div class="disabled" style="margin: 4px 0 0 5px"><%= f.single_value %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
+              <div class="disabled" style="margin: 4px 0 0 16px"><%= f.single_value %> <span class="av_count">(<%=t 'specs.all' %>)</span></div>
             <% else %>
               <%= render partial: 'slider', object: f, :locals => f.sliderSettings %>
             <% end %>

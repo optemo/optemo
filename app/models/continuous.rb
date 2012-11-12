@@ -34,17 +34,19 @@ class Continuous < Facet
   def distribution
     return [] if ui == 'ranges'
     num_buckets = 24
-    discretized = Session.search.solr_search(mycats: Session.search.userdatacats, mybins: Session.search.userdatabins, myconts: Session.search.userdataconts).facet(name.to_sym).rows
+    discretized = Session.search.solr_cached.facet(name.to_sym).rows
     if (!discretized.empty?)
-      min_all = Rails.cache.fetch("Min#{Session.search.keyword_search}#{Session.product_type}#{name}") {discretized.first.value}
-      max_all = Rails.cache.fetch("Max#{Session.search.keyword_search}#{Session.product_type}#{name}") {discretized.last.value}
+      min_all = discretized.first.value
+      max_all = discretized.last.value
       saved_cont = Session.search.userdataconts.find{|m|m.name == name}
       if saved_cont.nil?
-        min = discretized.first.value
-        max = discretized.last.value
+        min = min_all
+        max = max_all
       else
         min = saved_cont.min
         max = saved_cont.max
+        min_all = [min_all,min].min
+        max_all = [max_all,max].max
       end
       step = (max_all - min_all + 0.00000001) / num_buckets
       dist = Array.new(num_buckets,0)
