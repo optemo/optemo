@@ -52,7 +52,7 @@ class CompareController < ApplicationController
 
     hist = params[:hist]
     if not hist.nil?
-      search = Search.find_by_params_hash(hist)
+      search = find_search_by_params_hash(hist)
     end
 
     params_hash = nil
@@ -62,7 +62,7 @@ class CompareController < ApplicationController
         ["page", "keyword", "sortby", "continuous", "binary", "categorical", "landing"].include?(param)
       end
       params_hash = hash_params(search_params)
-      search = Search.find_by_params_hash(params_hash)
+      search = find_search_by_params_hash(params_hash)
       if not search.nil? and not params[:expanded].nil?
         # We currently do not store the :expanded parameter in the database, so initialize it here.
         search.expanded = params[:expanded].keys
@@ -95,6 +95,13 @@ class CompareController < ApplicationController
     search
   end
 
+  def find_search_by_params_hash(params_hash) 
+    # The column collation is case-insensitive, so we need to filter out hashes that 
+    # differ only by case manually.
+    searches = Search.find_all_by_params_hash(params_hash)
+    searches.find { |item| item.params_hash == params_hash }
+  end
+  
   # Takes a hash and converts it to an array where each element is in turn an array of the form [key, value].
   # The returned array is sorted on the key in the original hash. For values which are hashes, this method
   # calls itself recursively to convert the value in to a sorted array.

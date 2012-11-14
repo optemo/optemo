@@ -47,11 +47,17 @@ class CompareControllerTest < ActionController::TestCase
     assert_not_nil Session.search
     assert_equal expected_hash, Session.search.params_hash
 
+    # Lookup of existing searches using hist parameter is case-sensitive.
+    get :index, {"hist" => expected_hash.downcase!}
+    assert_response :success
+    assert_equal 2, Search.all.size, "A new search was created"
+    assert_not_nil Session.search
+
     # If no search matches the hist parameter, we create a new search.
     get :index, {"hist" => "junk", "ajax"=>"true", "category_id"=>"B20218", "categorical"=>{"product_type"=>"B22474"}, 
                  "is_quebec"=>"false"}
     assert_response :success
-    assert_equal 2, Search.all.size, "A new search was created"
+    assert_equal 3, Search.all.size, "A new search was created"
     assert_not_nil Session.search
     assert_equal "as5c7rKv8yFpJfvZ2hqrEw", Session.search.params_hash
   end
