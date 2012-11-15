@@ -44,7 +44,7 @@ Filter Page:
   - Check two brands, then click on a binary filter with a small number
     - Undo the filter. Test the cases where the filter matched:
       - Both brands: undoing it will preserve the two brands.
-      - One brand: only the matched brand stays selected. (As of 10/10, this does not pass. Both brands stay selected.)
+      - One brand: only the matched brand stays selected. 
   - Check a couple of binary filters then uncheck them (both in status and advanced search)
     - Click on both the link and the box
     - Check that the proper products are shown
