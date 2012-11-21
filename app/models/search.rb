@@ -195,55 +195,39 @@ class Search < ActiveRecord::Base
 
   def products
     @validated_keyword = keyword_search
-    #puts "hashed_product_type #{Session.product_type}"
+    res = grouping(solr_cached)
+    @num_result = solr_cached.group(:eq_id_str).ngroups
+    
     if (keyword_search)
-      things = solr_cached
-      res = grouping(things)
-      
-      @num_result = things.group(:eq_id_str).ngroups
-      @collation = things.collation if things.collation !=nil
-      #puts "collation_term #{@collation}"
-      res_col=[]
+      @collation = solr_cached.collation if solr_cached.collation !=nil
+      #Redo search with spelling correction
       if (@collation)
-        things_col= solr_search(searchterm: @collation)
-        res_col = grouping(things_col)
+        solr_col= solr_search(searchterm: @collation)
+        res_col = grouping(solr_col)
         if (res_col.empty?)
           @col_emp_result = true
         end
       end
-      if (res.empty?)
-        unless (res_col.empty?)
-          products_list(res_col,things_col.group(:eq_id_str).ngroups)
-          @solr_cached = things_col
-          @validated_keyword = @collation
-        else
-          products_list(res,things.group(:eq_id_str).ngroups) 
-        end
-      else
-        products_list(res,things.group(:eq_id_str).ngroups)  
-      end
-    else
-      things = solr_cached
-      products_list( grouping(things), things.group(:eq_id_str).ngroups)
     end
+    
+    #Only use the collation if the first results are empty & it's not empty
+    if (res.empty? && res_col && !res_col.empty?)
+      res = res_col
+      @solr_cached = solr_col
+      @validated_keyword = @collation
+    end
+    
+    @products_size = solr_cached.group(:eq_id_str).ngroups
+    @paginated_products = Sunspot::Search::PaginatedCollection.new res, page||1, Search.per_page,@products_size
   end
   
   def grouping(things)
-    res=[]
     # By using .hits, we can get just the ids instead of getting the results. See Solr documentation
-    things.group(:eq_id_str).groups.each do |g|
+    res = things.group(:eq_id_str).groups.inject([]) do |res, g|
       res << g.hits.first.primary_key.to_i
     end
     Product.cachemany(res)
   end
-
-  def products_list(things, total) #paginate products through sunspot pagination
-    @products_size = total    
-    @paginated_products = Sunspot::Search::PaginatedCollection.new things, page||1, Search.per_page,total
-   # @paginated_products.each do |p|
-   #   puts "p.product_type #{p.id}"
-   # end
-   end
 
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
@@ -419,7 +403,7 @@ class Search < ActiveRecord::Base
     false
   end
 
-  private :products_list, :grouping
+  private :grouping
 
 end
 
