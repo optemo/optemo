@@ -11,9 +11,9 @@ class  Kmeans
    centers = []
    uniq_data = data.uniq
    s = uniq_data.size
-   m = s/number_clusters
+   m = s.to_f/number_clusters
    for j in (1..number_clusters) 
-     centers << uniq_data[(m*j)-1]
+     centers << uniq_data[(m*j).to_i-1]
    end    
    centers.map{|c| data.index(c)} 
   end
