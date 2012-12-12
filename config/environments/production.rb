@@ -13,6 +13,10 @@ Site::Application.configure do
 
   # Specifies the header that your server uses for sending files
   config.action_dispatch.x_sendfile_header = "X-Sendfile"
+  
+  #Specifying load-balancer servers so that the logs can use the X-Forwarded-For ips
+  load_balancers = "66\\.175\\.221\\.57|50\\.56\\.174\\.219"
+  config.action_dispatch.trusted_proxies = /(^127\.0\.0\.1$|^(10|172\.(1[6-9]|2[0-9]|30|31)|192\.168)\.|#{load_balancers})/
 
   # For nginx:
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect'
