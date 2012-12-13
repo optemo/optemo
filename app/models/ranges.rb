@@ -28,9 +28,15 @@ module Ranges
   
   def self.modifyRanges(selected_ranges, ranges, fname = nil)
     epsilon = fname == 'saleprice' || fname == 'pricePlusEHF' ? 0 :  0.1
+    
+    # Convert from FloatRange to Ruby Range
+    selected_ranges = selected_ranges.map{ |float_range| float_range.min .. float_range.max }
+    
     selected_ranges.sort!{|a,b| a.min <=> b.min}
-    #Ranges are expected to be ordered
+    
+    # Ranges are expected to be ordered
     modified_ranges = []
+    
     # |****| selected_ranges
     # |----| ranges
     ranges.each do |r|
@@ -79,8 +85,11 @@ module Ranges
     #        |****|
     # |----|
     precision = fname == 'saleprice' || fname == 'pricePlusEHF' ? 2 : 1
-    modified_ranges.map!{|r| FloatRange.new(r.min.round(precision),r.max.round(precision),fname,precision)}
-    modified_ranges + selected_ranges
+
+    # We call r.first and r.last, since r.min and r.max are invalid if the left bound is greater than the right bound.
+    # This can happen due to floating-point error when adding/subtracting epsilon to calculate the value of the bounds.
+    result = modified_ranges + selected_ranges
+    result.map!{|r| FloatRange.new(r.first.round(precision),r.last.round(precision),fname,precision)}
   end
   
   def self.count(feat, min, max)

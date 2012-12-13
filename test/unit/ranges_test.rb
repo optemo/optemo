@@ -104,4 +104,13 @@ class RangesTest < ActiveSupport::TestCase
     assert_equal expected_ranges, Ranges.modifyRanges(selected, ranges)
   end
   
+  test "modify ranges case 11" do
+    selected = [ (2.7 .. 2.7) ]
+    ranges = [0.0..0.0, 1.5..1.5, 2.4..2.8, 3.0..3.0, 3.2..3.5, 6.7..6.7]
+    expected_ranges = [ (0.0..0.0), (1.5..1.5), (2.4..2.6), (2.7..2.7), (2.8..2.8), (3.0..3.0), (3.2..3.5), (6.7..6.7) ]
+    selected.map!{|r|FloatRange.new(r.min,r.max)}
+    expected_ranges.map!{|r|FloatRange.new(r.min,r.max)}
+    assert_equal expected_ranges, Ranges.modifyRanges(selected, ranges)
+  end
+  
 end
