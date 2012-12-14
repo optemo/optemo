@@ -73,6 +73,7 @@ class Search < ActiveRecord::Base
         #truncate # facet counts are based on the most relevant document of each group matching the query
         order_by(:isBundleCont, :asc) # Make sure products instead of bundles are the representative
         order_by(type.to_sym, direction.to_sym) # Choose rep by sorting order
+        order_by(:utility, :desc) #Break ties with heuristic utility 
       end
       unless search_term
         with :product_type, Session.landing_page_leaves
