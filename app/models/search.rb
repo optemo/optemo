@@ -71,7 +71,8 @@ class Search < ActiveRecord::Base
         ngroups  # includes the number of groups that have matched the query
         facet #Solr patch 2898, allows only one count per group
         #truncate # facet counts are based on the most relevant document of each group matching the query
-        order_by(:isBundleCont, :asc)
+        order_by(:isBundleCont, :asc) # Make sure products instead of bundles are the representative
+        order_by(type.to_sym, direction.to_sym) # Choose rep by sorting order
       end
       unless search_term
         with :product_type, Session.landing_page_leaves
