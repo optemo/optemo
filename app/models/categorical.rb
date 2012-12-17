@@ -20,7 +20,7 @@ class Categorical < Facet
   end
   
   def selected
-    (Session.search.userdatacats+Session.search.parentcats).select{|d|d.name == name}
+    Session.search.userdatacats.select{|d|d.name == name}
   end
   
   def optionlist

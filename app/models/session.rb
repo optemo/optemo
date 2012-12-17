@@ -79,27 +79,21 @@ class Session
       # default to facets of landing page
       facets = Facet.where(product_type: Session.landing_page, active: true, used_for: ['filter','sortby','show'])
     end
-    # initialize features to the facets, not including the dynamically excluded facets
-    dynamically_excluded = []
-    self.features = facets.includes(:dynamic_facets).order(:value).select do |f|
-      #These are the subcategories for which this feature is only used for
+    # remove dynamically-excluded facets
+    facets = facets.includes(:dynamic_facets).order(:value).select do |f|
       f.name = 'pricePlusEHF' if (f.name == 'saleprice' && Session.quebec)
-      subcategories = f.dynamic_facets.map{|x|x.category}
-      subcategories.empty? || #We don't store subcategories for features which are always used
-      subcategories.any?{|e| categories.include? e} ||
-      (dynamically_excluded << f && false) #If a feature is not selected, we need to note this
-    end.group_by{|x|x.used_for}
-    # Some filters of last search need to be removed when dynamic filters removed
-    unless categories.empty?
-      dynamically_excluded.each do |f|
-        selection = case f.feature_type
-          when "Continuous" then self.search.userdataconts
-          when "Categorical" then self.search.userdatacats
-          when "Binary" then self.search.userdatabins
-        end
-        Maybe(selection.select{|ud|ud.name == f.name}.first).destroy
-      end
+      # Get the subcategories to which this facet applies, if it is a dynamic facet.
+      df_cats = f.dynamic_facets.map{ |df| df.category }
+      # If df_cats is empty, then it is not a dynamic facet.
+      df_cats.empty? || df_cats.any?{|df_cat| categories.include? df_cat}
     end
+    
+    # Remove filters which do not match the available facets.
+    if not self.search.nil?
+      self.search.prune_filters(facets)
+    end
+    
+    self.features = facets.group_by{ |facet| facet.used_for }
   end
 
   def self.isCrawler?(str, esc_param)

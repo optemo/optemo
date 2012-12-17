@@ -3,7 +3,7 @@ require 'sunspot_spellcheck'
 require 'will_paginate/array'
 
 class Search < ActiveRecord::Base
-  attr_writer :userdataconts, :userdatacats, :userdatabins, :parentcats, :products_size
+  attr_writer :userdataconts, :userdatacats, :userdatabins, :products_size
   attr_accessor :expanded, :collation, :col_emp_result, :num_result, :validated_keyword, :specs, :siblings, :sibling_assocs, :bundles, :bundle_assocs
   
   self.per_page = 18 #for will_paginate
@@ -166,13 +166,6 @@ class Search < ActiveRecord::Base
   def userdatabins
     @userdatabins ||= Userdatabin.find_all_by_search_id(id)
   end
-  def parentcats
-    @parentcats ||=[]
-  end
-  
-  def parentconts
-    @parentconts ||=[]
-  end  
   
   def paginated_products #set the paginated_products
     unless @paginated_products
@@ -223,14 +216,6 @@ class Search < ActiveRecord::Base
     @paginated_products = Sunspot::Search::PaginatedCollection.new res, page||1, Search.per_page,@products_size
   end
   
-  def grouping(things)
-    # By using .hits, we can get just the ids instead of getting the results. See Solr documentation
-    res = things.group(:eq_id_str).groups.inject([]) do |res, g|
-      res << g.hits.first.primary_key.to_i
-    end
-    Product.cachemany(res)
-  end
-
   def products_landing
     @landing_products ||= CachingMemcached.cache_lookup("FeaturedProducts(#{Session.product_type}") do
       CatSpec.joins("INNER JOIN `bin_specs` ON `cat_specs`.product_id = `bin_specs`.product_id").where(bin_specs: {name: "featured"}, cat_specs: {name: "product_type", value: Session.product_type_leaves}).map{|x|x.product_id}
@@ -272,140 +257,60 @@ class Search < ActiveRecord::Base
   end
  
   def createFeatures(p)
-    @userdataconts = []
-    @parentconts=[]
-
-    unless p[:categorical].nil?
-      product_types = p[:categorical][:product_type]
-    end  
-    current_product_type = Session.product_type
-    
+    #Continuous Features
     r = /(?<min>[\d.]*);(?<max>[\d.]*)/
     Maybe(p[:continuous]).each_pair do |k,v|
-      unless extra_dynamic_facet?(k, product_types, current_product_type)
-        v.split("*").each do |cont|
-          if res = r.match(cont)
-            @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
-          end
+      v.split("*").each do |cont|
+        if res = r.match(cont)
+          @userdataconts << Userdatacont.new({:name => k, :min => res[:min], :max => res[:max]})
         end
       end
     end
     
     #Binary Features
-    @userdatabins = []
     Maybe(p[:binary]).each_pair do |k,v|
-      unless extra_dynamic_facet?(k, product_types, current_product_type)
-        #Handle false booleans
-        if v != '0'
-          @userdatabins << Userdatabin.new({:name => k, :value => v})
-        end
+      #Handle false booleans
+      if v != '0'
+        @userdatabins << Userdatabin.new({:name => k, :value => v})
       end
     end
     
     #Categorical Features
-    #for the category part, the parents and children are separated in order to be able to make the tree and also do a correct search
-    @userdatacats = []
-    @parentcats=[]
     Maybe(p[:categorical]).each_pair do |k,v|
-      unless extra_dynamic_facet?(k, product_types, current_product_type)
-        if k == "product_type"
-           temp=[]
-           v.split("*").each do |cat|
-             nested_cats = cat.split("+")
-             nested_cats.each do |subcat|
-                @parentcats << Userdatacat.new({:name => k , :value => temp.delete(subcat)})  if temp.include?(subcat)
-             end
-             temp << nested_cats.last if nested_cats.last 
-           end
-           temp.each do |t|
-              @userdatacats << Userdatacat.new({:name => k, :value => t})
-           end
-           temp=[]
-        else   
-          v.split("*").each do |cat|
-            @userdatacats << Userdatacat.new({:name => k, :value => cat})
-          end
-        end
+      v.split("*").each do |cat|
+        @userdatacats << Userdatacat.new({:name => k, :value => cat})
       end
     end
     
     @expanded = p[:expanded].try(:keys)
-    
   end
   
-  def extra_dynamic_facet?(facet_name, selected_product_types, current_product_type)
-    CachingMemcached.cache_lookup("ExtraFacet#{facet_name}Selected#{selected_product_types}Current#{current_product_type}") do
-      # condition true iff the facet is a dynamic facet but a matching product category is not also selected in the search
-      category_found = false
-      unless facet_name == 'product_type'
-        # get the dynamic facets if there are any set for the current product type, otherwise do nothing
-        dynamic_facets = Maybe(Facet.find_by_name_and_product_type(facet_name, current_product_type)).dynamic_facets
-        unless dynamic_facets.nil? or dynamic_facets.empty?
-          unless selected_product_types.nil?
-            selected_product_types.split('*').each do |p_type|
-              category_found = true unless dynamic_facets.where(:category => p_type).empty?
-            end
-          end
-          if category_found == false
-            true
-          else
-            false
-          end
-        else
-          false
+  # Takes array of available facets and prunes filters which do not
+  # match one of the available facets.
+  def prune_filters(facets) 
+    [[userdatacats, "Categorical"], [userdataconts, "Continuous"], [userdatabins, "Binary"]].each do |filters, filter_type|
+      to_remove = []
+      filters.each do |filter|
+        matching_facet = facets.find do |facet| 
+          facet.feature_type == filter_type and facet.name == filter.name and facet.active and facet.used_for == "filter" 
+        end
+        if matching_facet.nil? 
+          to_remove << filter
         end
       end
-      false
+      to_remove.each { |filter| filters.delete(filter) }
     end
   end
   
-  # The intent of this function is to see if filtering is being done on a previously filtered set of clusters.
-  # The reason for its existence is that filtering across, say, 50% of the total clusters is faster
-  # than starting from the beginning every time.
-  # Returns 'true' if the filtering is "expanded", ie., if the new filtering needs to examine clusters that weren't in the previous search.
-  def expandedFiltering?(old_search)
-    #Continuous feature
-    olduserdataconts = old_search.userdataconts
-    @userdataconts.each do |f|
-      old = olduserdataconts.select{|c|c.name == f.name}.first
-      if old # If the oldsession max value is not nil then calculate newrange
-        oldrange = old.max - old.min
-        newrange = f.max - f.min
-        if newrange > oldrange
-          return true #Continuous
-        end
-      end
+  private 
+  
+  def grouping(things)
+    # By using .hits, we can get just the ids instead of getting the results. See Solr documentation
+    res = things.group(:eq_id_str).groups.inject([]) do |res, g|
+      res << g.hits.first.primary_key.to_i
     end
-    #Binary Feature
-    @userdatabins.each do |f|
-      if f.value == false
-        #Only works for one item submitted at a time
-        @userdatabins.delete(f)
-        return true #Binary
-      end
-    end
-    #Categorical Feature
-    olduserdatacats = old_search.userdatacats
-    if @userdatacats.empty?
-      return true unless olduserdatacats.empty?
-    else
-      @userdatacats.each do |f|
-        return true if f.name == "color" #Color is always an expanded filtering
-        old = olduserdatacats.select{|c|c.name == f.name}
-        unless old.empty?
-          newf = @userdatacats.select{|c|c.name == f.name}
-          return true if newf.length == 0 && old.length > 0
-          return true if old.length > 0 && newf.length > old.length
-        end
-      end
-    end
-    if self.keyword_search.blank?
-      return true unless old_search.keyword_search.blank?
-    end
-    false
+    Product.cachemany(res)
   end
-
-  private :grouping
 
 end
 

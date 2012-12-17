@@ -117,6 +117,80 @@ class CompareControllerTest < ActionController::TestCase
     assert_not_equal old_updated_at, search.updated_at, "Updated_at field was changed"
 
   end
+  
+  test "Session features set correctly based on product type" do
+    get :index, {"ajax"=>"true", "category_id"=>"B20005"}
+    assert_response :success
+    features = Session.features.values.flatten
+    assert_not_nil features
+    assert_nil features.find{ |facet| facet.name == "brand" }
+    assert_nil features.find{ |facet| facet.name == "saleprice" }
+    assert_nil features.find{ |facet| facet.name == "onsale" }
+
+    get :index, {"ajax"=>"true", "category_id"=>"B20218"}
+    assert_response :success
+    features = Session.features.values.flatten
+    assert_not_nil features
+    assert_not_nil features.find{ |facet| facet.name == "brand" }
+    assert_not_nil features.find{ |facet| facet.name == "saleprice" }
+    assert_not_nil features.find{ |facet| facet.name == "onsale" }
+    
+    # frontlcd is a dynamic facet only available if the B22474 subcategory is selected
+    assert_nil features.find{ |facet| facet.name == "frontlcd" }
+    
+    # If B22474 is selected, we should get the facets of the landing page (B20218) plus the dynamic facet frontlcd
+    get :index, {"ajax"=>"true", "category_id"=>"B20218", "categorical"=>{"product_type"=>"B22474"}}
+    assert_response :success
+    features = Session.features.values.flatten
+    assert_not_nil features
+    assert_not_nil features.find{ |facet| facet.name == "brand" }
+    assert_not_nil features.find{ |facet| facet.name == "saleprice" }
+    assert_not_nil features.find{ |facet| facet.name == "onsale" }
+
+    assert_not_nil features.find{ |facet| facet.name == "frontlcd" }
+  end
+  
+  test "Session filters set correctly based on product type" do
+    get :index, {"ajax"=>"true", "category_id"=>"B20005", "binary"=>{"onsale"=>"1"}, "categorical"=>{"brand"=>"canon"}, 
+                 "continuous"=>{"saleprice"=>"100.0;150.0"}, "sortby"=>"utility_desc"}
+    assert_response :success
+    assert_not_nil Session.search
+    assert_not_nil Session.search.userdatacats
+    assert_not_nil Session.search.userdataconts
+    assert_not_nil Session.search.userdatabins
+    assert_nil Session.search.userdatacats.find{ |filter| filter.name == "brand" }
+    assert_nil Session.search.userdataconts.find{ |filter| filter.name == "saleprice" }
+    assert_nil Session.search.userdatabins.find{ |filter| filter.name == "onsale" }
+
+    get :index, {"ajax"=>"true", "category_id"=>"B20218", "binary"=>{"onsale"=>"1", "frontlcd" => "1"}, "categorical"=>{"brand"=>"canon"}, 
+                 "continuous"=>{"saleprice"=>"100.0;150.0"}, "sortby"=>"utility_desc"}
+    assert_response :success
+    assert_not_nil Session.search
+    assert_not_nil Session.search.userdatacats
+    assert_not_nil Session.search.userdataconts
+    assert_not_nil Session.search.userdatabins
+    assert_not_nil Session.search.userdatacats.find{ |filter| filter.name == "brand" }
+    assert_not_nil Session.search.userdataconts.find{ |filter| filter.name == "saleprice" }
+    assert_not_nil Session.search.userdatabins.find{ |filter| filter.name == "onsale" }
+
+    # frontlcd is a dynamic facet only available if the B22474 subcategory is selected
+    assert_nil Session.search.userdatabins.find{ |filter| filter.name == "frontlcd" }
+
+    get :index, {"ajax"=>"true", "category_id"=>"B20218", "binary"=>{"onsale"=>"1", "frontlcd" => "1"}, "categorical"=>{"brand"=>"canon", "product_type"=>"B22474"}, 
+                 "continuous"=>{"saleprice"=>"100.0;150.0"}, "sortby"=>"utility_desc"}
+    # If B22474 is selected, the frontlcd filter should not be pruned.
+    assert_response :success
+    assert_not_nil Session.search
+    assert_not_nil Session.search.userdatacats
+    assert_not_nil Session.search.userdataconts
+    assert_not_nil Session.search.userdatabins
+    assert_not_nil Session.search.userdatacats.find{ |filter| filter.name == "product_type" }
+    assert_not_nil Session.search.userdatacats.find{ |filter| filter.name == "brand" }
+    assert_not_nil Session.search.userdataconts.find{ |filter| filter.name == "saleprice" }
+    assert_not_nil Session.search.userdatabins.find{ |filter| filter.name == "onsale" }
+    assert_not_nil Session.search.userdatabins.find{ |filter| filter.name == "frontlcd" }
+  end
+  
 end
 
 

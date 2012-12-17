@@ -77,7 +77,7 @@ class Continuous < Facet
   end
   
   def selected
-    (Session.search.userdataconts+Session.search.parentconts).select{|d| d.name == name}
+    Session.search.userdataconts.select{|d| d.name == name}
   end
   
   private

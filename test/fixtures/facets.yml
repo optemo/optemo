@@ -1,23 +1,19 @@
-saleprice:
-  id: 50
-  product_type: B20218
-  name: saleprice
-  feature_type: Continuous
-  used_for: sortby
-  style: asc
-  value: 0
-  active: 1
-saleprice:
-  id: 51
-  product_type: B20218
-  name: saleprice
+B20005_utility:
+  product_type: B20005
+  name: utility
   feature_type: Continuous
   used_for: sortby
   style: desc
   value: 0
   active: 1
-utility:
-  id: 52
+B20005_product_type:
+  product_type: B20005
+  name: product_type
+  feature_type: Categorical
+  used_for: filter
+  value: 0
+  active: 1
+B20218_utility_asc:
   product_type: B20218
   name: utility
   feature_type: Continuous
@@ -25,8 +21,7 @@ utility:
   style: asc
   value: 0
   active: 1
-utility:
-  id: 53
+B20218_utility_desc:
   product_type: B20218
   name: utility
   feature_type: Continuous
@@ -34,18 +29,83 @@ utility:
   style: desc
   value: 0
   active: 1
-product_type:
-  id: 54
+B20218_saleprice_asc:
+  product_type: B20218
+  name: saleprice
+  feature_type: Continuous
+  used_for: sortby
+  style: asc
+  value: 0
+  active: 1
+B20218_saleprice_desc:
+  product_type: B20218
+  name: saleprice
+  feature_type: Continuous
+  used_for: sortby
+  style: desc
+  value: 0
+  active: 1
+B20218_saleprice_filter:
+  product_type: B20218
+  name: saleprice
+  feature_type: Continuous
+  used_for: filter
+  value: 0
+  active: 1
+B20218_onsale:
+  product_type: B20218
+  name: onsale
+  feature_type: Binary
+  used_for: filter
+  value: 0
+  active: 1
+B20218_product_type:
   product_type: B20218
   name: product_type
   feature_type: Categorical
   used_for: filter
   value: 0
   active: 1
-brand:
-  id: 55
+B20218_brand:
   product_type: B20218
   name: brand
+  feature_type: Categorical
+  used_for: filter
+  value: 0
+  active: 1
+B20218_frontlcd:
+  product_type: B20218
+  name: frontlcd
+  feature_type: Binary
+  used_for: filter
+  value: 0
+  active: 1
+B29157_utility:
+  product_type: B29157
+  name: utility
+  feature_type: Continuous
+  used_for: sortby
+  style: desc
+  value: 0
+  active: 1
+B29157_product_type:
+  product_type: B29157
+  name: product_type
+  feature_type: Categorical
+  used_for: filter
+  value: 0
+  active: 1
+B20352_utility:
+  product_type: B20352
+  name: utility
+  feature_type: Continuous
+  used_for: sortby
+  style: desc
+  value: 0
+  active: 1
+B20352_product_type:
+  product_type: B20352
+  name: product_type
   feature_type: Categorical
   used_for: filter
   value: 0
