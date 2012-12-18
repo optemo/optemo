@@ -74,6 +74,11 @@ Filter Page:
       - Verify the forward button correctly redoes them.
     - From a landing page, click See All. 
       - Verify that the back button takes you back to the landing page.
+  - Dynamic facets
+    - Go to BB Drives.  Note the original number of products for the category.  
+    - Select External Hard Drives. Then select a range for the dynamic facet "Data Buffer".
+    - Unselect External Hard Drives.  Verify that the Data Buffer filter is removed and the number of products is reset to the original value for  
+      the category.
 
 Product Comparison:
 
