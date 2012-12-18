@@ -285,14 +285,14 @@ class Search < ActiveRecord::Base
     @expanded = p[:expanded].try(:keys)
   end
   
-  # Takes array of available facets and prunes filters which do not
+  # Takes array of available filtering facets and prunes filters which do not
   # match one of the available facets.
   def prune_filters(facets) 
     [[userdatacats, "Categorical"], [userdataconts, "Continuous"], [userdatabins, "Binary"]].each do |filters, filter_type|
       to_remove = []
       filters.each do |filter|
         matching_facet = facets.find do |facet| 
-          facet.feature_type == filter_type and facet.name == filter.name and facet.active and facet.used_for == "filter" 
+          facet.feature_type == filter_type and facet.name == filter.name and facet.active 
         end
         if matching_facet.nil? 
           to_remove << filter

@@ -87,13 +87,14 @@ class Session
       # If df_cats is empty, then it is not a dynamic facet.
       df_cats.empty? || df_cats.any?{|df_cat| categories.include? df_cat}
     end
+    facets = facets.group_by{ |facet| facet.used_for }
     
     # Remove filters which do not match the available facets.
     if not self.search.nil?
-      self.search.prune_filters(facets)
+      self.search.prune_filters(facets['filter'])
     end
     
-    self.features = facets.group_by{ |facet| facet.used_for }
+    self.features = facets
   end
 
   def self.isCrawler?(str, esc_param)

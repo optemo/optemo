@@ -1,0 +1,4 @@
+frontlcd: 
+  # Referencing a facet defined in facets.yml
+  facet: B20218_frontlcd
+  category: B22474
