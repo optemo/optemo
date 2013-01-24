@@ -7,7 +7,7 @@
 <% if bin_specs["onsale"] -%>
   <span class="save" style="<%= "font-size: 12px;" if !fr?.empty? && Session.futureshop? %>">
     <%= t('products.compare.save') %><%= (fr?.empty? ? "" : " ")+": " if Session.bestbuy? %>
-    <%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"]) %>
+    <%= number_to_currency(cont_specs["price"]-cont_specs["saleprice"], precision: 0) %>
   </span>
   <% if cat_specs["saleEndDate"] && Time.now < Date.parse(cat_specs["saleEndDate"]) -%>
     <div class="saleends">
