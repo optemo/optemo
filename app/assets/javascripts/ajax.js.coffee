@@ -177,7 +177,7 @@ opt.stop_spinner = ->
 
 #****Private Functions****
 BestBuyLandingElements = ->
-  bb_divs = $("#pagecontentmain2 > [id^=ctl00_CP], #pagecontentmain2 > .std-bottommargin, #pagecontentmain2 .articles-container, #pagecontentmain2 .ui-tabcontrol, #contentleft1 [id^=ctl00_CC], #contentleft1 .department-headline, #contentleft1 .tech-community, #contentleft1 .btm-space")
+  bb_divs = $("#pagecontentmain2 > [id^=ctl00_CP], #pagecontentmain2 > .std-bottommargin, #pagecontentmain2 .articles-container, #pagecontentmain2 .ui-tabcontrol, #contentleft1 [id^=ctl00_CC], #contentleft1 .department-headline, #contentleft1 .tech-community, #contentleft1 .btm-space, .prod-listing-wrapper .across-wrapper, .prod-listing-wrapper [id^=ctl00_C]")
   if ($("#landingpage_indicator").length == 0)
     # If they exist, hide the Best Buy landing page elements
     if (bb_divs.length != 0) # Make sure they exist
