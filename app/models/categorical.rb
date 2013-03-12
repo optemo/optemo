@@ -4,7 +4,7 @@ class Categorical < Facet
     color_counts = CatSpec.count_feat("color")
     display_colours = %w(red orange yellow green blue purple pink white silver brown black).zip(
        %w(l   l       l       d   d     d     l     l     l     d     d    ))
-    display_colours.select!{|color,b| !!selected.index{|x| x.value == color && x.name == "color"} or !color_counts[color].nil?}
+    display_colours.select{|color,b| !!selected.index{|x| x.value == color && x.name == "color"} or !color_counts[color].nil?}
   end
   
   def no_display
