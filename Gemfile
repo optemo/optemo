@@ -1,4 +1,4 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 
 gem 'rails', '3.2.13'
@@ -27,7 +27,7 @@ gem 'mysql2', '> 0.3'
 # gem 'unicorn'
 
 # Deploy with Capistrano
-gem 'capistrano', '2.13.5'
+gem 'capistrano'
 gem 'capistrano-ext'
 gem 'rvm-capistrano'
 
