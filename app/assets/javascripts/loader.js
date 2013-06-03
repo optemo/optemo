@@ -65,18 +65,25 @@ var opt_history = location.hash.replace(/^#/, '');
 
 var category_id_hash = {'laptops-netbooks.aspx' : 'B20352',
                         'ordinateurs-portatifs-et-miniportables.aspx' : 'B20352',
-                        'optemo-fs-sandbox.aspx' : 'F1002',
-                        '20218.aspx' : 'Bcameras'};
-  
+                        'optemo-fs-sandbox.aspx' : 'F1002'};
+
+// Allow for passing the category via url
+var urlRegex = new RegExp("[\\?&]category_id=([^&#]*)");
+var url_passed_category = urlRegex.exec(window.location.href);
+if (url_passed_category == null)
+  var opt_category_id = 0;
+else
+  var opt_category_id = url_passed_category[1] || 0;
+
 //Check for new BB URL pattern
 var urlRegex = new RegExp("([0-9]+)(opt)?\.aspx", "i");
 var url_category = urlRegex.exec(window.location.href);
 if (url_category != null) {
   var opt_brand = new RegExp("futureshop\.ca|str1-fsca\.bestbuy\.com|str2-fsca\.bestbuy\.com", "i").exec(window.location.href);
-  var opt_category_id = (opt_brand ? "F" : "B") + url_category[1];
+  opt_category_id = (opt_brand ? "F" : "B") + url_category[1];
 }
 else
-  var opt_category_id = 0;
+  opt_category_id = 0;
 
 //Check the URL for the categories in the category_hash  
 for (var i in category_id_hash) {
@@ -85,14 +92,6 @@ for (var i in category_id_hash) {
     break;
   }
 }
-
-// Allow for passing the category via url
-var urlRegex = new RegExp("[\\?&]category_id=([^&#]*)");
-var url_passed_category = urlRegex.exec(window.location.href);
-if (url_passed_category == null)
-  opt_category_id = 0;
-else
-  opt_category_id = url_passed_category[1] || 0;
 
 // Failsafe just in case nothing seems to match
 if (opt_category_id == 0) {
