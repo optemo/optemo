@@ -65,7 +65,8 @@ var opt_history = location.hash.replace(/^#/, '');
 
 var category_id_hash = {'laptops-netbooks.aspx' : 'B20352',
                         'ordinateurs-portatifs-et-miniportables.aspx' : 'B20352',
-                        'optemo-fs-sandbox.aspx' : 'F1002'};
+                        'optemo-fs-sandbox.aspx' : 'F1002',
+                        '20218.aspx' : 'Bcameras'};
 
 // Allow for passing the category via url
 var urlRegex = new RegExp("[\\?&]category_id=([^&#]*)");
