@@ -8,9 +8,9 @@ module NeweggScraper
     url = id_to_details_url local_id, region
     klik = case region
     when /us/i
-      "-***REMOVED***-10446076"
+      "-3328141-10446076"
     when /ca/i
-      "-***REMOVED***-10657534"
+      "-3328141-10657534"
     end
     special_url = "http://www.jdoqocy.com/click#{klik}?url="
     special_url += CGI.escape(url)

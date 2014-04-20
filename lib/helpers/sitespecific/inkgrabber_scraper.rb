@@ -6,7 +6,7 @@ module InkgrabberScraper
   
   def id_to_sponsored_link local_id, region, merchant=nil
     url = id_to_details_url(local_id,region)
-    special_url = "http://www.jdoqocy.com/click-***REMOVED***-10429337?url="
+    special_url = "http://www.jdoqocy.com/click-3328141-10429337?url="
     special_url += CGI.escape(url)
     return special_url
   end

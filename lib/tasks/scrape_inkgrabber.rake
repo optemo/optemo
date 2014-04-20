@@ -18,7 +18,7 @@ module Inkgrabber
   end
   
   def special_url url
-   special_url = "http://www.jdoqocy.com/click-***REMOVED***-10429337?url="
+   special_url = "http://www.jdoqocy.com/click-3328141-10429337?url="
    special_url += CGI.escape(url)
    return special_url
   end
